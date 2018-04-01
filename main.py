@@ -1,7 +1,8 @@
 from device import Device
 
 item = Device()
-print(len(item.myDb))
+item.setData(item.myDb.getItem("enst"))
+item.login()
 
 
 

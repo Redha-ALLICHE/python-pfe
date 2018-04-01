@@ -2,10 +2,10 @@
         "id": "0",
         "name": "enst",
         "type": "router",
-        "ip_address": "192.168.1.150",
+        "ip_address": "192.168.1.2",
         "port": "23",
         "username": "ajazix",
-        "password": "root"
+        "password": "1234"
     },
     {
         "id": "1",

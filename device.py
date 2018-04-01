@@ -21,13 +21,20 @@ class Device(Database):
         """print on the screen the informations about the device """
         print(self.data)
 
+    def setData(self, newData):
+        """the setter of data"""
+        if newData:
+            self.data = newData
+        else:
+            print("error can't find the data")
+            return None
 
     def login(self):
-        """enable to login to the device """
+        """enable the user to login into the device """
         try:
             print("loading...")
             target = tn.Telnet().open(host=self.data['ip_address'], port=self.data['port'])
-        except TimeoutError:
+        except (TimeoutError, OSError):
             print("Error !!! device unreacheable ")
             return None
         else:
