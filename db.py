@@ -4,8 +4,22 @@ class Database():
     """this class ensures the access to the database""" 
     def __init__(self, devices_file):
         self.devices_file = devices_file
-        pass
-    
+
+    def __len__(self):
+        """return the number of item in the file"""
+        data = self.getAllInfo()
+        if data:
+            return len(data)
+        return 0
+
+    def openFile(self, path, mode='r'):
+        """opens the file and returns the pointer"""
+        try:
+            return open(path, mode)
+        except FileNotFoundError :
+            print("file not found")
+            return None
+        
     def getAllInfo(self):
         """retrieve all the devices informations from the .json file"""
         try:
@@ -18,7 +32,7 @@ class Database():
             print("Error !!! the file is corrupted")
             return None
 
-    def getItem(self, the_name=''):
+    def getItemByName(self, the_name=''):
             """retrieve the informations about a device from the list_of_devices.json file """
             all_info = self.getAllInfo()
             if all_info:
@@ -47,7 +61,7 @@ class Database():
 
     def deleteDevice(self, dev_name=''):
         """delete the device from the file"""
-        info = self.getItem(the_name=dev_name)
+        info = self.getItemByName(the_name=dev_name)
         if info:
             all_info = self.getAllInfo()
             all_info.remove(info)
@@ -56,8 +70,16 @@ class Database():
             print("deleting done")
         return None
 
-    def __len__(self):
-        data = self.getAllInfo()
-        if data:
-            return len(data)
-        return 0
+    def refreshSetting(self, data, id):
+        """update the settings of one existing device in your list of devices file"""
+        id = int(id)
+        all_info = self.getAllInfo()
+        if len(all_info) > id:
+            all_info[id] = data
+            with open(self.devices_file, 'w') as destination:
+                json.dump(all_info, destination, indent=4)
+            print("refreshing the name of the device")
+            return all_info[id]
+        print("Error !!! the device with the id = " + id + " is not found in the file")
+        return None
+        

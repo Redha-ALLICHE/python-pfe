@@ -1,6 +1,7 @@
-[{
+[
+    {
         "id": "0",
-        "name": "enst",
+        "name": "R2",
         "type": "router",
         "ip_address": "192.168.1.2",
         "port": "23",

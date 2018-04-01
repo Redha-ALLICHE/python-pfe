@@ -1,5 +1,6 @@
 import telnetlib as tn
 from db import Database
+import time
 
 class Device(Database): 
     """this class models a device like routers ,swithes and servers """
@@ -26,26 +27,52 @@ class Device(Database):
         if newData:
             self.data = newData
         else:
-            print("error can't find the data")
             return None
 
     def login(self):
         """enable the user to login into the device """
         try:
+            if self.data["ip_address"] =="":
+                return None
             print("loading...")
-            target = tn.Telnet().open(host=self.data['ip_address'], port=self.data['port'])
+            target = tn.Telnet()
+            target.open(host=self.data['ip_address'], port=self.data['port'])
         except (TimeoutError, OSError):
             print("Error !!! device unreacheable ")
             return None
         else:
-            target.read_until("username: ")
-            target.write(self.data['username'] + "\n")
-            target.read_until("Password: ")
-            target.write(self.data['password'] + "\n")
-            print(target.read_all())
-            target.write("exit\n")
-            tn.Telnet().close()
+            target.read_until("Username: ".encode())
+            target.write((self.data['username'] + "\n").encode())
+            target.read_until("Password: ".encode())
+            target.write((self.data['password'] + "\n").encode())
+            answer = target.read_some().decode()
+            if answer.endswith(">"):
+                if self.data["name"] != answer[2:-1]:
+                    self.data["name"] = answer[2:-1]
+                    self.myDb.refreshSetting(self.data, self.data["id"])
+                print("Connection successful to " + self.data["name"])
+                return target
+            else:
+                print("Connection failed")
+                return None
 
+    def executeCommands(self, target, the_file="list_of_commands.txt"):
+        """execute commands from a file into one device"""
+        file = self.myDb.openFile(the_file)
+        if target and file:
+            for command in file:
+                target.write((command + '\n').encode())
+                time.sleep(0.2)
+            target.write(("exit\n").encode())
+            print(target.read_all().decode())
+            target.close()
+            file.close()
+        else:
+            print("Nothing to do !!")
+        return None
+            
+
+        
 
     
 
