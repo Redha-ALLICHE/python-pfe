@@ -55,3 +55,9 @@ class Database():
                 json.dump(all_info, destination, indent=4)
             print("deleting done")
         return None
+
+    def __len__(self):
+        data = self.getAllInfo()
+        if data:
+            return len(data)
+        return 0

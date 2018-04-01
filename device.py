@@ -1,4 +1,3 @@
-import json
 import telnetlib as tn
 from db import Database
 
@@ -13,9 +12,11 @@ class Device(Database):
 
     def getInputFromUser(self):
         """retrieve the information from the user about a new device and store it in the data variable """
-        for element in self.data.keys():
+        what_needed = ['name', 'type', 'ip_address', 'username' , 'password']
+        for element in what_needed:
             self.data[element] = input("give me the " + element + ' : ')
-      
+        self.data["id"] = len(self.myDb)
+
     def show_info(self):
         """print on the screen the informations about the device """
         print(self.data)
