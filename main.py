@@ -1,6 +1,7 @@
-import device  
+from device import Device
 
-router = device.Device()
-router.getItem('enst')
-router.login()
+item = Device()
+print(item.myDb.getItem("hehe"))
+
+
 
