@@ -1,7 +1,7 @@
 import json
 
 class Utility():
-    """this class ensures the access to the files and provide some utility functions""" 
+    """this class ensures the access to the files and prove some utility functions""" 
     def __init__(self, devices_file):
         self.devices_file = devices_file
 
@@ -70,18 +70,30 @@ class Utility():
             print("deleting done")
         return None
 
-    def refreshSetting(self, data, id):
+    def refreshSetting(self, data):
         """update the settings of one existing device in your list of devices file"""
-        id = int(id)
         all_info = self.getAllInfo()
-        if len(all_info) > id:
-            all_info[id] = data
+        check = self.searchDevice(data)
+        if check != "EOL":
+            all_info[check] = data
             with open(self.devices_file, 'w') as destination:
                 json.dump(all_info, destination, indent=4)
-            print("refreshing the name of the device")
-            return all_info[id]
-        print("Error !!! the device with the id = " + id + " is not found in the file")
-        return None
+            print("Refreshing the existing info of the device")
+            return all_info[check]
+        else:
+            all_info.append(data)
+            with open(self.devices_file, 'w') as destination:
+                json.dump(all_info, destination, indent=4)
+            print("Adding the device with the ip address " + data["ip_address"] + " in the list of devices")
+            return None
+
+    def searchDevice(self, data):
+        """retrun the index of the device if found in the file"""
+        all_info = self.getAllInfo()
+        for i, item in enumerate(all_info, 0):
+            if item["ip_address"] == data["ip_address"]:
+                return i
+        return "EOL"
         
     def generateRange(self, start, end):
         """get a starting ip and an ending ip and generate a list of ips 192.168.1.2-52"""

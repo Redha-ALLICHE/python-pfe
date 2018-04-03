@@ -1,6 +1,7 @@
 import telnetlib as tn
 from db import Utility
 import time
+import getpass
 
 class Device(Utility): 
     """this class models a device like routers ,swithes and servers """
@@ -9,14 +10,14 @@ class Device(Utility):
         """declare the variables neeeded to specify a device and get the devices_list file path where this informations are stored """
 
         self.myDb = Utility(devices_list)
-        self.data = {'id':'0','name':'','type':'','ip_address':'','port':'23','username':'','password':''} 
+        self.data = {'name':'','type':'','ip_address':'','port':'23','username':'','password':''} 
 
     def getInputFromUser(self):
         """retrieve the information from the user about a new device and store it in the data variable """
-        what_needed = ['name', 'type', 'ip_address', 'username' , 'password']
+        what_needed = ['name', 'type', 'ip_address', 'username']
         for element in what_needed:
-            self.data[element] = input("give me the " + element + ' : ')
-        self.data["id"] = len(self.myDb)
+            self.data[element] = input("Give me the " + element + ' : ')
+        self.data["password"] = getpass.getpass("Give me the password")
 
     def show_info(self):
         """print on the screen the informations about the device """
@@ -49,25 +50,31 @@ class Device(Utility):
             if answer.endswith(">") :
                 if self.data["name"] != answer[2:-1] and refreshing:
                     self.data["name"] = answer[2:-1]
-                    self.myDb.refreshSetting(self.data, self.data["id"])
+                    self.myDb.refreshSetting(self.data)
                 print("Connection successful to " + self.data["ip_address"])
                 return target
             else:
                 print("Failed to connect to "+ self.data["ip_address"])
                 return None
 
-    def loginPrivelegeMode(self, target, enablePassword):
+    def loginPrivelegeMode(self, target):
         """login to privelege mode in a cisco device"""
         if target:
+            enablePassword = getpass.getpass("Input the enable password : ")
             target.write(("en\n").encode())
             time.sleep(0.2)
-            target.write((enablePassword).encode())
+            target.write((enablePassword + "\n").encode())
+            time.sleep(0.2)
             answer = target.read_some().decode()
             if answer.endswith("#"):
+                print("Getting into the privelege mode")
                 return target
-        return None
+            else:
+                print("incorrect password",end=' ')
+                target.close()
+                return None
 
-    def executeCommands(self, target, the_file="list_of_commands.txt"):
+    def executeCommands(self, target, the_file="list_of_commands.txt",silent= True):
         """execute commands from a file into one device"""
         file = self.myDb.openFile(the_file)
         if target and file:
@@ -75,31 +82,48 @@ class Device(Utility):
                 target.write((command + '\n').encode())
                 time.sleep(0.2)
             target.write(("exit\n").encode())
-            print(target.read_all().decode())
+            if silent:
+                print("All the commands are done")
+            else:
+                print(target.read_all().decode())
             target.close()
             file.close()
         else:
             print("Commands did not apply!!")
         return None
             
-    def configureMultipleFromRange(self, start, end, command_path="list_of_commands.txt", save=False):
+    def configureMultipleFromRange(self, start, end, command_path="list_of_commands.txt", save=False, silent=True, privelege=False):
         """configure a range of ips with the same configuration"""
-        self.data["username"] = input("give me the username : ")
-        self.data["password"] = input("give me the password : ")
-        for ip in self.myDb.generateRange(start,end):
-            self.data["ip_address"] = ip 
-            self.executeCommands(self.login(refreshing=save), command_path)
-        return None
+        self.data["username"] = input("Give me the username : ")
+        self.data["password"] = getpass.getpass("Give me the password : ")
+        if privelege:
+            for ip in self.myDb.generateRange(start,end):
+                self.data["ip_address"] = ip 
+                self.executeCommands(self.loginPrivelegeMode(self.login(refreshing=save)),
+                                    command_path, silent=True)
+        else:
+            for ip in self.myDb.generateRange(start,end):
+                self.data["ip_address"] = ip 
+                self.executeCommands(self.login(refreshing=save),
+                                    command_path, silent=True)
+            return None
 
-    def configureMultipleFromFile(self, ip_path="list_of_ip.txt", command_path="list_of_commands.txt", save=False):
+    def configureMultipleFromFile(self, ip_path="list_of_ip.txt", command_path="list_of_commands.txt", save=False, silent=True, privelege=False):
         """configure a range of ips retrieved from a file with the same configuration"""
         file = self.myDb.openFile(ip_path)
         if file:
-            self.data["username"] = input("give me the username : ")
-            self.data["password"] = input("give me the password : ")
-            for ip in file:
-                self.data["ip_address"] = ip
-                self.executeCommands(self.login(refreshing=save), command_path)
+            self.data["username"] = input("Give me the username : ")
+            self.data["password"] = getpass.getpass("Give me the password : ")
+            if privelege:
+                for ip in file:
+                    self.data["ip_address"] = ip.rstrip('\n')
+                    self.executeCommands(self.loginPrivelegeMode(
+                        self.login(refreshing=save)), command_path, silent=True)
+            else:
+                for ip in file:
+                    self.data["ip_address"] = ip.rstrip('\n')
+                    self.executeCommands(self.login(
+                        refreshing=save), command_path, silent=True)
             file.close()
         return None
         

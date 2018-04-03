@@ -1,4 +1,2 @@
-en
-1234
 show run
 
