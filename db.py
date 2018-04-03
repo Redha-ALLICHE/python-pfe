@@ -1,7 +1,7 @@
 import json
 
-class Database():
-    """this class ensures the access to the database""" 
+class Utility():
+    """this class ensures the access to the files and provide some utility functions""" 
     def __init__(self, devices_file):
         self.devices_file = devices_file
 
@@ -17,7 +17,7 @@ class Database():
         try:
             return open(path, mode)
         except FileNotFoundError :
-            print("file not found")
+            print("file named " + path + " is not found")
             return None
         
     def getAllInfo(self):
@@ -83,3 +83,41 @@ class Database():
         print("Error !!! the device with the id = " + id + " is not found in the file")
         return None
         
+    def generateRange(self, start, end):
+        """get a starting ip and an ending ip and generate a list of ips 192.168.1.2-52"""
+        ip_list = []
+        increment = start
+        startSplit = [int(x) for x in start.split('.')]
+        endSplit = [int(x) for x in end.split('.')]
+        indice = True
+        for i in range(0,3):
+            if startSplit[i] < endSplit[i]:
+                break
+            elif startSplit[i] > endSplit[i]:
+                indice = False
+        if not indice:
+            print("Error in the range")
+            return None
+        while increment != end:
+            ip_list.append(increment)
+            splitted = [int(x) for x in increment.split('.')]
+            if splitted[3] < 255:
+                splitted[3] += 1
+            elif splitted[2] < 255:
+                splitted[3]= 0
+                splitted[2]+= 1
+            elif splitted[1] < 255:
+                splitted[3] = 0
+                splitted[2] = 0
+                splitted[1]+= 1
+            elif splitted[0] < 255:
+                splitted[3] = 0
+                splitted[2] = 0
+                splitted[1] = 0
+                splitted[0] += 1
+            else:
+                return None
+            increment = ".".join([str(x) for x in splitted])
+        ip_list.append(end)
+        return ip_list
+    

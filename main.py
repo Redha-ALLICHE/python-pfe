@@ -1,8 +1,8 @@
 from device import Device
 
 item = Device()
-item.setData(item.myDb.getItemByName("R2"))
-item.executeCommands(item.login())
+#item.configureMultipleFromRange("192.168.1.15", "192.168.1.19")
+item.configureMultipleFromFile(save=True)
 
 
 

@@ -1,14 +1,14 @@
 import telnetlib as tn
-from db import Database
+from db import Utility
 import time
 
-class Device(Database): 
+class Device(Utility): 
     """this class models a device like routers ,swithes and servers """
 
     def __init__(self,devices_list='list_of_devices.json'):
         """declare the variables neeeded to specify a device and get the devices_list file path where this informations are stored """
 
-        self.myDb = Database(devices_list)
+        self.myDb = Utility(devices_list)
         self.data = {'id':'0','name':'','type':'','ip_address':'','port':'23','username':'','password':''} 
 
     def getInputFromUser(self):
@@ -29,7 +29,7 @@ class Device(Database):
         else:
             return None
 
-    def login(self):
+    def login(self, refreshing =True):
         """enable the user to login into the device """
         try:
             if self.data["ip_address"] =="":
@@ -46,15 +46,26 @@ class Device(Database):
             target.read_until("Password: ".encode())
             target.write((self.data['password'] + "\n").encode())
             answer = target.read_some().decode()
-            if answer.endswith(">"):
-                if self.data["name"] != answer[2:-1]:
+            if answer.endswith(">") :
+                if self.data["name"] != answer[2:-1] and refreshing:
                     self.data["name"] = answer[2:-1]
                     self.myDb.refreshSetting(self.data, self.data["id"])
-                print("Connection successful to " + self.data["name"])
+                print("Connection successful to " + self.data["ip_address"])
                 return target
             else:
-                print("Connection failed")
+                print("Failed to connect to "+ self.data["ip_address"])
                 return None
+
+    def loginPrivelegeMode(self, target, enablePassword):
+        """login to privelege mode in a cisco device"""
+        if target:
+            target.write(("en\n").encode())
+            time.sleep(0.2)
+            target.write((enablePassword).encode())
+            answer = target.read_some().decode()
+            if answer.endswith("#"):
+                return target
+        return None
 
     def executeCommands(self, target, the_file="list_of_commands.txt"):
         """execute commands from a file into one device"""
@@ -68,11 +79,27 @@ class Device(Database):
             target.close()
             file.close()
         else:
-            print("Nothing to do !!")
+            print("Commands did not apply!!")
         return None
             
+    def configureMultipleFromRange(self, start, end, command_path="list_of_commands.txt", save=False):
+        """configure a range of ips with the same configuration"""
+        self.data["username"] = input("give me the username : ")
+        self.data["password"] = input("give me the password : ")
+        for ip in self.myDb.generateRange(start,end):
+            self.data["ip_address"] = ip 
+            self.executeCommands(self.login(refreshing=save), command_path)
+        return None
 
+    def configureMultipleFromFile(self, ip_path="list_of_ip.txt", command_path="list_of_commands.txt", save=False):
+        """configure a range of ips retrieved from a file with the same configuration"""
+        file = self.myDb.openFile(ip_path)
+        if file:
+            self.data["username"] = input("give me the username : ")
+            self.data["password"] = input("give me the password : ")
+            for ip in file:
+                self.data["ip_address"] = ip
+                self.executeCommands(self.login(refreshing=save), command_path)
+            file.close()
+        return None
         
-
-    
-

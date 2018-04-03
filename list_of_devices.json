@@ -1,11 +1,10 @@
-[
-    {
+[{
         "id": "0",
-        "name": "R2",
-        "type": "router",
-        "ip_address": "192.168.1.2",
+        "name": "enst",
+        "type": "",
+        "ip_address": "192.168.1.12",
         "port": "23",
-        "username": "ajazix",
+        "username": "root",
         "password": "1234"
     },
     {
