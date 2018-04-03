@@ -1,5 +1,4 @@
-[
-    {
+[{
         "name": "IOU3",
         "type": "",
         "ip_address": "192.168.1.16",
@@ -27,14 +26,6 @@
         "name": "IOU2",
         "type": "",
         "ip_address": "192.168.1.15",
-        "port": "23",
-        "username": "root",
-        "password": "1234"
-    },
-    {
-        "name": "IOU5",
-        "type": "",
-        "ip_address": "192.168.1.18",
         "port": "23",
         "username": "root",
         "password": "1234"

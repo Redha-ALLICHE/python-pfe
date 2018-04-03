@@ -97,9 +97,10 @@ class Device(Utility):
     def configureMultipleFromRange(self, start, end, command_path="list_of_commands.txt", save=False, silent=True, privelege=False, mode="one"):
         """configure a range of ips with the same configuration"""
         if mode == "one":
+            print("Enter the common login")
             self.data = self.myDb.getInputs(self.data, mode='ask')
         for ip in self.myDb.generateRange(start,end):
-            self.data["ip_address"] = ip 
+            self.data["ip_address"] = ip
             self.data = self.myDb.getInputs(self.data, mode= mode)
             self.executeCommands(self.login(refreshing=save,privelege=privelege),command_path, silent=True)
         return None
@@ -108,6 +109,7 @@ class Device(Utility):
         """configure a range of ips retrieved from a file with the same configuration"""
         file = self.myDb.openFile(ip_path)
         if mode == 'one':
+            print("Enter the common login")
             self.data = self.myDb.getInputs(self.data, mode='ask')
         if file:
             for ip in file:
