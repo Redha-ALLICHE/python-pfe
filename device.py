@@ -30,7 +30,7 @@ class Device(Utility):
         else:
             return None
 
-    def login(self, refreshing =True):
+    def login(self, refreshing =True, privelege=False):
         """enable the user to login into the device """
         try:
             if self.data["ip_address"] =="":
@@ -52,6 +52,8 @@ class Device(Utility):
                     self.data["name"] = answer[2:-1]
                     self.myDb.refreshSetting(self.data)
                 print("Connection successful to " + self.data["ip_address"])
+                if privelege:
+                    return self.loginPrivelegeMode(target)
                 return target
             else:
                 print("Failed to connect to "+ self.data["ip_address"])
@@ -92,38 +94,26 @@ class Device(Utility):
             print("Commands did not apply!!")
         return None
             
-    def configureMultipleFromRange(self, start, end, command_path="list_of_commands.txt", save=False, silent=True, privelege=False):
+    def configureMultipleFromRange(self, start, end, command_path="list_of_commands.txt", save=False, silent=True, privelege=False, mode="one"):
         """configure a range of ips with the same configuration"""
-        self.data["username"] = input("Give me the username : ")
-        self.data["password"] = getpass.getpass("Give me the password : ")
-        if privelege:
-            for ip in self.myDb.generateRange(start,end):
-                self.data["ip_address"] = ip 
-                self.executeCommands(self.loginPrivelegeMode(self.login(refreshing=save)),
-                                    command_path, silent=True)
-        else:
-            for ip in self.myDb.generateRange(start,end):
-                self.data["ip_address"] = ip 
-                self.executeCommands(self.login(refreshing=save),
-                                    command_path, silent=True)
-            return None
+        if mode == "one":
+            self.data = self.myDb.getInputs(self.data, mode='ask')
+        for ip in self.myDb.generateRange(start,end):
+            self.data["ip_address"] = ip 
+            self.data = self.myDb.getInputs(self.data, mode= mode)
+            self.executeCommands(self.login(refreshing=save,privelege=privelege),command_path, silent=True)
+        return None
 
-    def configureMultipleFromFile(self, ip_path="list_of_ip.txt", command_path="list_of_commands.txt", save=False, silent=True, privelege=False):
+    def configureMultipleFromFile(self, ip_path="list_of_ip.txt", command_path="list_of_commands.txt", save=False, silent=True, privelege=False, mode='one'):
         """configure a range of ips retrieved from a file with the same configuration"""
         file = self.myDb.openFile(ip_path)
+        if mode == 'one':
+            self.data = self.myDb.getInputs(self.data, mode='ask')
         if file:
-            self.data["username"] = input("Give me the username : ")
-            self.data["password"] = getpass.getpass("Give me the password : ")
-            if privelege:
-                for ip in file:
-                    self.data["ip_address"] = ip.rstrip('\n')
-                    self.executeCommands(self.loginPrivelegeMode(
-                        self.login(refreshing=save)), command_path, silent=True)
-            else:
-                for ip in file:
-                    self.data["ip_address"] = ip.rstrip('\n')
-                    self.executeCommands(self.login(
-                        refreshing=save), command_path, silent=True)
+            for ip in file:
+                self.data["ip_address"] = ip.rstrip('\n')
+                self.data = self.myDb.getInputs(self.data, mode=mode)
+                self.executeCommands(self.login(refreshing=save,privelege=privelege), command_path, silent=True)
             file.close()
         return None
         

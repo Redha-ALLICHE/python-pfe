@@ -1,4 +1,5 @@
 import json
+import getpass
 
 class Utility():
     """this class ensures the access to the files and prove some utility functions""" 
@@ -95,6 +96,21 @@ class Utility():
                 return i
         return "EOL"
         
+    def getInputs(self, data, mode="one"):
+        """prompt the login inputs for two modes :ask or check """ 
+        if mode == "ask":
+            data["username"] = input("Give me the username : ")
+            data["password"] = getpass.getpass("Give me the password : ")
+        elif mode == "check":
+            all_info = self.getAllInfo()
+            index = self.searchDevice(data)
+            if index != "EOL" and all_info[index]["username"] and all_info[index]["password"]:
+                data = all_info[index]
+            else:
+                data["username"] = input("Give me the username : ")
+                data["password"] = getpass.getpass("Give me the password : ")
+        return data
+
     def generateRange(self, start, end):
         """get a starting ip and an ending ip and generate a list of ips 192.168.1.2-52"""
         ip_list = []
