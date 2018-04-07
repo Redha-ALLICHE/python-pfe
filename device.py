@@ -2,22 +2,19 @@ import telnetlib as tn
 from db import Utility
 import time
 import getpass
+import paramiko as pk
 
 class Device(Utility): 
     """this class models a device like routers ,swithes and servers """
 
     def __init__(self,devices_list='list_of_devices.json'):
         """declare the variables neeeded to specify a device and get the devices_list file path where this informations are stored """
-
         self.myDb = Utility(devices_list)
         self.data = {'name':'','type':'','ip_address':'','port':'23','username':'','password':''} 
 
     def getInputFromUser(self):
         """retrieve the information from the user about a new device and store it in the data variable """
-        what_needed = ['name', 'type', 'ip_address', 'username']
-        for element in what_needed:
-            self.data[element] = input("Give me the " + element + ' : ')
-        self.data["password"] = getpass.getpass("Give me the password")
+        self.data = self.myDb.fillData(self.data)
 
     def show_info(self):
         """print on the screen the informations about the device """
@@ -30,7 +27,9 @@ class Device(Utility):
         else:
             return None
 
-    def login(self, refreshing =True, privelege=False):
+    """Telnet part"""
+
+    def loginTelnet(self, refreshing =True, privelege=False):
         """enable the user to login into the device """
         try:
             if self.data["ip_address"] =="":
@@ -43,9 +42,9 @@ class Device(Utility):
             return None
         else:
             target.read_until("Username: ".encode())
-            target.write((self.data['username'] + "\n").encode())
+            self.executeLine(target, self.data["username"])
             target.read_until("Password: ".encode())
-            target.write((self.data['password'] + "\n").encode())
+            self.executeLine(target, self.data["password"])
             answer = target.read_some().decode()
             if answer.endswith(">") :
                 if self.data["name"] != answer[2:-1] and refreshing:
@@ -63,10 +62,8 @@ class Device(Utility):
         """login to privelege mode in a cisco device"""
         if target:
             enablePassword = getpass.getpass("Input the enable password : ")
-            target.write(("en\n").encode())
-            time.sleep(0.2)
-            target.write((enablePassword + "\n").encode())
-            time.sleep(0.2)
+            self.executeLine(target,"en")
+            self.executeLine(target,enablePassword)
             answer = target.read_some().decode()
             if answer.endswith("#"):
                 print("Getting into the privelege mode")
@@ -80,10 +77,10 @@ class Device(Utility):
         """execute commands from a file into one device"""
         file = self.myDb.openFile(the_file)
         if target and file:
+            self.executeLine(target,"terminal lengh 0")
             for command in file:
-                target.write((command + '\n').encode())
-                time.sleep(0.2)
-            target.write(("exit\n").encode())
+                self.executeLine(target,command)
+            self.executeLine(target,"exit")
             if silent:
                 print("All the commands are done")
             else:
@@ -93,7 +90,13 @@ class Device(Utility):
         else:
             print("Commands did not apply!!")
         return None
-            
+        
+    def executeLine(self, target, command):
+        """executes a line of command in the target"""
+        target.write((command + '\n').encode())
+        time.sleep(0.2)
+        return target
+
     def configureMultipleFromRange(self, start, end, command_path="list_of_commands.txt", save=False, silent=True, privelege=False, mode="one"):
         """configure a range of ips with the same configuration"""
         if mode == "one":
@@ -102,7 +105,7 @@ class Device(Utility):
         for ip in self.myDb.generateRange(start,end):
             self.data["ip_address"] = ip
             self.data = self.myDb.getInputs(self.data, mode= mode)
-            self.executeCommands(self.login(refreshing=save,privelege=privelege),command_path, silent=True)
+            self.executeCommands(self.loginTelnet(refreshing=save,privelege=privelege),command_path, silent=True)
         return None
 
     def configureMultipleFromFile(self, ip_path="list_of_ip.txt", command_path="list_of_commands.txt", save=False, silent=True, privelege=False, mode='one'):
@@ -115,7 +118,50 @@ class Device(Utility):
             for ip in file:
                 self.data["ip_address"] = ip.rstrip('\n')
                 self.data = self.myDb.getInputs(self.data, mode=mode)
-                self.executeCommands(self.login(refreshing=save,privelege=privelege), command_path, silent=True)
+                self.executeCommands(self.loginTelnet(refreshing=save,privelege=privelege), command_path, silent=True)
             file.close()
         return None
-        
+
+    """ Common tasks"""
+    def executeCommonTask(self, path):
+        """execute a task from a file"""
+        self.executeCommands(self.loginTelnet(privelege=True),path,silent=False)
+
+    def createVlans(self, target, start, numberOfVlans, nameList=[] ):
+        """create vlans on the taget """
+        if target:
+            print("Creating the vlans")
+            if numberOfVlans!=0:
+                text = str(start) + '-' + str(int(start)+int(numberOfVlans-1))
+            else:
+                text = str(start)
+            self.executeLine(target, "vlan "+ text)
+            self.executeLine(target, "no shutdown")
+            self.executeLine(target, "exit")
+            if nameList and len(nameList) == numberOfVlans:
+                print("Naming the vlans")
+                for i , name  in enumerate(nameList,start):
+                    self.executeLine(target, "vlan "+ str(i))
+                    self.executeLine(target, "name "+ str(name))
+                    self.executeLine(target, "exit")
+            target.close()
+        return None
+
+    def saveConfig(self, target):
+        """ saves the current configuration into the device"""
+        pass
+
+    """SSH part """
+    """
+    def loginSSH(self):
+        ""connects to the device with SSh""
+        try:
+            if data["ip_address"]=='':
+                print("Invalid ip")
+                return None
+            client = pk.SSHClient()
+            client.load_system_host_keys()
+            self.data = self.myDb.getInputs(self.data,"check")
+            client.connect(self.data["ip_address"],username=self.data["username"], password=self.data["password"])
+        except:
+"""

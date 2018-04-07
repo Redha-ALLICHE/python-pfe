@@ -21,6 +21,14 @@ class Utility():
             print("file named " + path + " is not found")
             return None
 
+    def fillData(self, data):
+        """retrieve the information from the user about a new device and store it in the data variable """
+        what_needed = ['name', 'type', 'ip_address', 'username']
+        for element in what_needed:
+            data[element] = input("Give me the " + element + ' : ')
+        data["password"] = getpass.getpass("Give me the password")
+        return data
+
     def refreshTheFile(self):
         """stores the new all info in the list of devices file"""
         with open(self.devices_file, 'w') as destination:
