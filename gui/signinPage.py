@@ -1,24 +1,20 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'signin.ui'
-#
-# Created by: PyQt5 UI code generator 5.10.1
-#
-# WARNING! All changes made in this file will be lost!
-
 from PyQt5 import QtCore, QtGui, QtWidgets
 import sys
+from users.database import Database
 
-class Ui_SigninPage(object):
+class Ui_SigninPage(QtWidgets.QDialog):
+    """this class creates and shows the signIn page"""
 
+    def __init__(self):
+        QtWidgets.QDialog.__init__(self, None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
+        self.setupUi(self)
+        
     def setupUi(self, SigninPage):
         SigninPage.setObjectName("SigninPage")
         SigninPage.resize(430, 480)
+        SigninPage.setWindowModality(QtCore.Qt.ApplicationModal)
         SigninPage.setMaximumSize(QtCore.QSize(430, 480))
-        SigninPage.setStyleSheet("font: 16pt \"Arial\";\n"
-        "padding-top: 40px;\n"
-        "padding-bottom:40px;\n"
-        "background-color: rgb(37, 40, 48);\n"
+        SigninPage.setStyleSheet("background-color: rgb(37, 40, 48);\n"
         "color: rgb(207, 210, 218);\n"
         "")
         self.gridLayout = QtWidgets.QGridLayout(SigninPage)
@@ -171,7 +167,7 @@ class Ui_SigninPage(object):
         spacerItem3 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.gridLayout.addItem(spacerItem3, 0, 0, 1, 1)
         self.title.setBuddy(self.title)
-
+        self.submit_btn.clicked.connect(self.validateInfo)
         self.retranslateUi(SigninPage)
         QtCore.QMetaObject.connectSlotsByName(SigninPage)
 
@@ -185,12 +181,38 @@ class Ui_SigninPage(object):
         self.password_input.setPlaceholderText(_translate("SigninPage", "Password"))
         self.copyright.setText(_translate("SigninPage", "© 2018-2019"))
         self.email_input.setPlaceholderText(_translate("SigninPage", "Email"))
+    
+    def errorMsg(self, msg):
+        """display an error msg to the screen"""
+        QtWidgets.QMessageBox.warning(
+            self, "Login", msg, QtWidgets.QMessageBox.Ok,QtWidgets.QMessageBox.Ok)
 
+    def validateInfo(self):
+        """validate the inputs from the users"""
+        user = self.username_input.text()
+        passw = self.password_input.text()
+        confirm = self.confirm_password.text()
+        mail = self.email_input.text()
+        if not user :
+            self.errorMsg("You forget to enter the username")
+        elif not passw:
+            self.errorMsg("You forget to enter the password")
+        elif not confirm:
+            self.errorMsg("You forget to enter the confirmation of the password")
+        elif passw != confirm:
+            self.errorMsg("the confirmation password is not the same as the password")
+        elif not mail:
+            self.errorMsg("You forget to enter the email")
+        else:
+            self.addUser(user, passw, mail)
 
-if __name__ == '__main__':
-        app = QtWidgets.QApplication(sys.argv)
-        window = QtWidgets.QWidget()
-        ui = Ui_SigninPage()
-        ui.setupUi(window)
-        window.show()
-        sys.exit(app.exec_())
+    def addUser(self , user, passw, mail):
+        """adds a new user to the database"""
+        db = Database()
+        if db.addUser(user, passw, mail):
+            QtWidgets.QMessageBox.information(self,"Sign In","the new user is added",QtWidgets.QMessageBox.Ok)
+            db.save()
+            db.closeDb()
+            self.close()
+        else:
+            self.errorMsg("Failed to add a new user verify your inputs")

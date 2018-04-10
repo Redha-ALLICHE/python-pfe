@@ -2,7 +2,7 @@ import sqlite3
 import hashlib
 import regex
 
-class database():
+class Database():
     """this class handles the creation of the users database and login verification process"""
     def __init__(self, path="users/login.db"):
         self.path = path

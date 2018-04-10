@@ -1,14 +1,48 @@
-# -*- coding: utf-8 -*-
-
-# Form implementation generated from reading ui file 'login.ui'
-#
-# Created by: PyQt5 UI code generator 5.10.1
-#
-
 from PyQt5 import QtCore, QtGui, QtWidgets
+from gui.signinPage import Ui_SigninPage
 import sys
+from users.database import Database
 
-class Ui_loginPage(object):
+class Ui_loginPage(QtWidgets.QDialog):
+    """this class creates the login page"""
+    def __init__(self):
+        """create the login page object"""
+        QtWidgets.QDialog.__init__(
+            self, None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
+        self.setupUi(self)
+
+    def checkCases(self):
+        """checks if the inputs are empty """
+        if not self.username_input.text():
+            self.errorMsg("I think that you forget the username !")
+        elif not self.password_input.text():
+            self.errorMsg("I think that you forget the password !")
+        else:
+            self.goToMain()
+
+    def goToMain(self):
+        """check the login info and start the main page if they are true """
+        entered_username = self.username_input.text()
+        entered_password = self.password_input.text()
+        db = Database()
+        if db.checkLogin(entered_username,entered_password):
+            print("go to the main")
+            db.closeDb()
+        else:
+            self.errorMsg("Incorrect username or password !")
+            self.username_input.setText('')
+            self.password_input.setText('')
+
+    def goToSignin(self):
+        """go to the signin page"""
+        new_user = Ui_SigninPage()
+        new_user.exec_()
+        new_user.show()
+
+    def errorMsg(self, msg):
+        """display an error msg to the screen"""
+        QtWidgets.QMessageBox.warning(
+            self, "Login", msg, QtWidgets.QMessageBox.Ok,QtWidgets.QMessageBox.Ok)
 
     def setupUi(self, loginPage):
         """the login page setup ui"""
@@ -96,21 +130,21 @@ class Ui_loginPage(object):
         self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_2.setObjectName("line_2")
         self.verticalLayout.addWidget(self.line_2)
-        self.rememberme_check = QtWidgets.QCheckBox(loginPage)
+        self.shoPass_check = QtWidgets.QCheckBox(loginPage)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.rememberme_check.sizePolicy().hasHeightForWidth())
-        self.rememberme_check.setSizePolicy(sizePolicy)
-        self.rememberme_check.setMaximumSize(QtCore.QSize(16777215, 50))
-        self.rememberme_check.setStyleSheet("QCheckBox{\n"
+        sizePolicy.setHeightForWidth(self.shoPass_check.sizePolicy().hasHeightForWidth())
+        self.shoPass_check.setSizePolicy(sizePolicy)
+        self.shoPass_check.setMaximumSize(QtCore.QSize(16777215, 50))
+        self.shoPass_check.setStyleSheet("QCheckBox{\n"
         "    font-size: 16px;\n"
         "    color: rgb(207, 210, 218);\n"
         "    margin: 10 0 0 10px;\n"
         "\n"
         "}")
-        self.rememberme_check.setObjectName("rememberme_check")
-        self.verticalLayout.addWidget(self.rememberme_check, 0, QtCore.Qt.AlignVCenter)
+        self.shoPass_check.setObjectName("shoPass_check")
+        self.verticalLayout.addWidget(self.shoPass_check, 0, QtCore.Qt.AlignVCenter)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem2)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -141,22 +175,17 @@ class Ui_loginPage(object):
         "\n"
         "\n"
         "")
-        self.signin_btn.setInputMethodHints(QtCore.Qt.ImhNone)
         self.signin_btn.setObjectName("signin_btn")
         self.horizontalLayout.addWidget(self.signin_btn)
         self.login_btn = QtWidgets.QPushButton(loginPage)
-        self.login_btn.setEnabled(True)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.login_btn.sizePolicy().hasHeightForWidth())
-        self.login_btn.setSizePolicy(sizePolicy)
+        #self.login_btn.setSizePolicy(sizePolicy)
         self.login_btn.setMinimumSize(QtCore.QSize(0, 10))
         self.login_btn.setMaximumSize(QtCore.QSize(16777215, 40))
         self.login_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-        self.login_btn.setMouseTracking(True)
-        self.login_btn.setTabletTracking(False)
-        self.login_btn.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.login_btn.setStyleSheet("QPushButton{\n"
         "background-color: rgb(25, 151, 198);\n"
         "color: rgb(255, 255, 255);\n"
@@ -174,10 +203,7 @@ class Ui_loginPage(object):
         "\n"
         "\n"
         "")
-        self.login_btn.setAutoRepeatDelay(100)
-        self.login_btn.setAutoDefault(False)
-        self.login_btn.setDefault(False)
-        self.login_btn.setFlat(False)
+        self.login_btn.setAutoDefault(True)
         self.login_btn.setObjectName("login_btn")
         self.horizontalLayout.addWidget(self.login_btn)
         self.verticalLayout.addLayout(self.horizontalLayout)
@@ -190,17 +216,16 @@ class Ui_loginPage(object):
         self.label_2.setObjectName("label_2")
         self.verticalLayout.addWidget(self.label_2, 0, QtCore.Qt.AlignHCenter)
         self.title.setBuddy(self.title)
-        self.login_btn.clicked.connect(self.goToMain)
-        self.signin_btn.clicked.connect(self.goToSignin)
-
+        self.buttonLink()
         self.retranslateUi(loginPage)
         QtCore.QMetaObject.connectSlotsByName(loginPage)
 
-    def goToMain(self):
-        pass
-
-    def goToSignin(self):
-        pass
+    def buttonLink(self):
+        """links the click events of the buttons"""
+        self.login_btn.setAutoDefault(True)
+        self.login_btn.clicked.connect(self.checkCases)
+        self.signin_btn.clicked.connect(self.goToSignin)
+        self.signin_btn.setAutoDefault(False)
 
     def retranslateUi(self, loginPage):
         _translate = QtCore.QCoreApplication.translate
@@ -208,15 +233,8 @@ class Ui_loginPage(object):
         self.title.setText(_translate("loginPage", "Welcome to Network Automation"))
         self.username_input.setPlaceholderText(_translate("loginPage", "Username"))
         self.password_input.setPlaceholderText(_translate("loginPage", "Password"))
-        self.rememberme_check.setText(_translate("loginPage", "Remember me"))
+        self.shoPass_check.setText(_translate("loginPage", "Remember me"))
         self.signin_btn.setText(_translate("loginPage", "Sign In"))
         self.login_btn.setText(_translate("loginPage", "Login"))
         self.label_2.setText(_translate("loginPage", "© 2018-2019"))
 
-if __name__=='__main__':
-        app = QtWidgets.QApplication(sys.argv)
-        window = QtWidgets.QWidget()
-        ui =Ui_loginPage()
-        ui.setupUi(window)
-        window.show()
-        sys.exit(app.exec_())

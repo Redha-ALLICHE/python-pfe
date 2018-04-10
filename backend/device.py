@@ -147,6 +147,14 @@ class Device(Utility):
             target.close()
         return None
 
+    def rename(self , target, name):
+        """change the hostname of the device"""
+        if target and name:
+            print("renaming the device")
+            self.executeLine(target, "hostname " + name)
+            target.close()
+        return None
+
     def saveConfig(self, target):
         """ saves the current configuration into the device"""
         pass
