@@ -54,6 +54,8 @@ class Ui_SigninPage(QtWidgets.QDialog):
         self.username_input.setText("")
         self.username_input.setObjectName("username_input")
         self.gridLayout.addWidget(self.username_input, 3, 0, 1, 1)
+        self.email_input = QtWidgets.QLineEdit(SigninPage)
+        self.password_input = QtWidgets.QLineEdit(SigninPage)
         self.confirm_password = QtWidgets.QLineEdit(SigninPage)
         self.confirm_password.setStyleSheet("QLineEdit{\n"
         "    background-color: rgb(255, 255, 255,0);\n"
@@ -111,7 +113,6 @@ class Ui_SigninPage(QtWidgets.QDialog):
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line.setObjectName("line")
         self.gridLayout.addWidget(self.line, 4, 0, 1, 1)
-        self.password_input = QtWidgets.QLineEdit(SigninPage)
         self.password_input.setStyleSheet("QLineEdit{\n"
         "    background-color: rgb(255, 255, 255,0);\n"
         "    color: rgb(207, 210, 218);\n"
@@ -146,7 +147,6 @@ class Ui_SigninPage(QtWidgets.QDialog):
         self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_2.setObjectName("line_2")
         self.gridLayout.addWidget(self.line_2, 6, 0, 1, 1)
-        self.email_input = QtWidgets.QLineEdit(SigninPage)
         self.email_input.setStyleSheet("QLineEdit{\n"
         "    background-color: rgb(255, 255, 255,0);\n"
         "    color: rgb(207, 210, 218);\n"
@@ -176,11 +176,11 @@ class Ui_SigninPage(QtWidgets.QDialog):
         SigninPage.setWindowTitle(_translate("SigninPage", "Sign In"))
         self.title.setText(_translate("SigninPage", "Sign In"))
         self.username_input.setPlaceholderText(_translate("SigninPage", "Username"))
+        self.email_input.setPlaceholderText(_translate("SigninPage", "Email"))
+        self.password_input.setPlaceholderText(_translate("SigninPage", "Password"))
         self.confirm_password.setPlaceholderText(_translate("SigninPage", "Confirm Password"))
         self.submit_btn.setText(_translate("SigninPage", "Submit"))
-        self.password_input.setPlaceholderText(_translate("SigninPage", "Password"))
         self.copyright.setText(_translate("SigninPage", "© 2018-2019"))
-        self.email_input.setPlaceholderText(_translate("SigninPage", "Email"))
     
     def errorMsg(self, msg):
         """display an error msg to the screen"""

@@ -1,2 +1,7 @@
-show run
-
+conf t
+vlan 2
+no shut
+exit
+int vlan 2
+no shut
+exit

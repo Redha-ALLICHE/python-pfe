@@ -27,6 +27,7 @@ class Ui_loginPage(QtWidgets.QDialog):
         db = Database()
         if db.checkLogin(entered_username,entered_password):
             print("go to the main")
+            self.setRemember()
             db.closeDb()
         else:
             self.errorMsg("Incorrect username or password !")
@@ -130,21 +131,21 @@ class Ui_loginPage(QtWidgets.QDialog):
         self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.line_2.setObjectName("line_2")
         self.verticalLayout.addWidget(self.line_2)
-        self.shoPass_check = QtWidgets.QCheckBox(loginPage)
+        self.rememberMe = QtWidgets.QCheckBox(loginPage)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.shoPass_check.sizePolicy().hasHeightForWidth())
-        self.shoPass_check.setSizePolicy(sizePolicy)
-        self.shoPass_check.setMaximumSize(QtCore.QSize(16777215, 50))
-        self.shoPass_check.setStyleSheet("QCheckBox{\n"
+        sizePolicy.setHeightForWidth(self.rememberMe.sizePolicy().hasHeightForWidth())
+        self.rememberMe.setSizePolicy(sizePolicy)
+        self.rememberMe.setMaximumSize(QtCore.QSize(16777215, 50))
+        self.rememberMe.setStyleSheet("QCheckBox{\n"
         "    font-size: 16px;\n"
         "    color: rgb(207, 210, 218);\n"
         "    margin: 10 0 0 10px;\n"
         "\n"
         "}")
-        self.shoPass_check.setObjectName("shoPass_check")
-        self.verticalLayout.addWidget(self.shoPass_check, 0, QtCore.Qt.AlignVCenter)
+        self.rememberMe.setObjectName("rememberMe")
+        self.verticalLayout.addWidget(self.rememberMe, 0, QtCore.Qt.AlignVCenter)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
         self.verticalLayout.addItem(spacerItem2)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
@@ -225,6 +226,7 @@ class Ui_loginPage(QtWidgets.QDialog):
         self.login_btn.setAutoDefault(True)
         self.login_btn.clicked.connect(self.checkCases)
         self.signin_btn.clicked.connect(self.goToSignin)
+        self.getRemember()
         self.signin_btn.setAutoDefault(False)
 
     def retranslateUi(self, loginPage):
@@ -233,8 +235,27 @@ class Ui_loginPage(QtWidgets.QDialog):
         self.title.setText(_translate("loginPage", "Welcome to Network Automation"))
         self.username_input.setPlaceholderText(_translate("loginPage", "Username"))
         self.password_input.setPlaceholderText(_translate("loginPage", "Password"))
-        self.shoPass_check.setText(_translate("loginPage", "Remember me"))
+        self.rememberMe.setText(_translate("loginPage", "Remember me"))
         self.signin_btn.setText(_translate("loginPage", "Sign In"))
         self.login_btn.setText(_translate("loginPage", "Login"))
         self.label_2.setText(_translate("loginPage", "© 2018-2019"))
 
+    def getRemember(self, path='gui/remember.txt'):
+        """get the state of the remember"""
+        with open(path) as f:
+            data = f.readlines()
+        if data:   
+            if data[0].strip('\n') == "1":
+                self.username_input.setText(data[1].strip('\n'))
+                self.rememberMe.setChecked(True)
+
+    def setRemember(self, path='gui/remember.txt'):
+        """set the state of the remember"""
+        with open(path, 'w') as f:
+            if self.rememberMe.isChecked():
+                f.write('1\n')
+                f.write(self.username_input.text())
+            else:
+                f.write('0\n')
+                f.write(' ')
+                

@@ -1,8 +1,8 @@
 import telnetlib as tn
-from db import Utility
+from utility import Utility
 import time
 import getpass
-import paramiko as pk
+
 
 class Device(Utility): 
     """this class models a device like routers ,swithes and servers """
@@ -73,11 +73,11 @@ class Device(Utility):
                 target.close()
                 return None
 
-    def executeCommands(self, target, the_file="list_of_commands.txt",silent= True):
+    def executeCommands(self, target, the_file="list_of_commands.txt",silent= True, continu=False):
         """execute commands from a file into one device"""
         file = self.myDb.openFile(the_file)
         if target and file:
-            self.executeLine(target,"terminal lengh 0")
+            self.executeLine(target,"terminal length 0")
             for command in file:
                 self.executeLine(target,command)
             self.executeLine(target,"exit")
@@ -85,8 +85,10 @@ class Device(Utility):
                 print("All the commands are done")
             else:
                 print(target.read_all().decode())
-            target.close()
             file.close()
+            if continu:
+                return target
+            target.close()
         else:
             print("Commands did not apply!!")
         return None
@@ -97,7 +99,7 @@ class Device(Utility):
         time.sleep(0.2)
         return target
 
-    def configureMultipleFromRange(self, start, end, command_path="list_of_commands.txt", save=False, silent=True, privelege=False, mode="one"):
+    def configureMultipleFromRange(self, start, end, command_path="list_of_commands.txt", save=False, silent=True, privelege=False, mode="one",continu=False):
         """configure a range of ips with the same configuration"""
         if mode == "one":
             print("Enter the common login")
@@ -105,7 +107,9 @@ class Device(Utility):
         for ip in self.myDb.generateRange(start,end):
             self.data["ip_address"] = ip
             self.data = self.myDb.getInputs(self.data, mode= mode)
-            self.executeCommands(self.loginTelnet(refreshing=save,privelege=privelege),command_path, silent=True)
+            con = self.executeCommands(self.loginTelnet(refreshing=save,privelege=privelege),command_path, silent=silent, continu=continu)
+            if continu:
+                return con
         return None
 
     def configureMultipleFromFile(self, ip_path="list_of_ip.txt", command_path="list_of_commands.txt", save=False, silent=True, privelege=False, mode='one'):
@@ -126,27 +130,7 @@ class Device(Utility):
     def executeCommonTask(self, path):
         """execute a task from a file"""
         self.executeCommands(self.loginTelnet(privelege=True),path,silent=False)
-
-    def createVlans(self, target, start, numberOfVlans, nameList=[] ):
-        """create vlans on the taget """
-        if target:
-            print("Creating the vlans")
-            if numberOfVlans!=0:
-                text = str(start) + '-' + str(int(start)+int(numberOfVlans-1))
-            else:
-                text = str(start)
-            self.executeLine(target, "vlan "+ text)
-            self.executeLine(target, "no shutdown")
-            self.executeLine(target, "exit")
-            if nameList and len(nameList) == numberOfVlans:
-                print("Naming the vlans")
-                for i , name  in enumerate(nameList,start):
-                    self.executeLine(target, "vlan "+ str(i))
-                    self.executeLine(target, "name "+ str(name))
-                    self.executeLine(target, "exit")
-            target.close()
-        return None
-
+    
     def rename(self , target, name):
         """change the hostname of the device"""
         if target and name:
@@ -155,21 +139,34 @@ class Device(Utility):
             target.close()
         return None
 
-    def saveConfig(self, target):
-        """ saves the current configuration into the device"""
-        pass
-
-    """SSH part """
-    """
-    def loginSSH(self):
-        ""connects to the device with SSh""
-        try:
-            if data["ip_address"]=='':
-                print("Invalid ip")
+"""    def createVlans(self, target, start, numberOfVlans, nameList=[] ):
+        create vlans on the taget 
+        if target:
+            print("Creating the vlans")
+            if numberOfVlans > 1:
+                text = str(start) + '-' + str(int(start)+int(numberOfVlans-1))
+            elif numberOfVlans == 1:
+                text = str(start)
+            else:
                 return None
-            client = pk.SSHClient()
-            client.load_system_host_keys()
-            self.data = self.myDb.getInputs(self.data,"check")
-            client.connect(self.data["ip_address"],username=self.data["username"], password=self.data["password"])
-        except:
-"""
+            
+            self.executeLine(target, "conf  t")
+            temp = "vlan " + text
+            #self.executeLine(target, temp)
+            #self.executeLine(target, "no shutdown")
+            self.executeLine(target, "conf  t")
+            self.executeLine(target, "conf  t")
+            print('**')
+            temp = "int vlan " + text
+            #self.executeLine(target, temp)
+            self.executeLine(target, "no shut")
+            self.executeLine(target, "exit")
+            print(text)
+            if nameList and len(nameList) == numberOfVlans:
+                print("Naming the vlans")
+                for i , name  in enumerate(nameList,start):
+                    self.executeLine(target, "vlan "+ str(i))
+                    self.executeLine(target, "name "+ str(name))
+                    self.executeLine(target, "exit")
+            target.close()
+        return None"""
