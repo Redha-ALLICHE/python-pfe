@@ -158,8 +158,9 @@ class Ui_loginPage(QtWidgets.QDialog):
         "    \n"
         "    background-color: rgba(240, 240, 240, 0);\n"
         "    color: rgb(25, 151, 198);    \n"
-        "    border: 3px solid transparent;\n"
-        "    border-color: rgb(25, 151, 198);\n"
+        "    border: 1px solid transparent;\n"
+        "    padding:5px 0;\n"
+        "    border-color : rgb(25, 151, 198);\n"
         "    font-size:16px;\n"
         "    border-radius: 10px;\n"
         "\n"
@@ -183,16 +184,16 @@ class Ui_loginPage(QtWidgets.QDialog):
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.login_btn.sizePolicy().hasHeightForWidth())
-        #self.login_btn.setSizePolicy(sizePolicy)
         self.login_btn.setMinimumSize(QtCore.QSize(0, 10))
         self.login_btn.setMaximumSize(QtCore.QSize(16777215, 40))
         self.login_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.login_btn.setStyleSheet("QPushButton{\n"
         "background-color: rgb(25, 151, 198);\n"
         "color: rgb(255, 255, 255);\n"
-        "padding-right: 10px;\n"
-        "padding-left: 10px;\n"
+        "padding:8px 10px;\n"
+        "border : 1px solid rgb(25, 151, 198);\n"
         "font-size:16px;\n"
+        "font-weight:500;\n"
         "border-radius: 10px;\n"
         "}\n"
         "QPushButton:hover{\n"

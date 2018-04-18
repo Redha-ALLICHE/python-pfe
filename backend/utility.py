@@ -1,10 +1,9 @@
-import json
 import getpass
+from network_db.net_database import Net_db
 
 class Utility():
     """this class ensures the access to the files and prove some utility functions""" 
-    def __init__(self, devices_file):
-        self.devices_file = devices_file
+    def __init__(self):
         self.all_info = self.getAllInfo()
 
     def __len__(self):
@@ -23,38 +22,33 @@ class Utility():
 
     def fillData(self, data):
         """retrieve the information from the user about a new device and store it in the data variable """
-        what_needed = ['name', 'type', 'ip_address', 'username']
+        what_needed = ['host', 'device_type', 'ip', 'username']
         for element in what_needed:
             data[element] = input("Give me the " + element + ' : ')
-        data["password"] = getpass.getpass("Give me the password")
+        data["password"] = getpass.getpass("Give me the password :")
+        data["secret"] = getpass.getpass("Give me the enable password :")
         return data
 
-    def refreshTheFile(self):
-        """stores the new all info in the list of devices file"""
-        with open(self.devices_file, 'w') as destination:
-            json.dump(self.all_info, destination, indent=4)
+    def refreshTheDb(self):
+        """stores the new all info in the list of devices database"""
+        db = Net_db()
+        for item in self.all_info:
+            db.updateDevice(item)
+        db.saveDb()
+        db.closeDb()
 
     def getAllInfo(self):
-        """retrieve all the devices informations from the .json file"""
-        try:
-            with open(self.devices_file) as destination:
-                return json.load(destination)
-        except FileNotFoundError:
-            print("Error !!! the file does't exists ")
-            if input("To create it write 'y': ").lower() == 'y':
-                with open(self.devices_file, 'w') as destination:
-                    json.dump([], destination, indent=4)
-                return []
-            return None
-        except json.JSONDecodeError:
-            print("Error !!! the file is corrupted")
-            return None
+        """retrieve all the devices informations from the database"""
+        db = Net_db()
+        allData = db.getAll()
+        db.closeDb()
+        return allData
 
     def getItemByName(self, the_name=''):
-            """retrieve the informations about a device from the list_of_devices.json file """
+            """retrieve the informations about a device from the database """
             if self.all_info:
                 for item in self.all_info:
-                    if item["name"] == the_name:
+                    if item["host"] == the_name:
                         return item
                 print("Error !!! the device " + the_name + " is not found in the file")
             return None
@@ -64,43 +58,51 @@ class Utility():
         info = self.getItemByName(the_name=dev_name)
         if info:
             self.all_info.remove(info)
-            self.refreshTheFile()
+            db = Net_db()
+            db.deleteDevice(info["ip"])
+            db.saveDb()
+            db.closeDb()
             print("deleting done")
         return None
 
     def refreshSetting(self, data):
-        """update the settings of one existing device in your list of devices file"""
+        """update the settings of one existing device in your devices database"""
+        db = Net_db()
         check = self.searchDevice(data)
         if check != "EOL":
-            self.all_info[check] = data
-            self.refreshTheFile()
+            db.updateDevice(data)
             print("Refreshing the existing info of the device")
+            db.saveDb()
+            db.closeDb()
             return self.all_info[check]
         else:
             self.all_info.append(data)
-            self.refreshTheFile()
-            print("Adding the device with the ip address " + data["ip_address"] + " in the list of devices")
+            db.addDevice(data)
+            db.saveDb()
+            db.closeDb()
+            print("Adding the device with the ip address " + data["ip"] + " in the list of devices")
             return None
 
     def searchDevice(self, data):
         """retrun the index of the device if found in the file"""
         for i, item in enumerate(self.all_info, 0):
-            if item["ip_address"] == data["ip_address"]:
+            if item["ip"] == data["ip"]:
                 return i
         return "EOL"
 
     def getInputs(self, data, mode="one"):
         """prompt the login inputs for two modes :ask or check """ 
         if mode == "ask":
-            print((" Trying to connect to " + data["ip_address"]+' ').center(80,"#"))
+            print((" Trying to connect to " + data["ip"]+' ').center(80,"#"))
             data["username"] = input("Enter the username : ")
             data["password"] = getpass.getpass("Enter the password : ")
         elif mode == "check":
-            print((" Trying to connect to " + data["ip_address"]+' ').center(80,"#"))
+            print((" Trying to connect to " + data["ip"]+' ').center(80,"#"))
             index = self.searchDevice(data)
             if index != "EOL" and self.all_info[index]["username"] and self.all_info[index]["password"]:
                 print("Found login informations")
-                data = self.all_info[index]
+                data = self.all_info[index].copy()
+                print(data)
             else:
                 data["username"] = input("Enter the username : ")
                 data["password"] = getpass.getpass("Enter the password : ")

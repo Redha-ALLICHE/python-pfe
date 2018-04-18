@@ -1,7 +1,6 @@
+show version
 conf t
-vlan 2
-no shut
+no vlan 2
 exit
-int vlan 2
-no shut
+exit
 exit
