@@ -1,6 +1,1 @@
-show version
-conf t
-no vlan 2
-exit
-exit
-exit
+show vlan brief

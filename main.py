@@ -1,12 +1,17 @@
 from backend.telnet import TelnetDevice
 
 item = TelnetDevice()
-#item.configureMultipleFromRange("192.168.1.15", "192.168.1.17",privelege=True, silent=False,mode="check")
+#item.automate(ips=['192.168.1.15'],commands=item.showRun(),mode='check', silent=False, backup=True)
+#item.configureMultipleFromRange("192.168.1.15", "192.168.1.17", command_path=item.createVlans(2, 3), privelege=True, silent=True, mode="check", backup=True)
+#item.configureMultipleFromRange("192.168.1.15", "192.168.1.17", command_path=['show vlan brief'], privelege=True, silent=False, mode="check", backup=False)
+#item.undo()
+#item.configureMultipleFromRange("192.168.1.15", "192.168.1.17", command_path=['show vlan brief'], privelege=True, silent=False, mode="check", backup=False)
 #item.createVlans(con, 2, 1)
-item.configureMultipleFromRange("192.168.1.15", "192.168.1.17", privelege=True, silent=False,  save=True,mode="check")
+#item.configureMultipleFromRange("192.168.1.15", "192.168.1.18", privelege=True, silent=False,  save=False,mode="check")
+#item.backup(['192.168.1.15'])
 #item.data["ip"]='192.168.1.15'
-#item.rename("enst")
-#item.configureMultipleFromFile(save=False, privelege=True, mode='ask')
-
-
-
+#item.createVlans(2,3)
+#item.showRun()
+#item.configureMultipleFromFile(save=False, silent=False , privelege=True, mode='check')
+item.restore('backups/192.168.1.15_20_04_2018_22h29.conf')
+#item.undo()

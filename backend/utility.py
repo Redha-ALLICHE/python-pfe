@@ -1,5 +1,7 @@
 import getpass
 from network_db.net_database import Net_db
+import time
+import shutil
 
 class Utility():
     """this class ensures the access to the files and prove some utility functions""" 
@@ -19,6 +21,42 @@ class Utility():
         except FileNotFoundError :
             print("file named " + path + " is not found")
             return None
+
+    def getList(self, path):
+        """converts a file to a list and returns it"""
+        with open(path) as file:
+            lines = file.readlines()
+        return lines
+
+    def getfiles(self, folder):
+        """get the names of the files in the folder"""
+        return shutil.os.listdir(folder)
+
+    def prepareBackup(self, ip, root, data):
+        """get the config and store it to a file """
+        name = str(root) + str(ip) + time.strftime('_%d_%m_%Y_%Hh%M.conf',time.localtime())
+        with open(name, mode='w') as f:
+            print("Saving the configuration in the file : " + name)
+            f.write("\n".join(data.split("\n")[3:-2]))
+        return data
+
+    def mktemp(self, temp_path):
+        """creates the temp_new folder"""
+        try:
+            name = temp_path + '_new/'
+            shutil.os.mkdir(name)
+        except:
+            print(name)
+        return name
+
+    def removeTemp(self, new_path, root_path='temp/'):
+        """remove the content of the temp folder"""
+        try:
+            shutil.rmtree(root_path, ignore_errors=True )
+            shutil.copytree(new_path, root_path)
+            shutil.rmtree(new_path, ignore_errors=True)
+        except:
+            print("error while cleaning the temp !!")
 
     def fillData(self, data):
         """retrieve the information from the user about a new device and store it in the data variable """
@@ -65,7 +103,7 @@ class Utility():
             print("deleting done")
         return None
 
-    def refreshSetting(self, data):
+    def refreshDevice(self, data):
         """update the settings of one existing device in your devices database"""
         db = Net_db()
         check = self.searchDevice(data)
@@ -102,7 +140,6 @@ class Utility():
             if index != "EOL" and self.all_info[index]["username"] and self.all_info[index]["password"]:
                 print("Found login informations")
                 data = self.all_info[index].copy()
-                print(data)
             else:
                 data["username"] = input("Enter the username : ")
                 data["password"] = getpass.getpass("Enter the password : ")
