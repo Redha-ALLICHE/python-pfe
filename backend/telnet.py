@@ -206,6 +206,7 @@ class TelnetDevice(Utility):
             data = f.read(5000)
         self.automate(ips=ip, commands=['conf t', str(data)], backup=False, silent=False)
         print("restoring from : " + config_path + "and merging with the actual config")
+
 #working in progress
     def restore(self, config_path, ips=''):
         """apply the configuration from a file to one or many devices"""

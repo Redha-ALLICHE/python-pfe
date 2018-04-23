@@ -21,7 +21,7 @@ class Device():
 
     def storeToDb(self):
         """stores the local device into the database"""
-        self.myDb.refreshSetting(self.device)
+        self.myDb.refreshDevice(self.device)
 
     def connect(self):
         """login to the device"""
