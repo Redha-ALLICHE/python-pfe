@@ -2,6 +2,8 @@ import telnetlib as tn
 from backend.utility import Utility
 import time
 import getpass
+import subprocess
+import sys
 
 
 class TelnetDevice(Utility):
@@ -42,6 +44,7 @@ class TelnetDevice(Utility):
             print("Establishing the connection...")
             target.open(host=self.data['ip'], port=self.data['port'])
             self.data = self.myDb.getInputs(self.data, mode=mode)
+            print(target.get_socket().getsockname())
         except (TimeoutError, OSError):
             print("Error !!! device unreacheable ")
             return None
@@ -150,7 +153,17 @@ class TelnetDevice(Utility):
         return None
 
 #""" Common tasks"""
-
+    def invokeshell(self):
+        """invoke a putty telnet shell"""
+        system = sys.platform
+        if sys.platform.startswith('win'):
+            puttypath = 'putty.exe'
+            subprocess.call([puttypath, '-telnet', self.data["ip"]],
+                            creationflags=subprocess.CREATE_NEW_CONSOLE)
+        else:
+            print(system)
+            subprocess.call(["telnet", self.data["ip"]], creationflags=subprocess.CREATE_NEW_CONSOLE)
+            
     def executeCommonTask(self, path):
         """execute a task from a file"""
         self.executeCommands(self.loginTelnet(
