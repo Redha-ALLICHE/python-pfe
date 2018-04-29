@@ -38,7 +38,22 @@ class Utility():
         with open(name, mode='w') as f:
             print("Saving the configuration in the file : " + name)
             f.write("\n".join(data.split("\n")[3:-2]))
-        return data
+        return name
+
+    def getRestore(self, actual_config, recovery_config):
+        """return the applicable config to do the restore """
+        new_config = []
+        for x ,line in enumerate(actual_config):
+            line = line.rstrip('\r')
+            if line.startswith('aaa'):
+                pass
+            elif line in recovery_config or line.startswith('!') or x < 4:
+                new_config.append(line)
+            elif line.startswith('no '):
+                new_config.append(line.lstrip('no '))
+            else:
+                new_config.append('no ' + line)
+        return '\n'.join(new_config).rstrip('end \n') + recovery_config              
 
     def mktemp(self, temp_path):
         """creates the temp_new folder"""

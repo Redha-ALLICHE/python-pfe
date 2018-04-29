@@ -217,33 +217,34 @@ class TelnetDevice(Utility):
         self.automate(ips=ip, commands=['conf t', str(data)], backup=False, silent=False)
         print("restoring from : " + config_path + "and merging with the actual config")
 
-    def save(self):
-        """return the commands for saving configs"""
-        return ['copy running-config startup-config', ' ']
-
+#working in progress
     def restore(self, config_path, ips=''):
         """apply the configuration from a file to one or many devices"""
         ip = ips
         if ip=='':
             ip = [config_path.split('_')[0].split('/')[-1]]
+            print(ip)
         with open(config_path) as f:
-            old_config = f.read(5000)
-        for addr in ip:
-            self.data.update({'host': '', 'device_type': '', 'ip': addr,'port': '23', 'username': '', 'password': '', 'secret': ''})
-            target = self.loginTelnet(privelege=True, mode='check')
-            if target:
-                self.executeLine(target, "terminal length 0")
-                self.executeLine(target, "show run")
-                target.read_until('#'.encode())
-                actual_config = target.read_until('#'.encode()).decode().split("\n")[3:-2]
-                new_config = self.myDb.getRestore(actual_config, old_config)
-                self.executeLine(target, "conf t")
-                self.executeLine(target, str(new_config + '\n'))
-                self.executeLine(target, "exit")
-                target.close()
-            else:
-                print("Commands did not apply!!")
-            print("restoring " + "from : " + config_path)
+            old_config = f.read(5000)data.split("\n")[3:-2])
+        self.data.update({'host': '', 'device_type': '', 'ip': '192.168.1.16',
+                                      'port': '23', 'username': '', 'password': '', 'secret': ''})
+        target = self.loginTelnet(privelege=True, mode='check')
+        if target:
+            self.executeLine(target, "terminal length 0")
+            self.executeLine(target, "show run")
+            target.read_until('#'.encode())
+            actual_config = target.read_until('#'.encode()).decode().split("\n")[3:-2]
+            print(old_config.split("\n")[3:-2])
+            self.executeLine(target, "conf t")
+            #self.executeLine(target, str(data))
+            self.executeLine(target, "exit")
+            #print(target.read_all().decode())
+            target.close()
+        else:
+            print("Commands did not apply!!")
+        #print(data)
+        #self.automate(ips=ip, commands=commands, backup=False, silent=False)
+        #print("restoring from : " + config_path)
         return None
 
     def undo(self):
@@ -252,5 +253,6 @@ class TelnetDevice(Utility):
         files = self.myDb.getfiles(path)
         for file in files:
             path = 'temp/'+ str(file)
+            print(path)
             self.restore(path)
         

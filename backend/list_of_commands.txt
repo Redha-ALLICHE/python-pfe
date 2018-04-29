@@ -1,1 +1,5 @@
-show vlan brief
+conf t
+no vlan 2
+no vlan 3
+no vlan 4
+exit
