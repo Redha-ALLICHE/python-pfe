@@ -6,15 +6,13 @@ import subprocess
 import sys
 
 
-
 class TelnetDevice(Utility):
     """this class models a device like routers ,swithes and servers """
 
     def __init__(self):
         """declare the variables neeeded to specify a device """
         self.myDb = Utility()
-        self.data = {'host': '', 'device_type': '', 'ip': '',
-                     'port': '23', 'username': '', 'password': '', 'secret': ''}
+        self.data = {'host': '', 'device_type': '','type':'', 'ip': '','port': '23', 'username': '', 'password': '', 'secret': '','description':'','path':'device_data/'}
 
 #""""global""""
 
@@ -42,10 +40,11 @@ class TelnetDevice(Utility):
             if self.data["ip"] == "":
                 return None
             target = tn.Telnet()
-            print("Establishing the connection...")
+            print((" Trying to connect to " + self.data["ip"]+' ').center(80,"#"))
             target.open(host=self.data['ip'], port=self.data['port'])
             self.data = self.myDb.getInputs(self.data, mode=mode)
-            print(target.get_socket().getsockname())
+            print("Establishing the connection...")
+            #print(target.get_socket().getsockname())
         except (TimeoutError, OSError):
             print("Error !!! device unreacheable ")
             return None
@@ -156,14 +155,12 @@ class TelnetDevice(Utility):
 #""" Common tasks"""
     def invokeshell(self):
         """invoke a putty telnet shell"""
-        system = sys.platform
         if sys.platform.startswith('win'):
             puttypath = 'putty.exe'
             subprocess.call([puttypath, '-telnet', self.data["ip"]],
                             creationflags=subprocess.CREATE_NEW_CONSOLE)
         else:
-            print(system)
-            subprocess.call(["telnet", self.data["ip"]], creationflags=subprocess.CREATE_NEW_CONSOLE)
+            subprocess.call(["plink", "-telnet", self.data["ip"]])
             
     def executeCommonTask(self, path):
         """execute a task from a file"""
@@ -253,4 +250,12 @@ class TelnetDevice(Utility):
         for file in files:
             path = 'temp/'+ str(file)
             self.restore(path)
-        
+
+    def enableSsh(self, ips, domain_name):
+        """enables the ssh protocol on the target for remote connection"""
+        if len(domain_name) == len(ips):
+            for i,ip in enumerate(ips):
+                self.automate(ips=[ip], commands=['conf t','ip domain-name '+ domain_name[i], 'crypto key generate rsa modulus 1024','line vty 0 4','transport input all','exit'], backup=True, silent=True,save=True)
+            print("setting up the ssh")
+        else:
+            print("No matching lengh between input")

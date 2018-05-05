@@ -2,6 +2,7 @@ import getpass
 from network_db.net_database import Net_db
 import time
 import shutil
+import subprocess
 
 class Utility():
     """this class ensures the access to the files and prove some utility functions""" 
@@ -47,7 +48,7 @@ class Utility():
             line = line.rstrip('\r')
             if line.startswith('aaa'):
                 pass
-            elif line in recovery_config or line.startswith('!') or x < 4:
+            elif line in recovery_config or line.startswith('!') or x <= 4:
                 new_config.append(line)
             elif line.startswith('no '):
                 new_config.append(line.lstrip('no '))
@@ -75,11 +76,12 @@ class Utility():
 
     def fillData(self, data):
         """retrieve the information from the user about a new device and store it in the data variable """
-        what_needed = ['host', 'device_type', 'ip', 'username']
+        what_needed = ['host', 'device_type','type', 'ip', 'username']
         for element in what_needed:
             data[element] = input("Give me the " + element + ' : ')
         data["password"] = getpass.getpass("Give me the password :")
         data["secret"] = getpass.getpass("Give me the enable password :")
+        data['description'] = input('Give me the description : ')
         return data
 
     def refreshTheDb(self):
@@ -146,11 +148,9 @@ class Utility():
     def getInputs(self, data, mode="one"):
         """prompt the login inputs for two modes :ask or check """ 
         if mode == "ask":
-            print((" Trying to connect to " + data["ip"]+' ').center(80,"#"))
             data["username"] = input("Enter the username : ")
             data["password"] = getpass.getpass("Enter the password : ")
         elif mode == "check":
-            print((" Trying to connect to " + data["ip"]+' ').center(80,"#"))
             index = self.searchDevice(data)
             if index != "EOL" and self.all_info[index]["username"] and self.all_info[index]["password"]:
                 print("Found login informations")
@@ -198,3 +198,16 @@ class Utility():
         ip_list.append(end)
         return ip_list
     
+    def ping(self, host):
+        """
+        Returns True if host (str) responds to a ping request.
+        Remember that a host may not respond to a ping (ICMP) request even if the host name is valid.
+        """
+        # Ping command count option as function of OS
+        param = '-n 1 ' if subprocess.sys.platform.lower().startswith("win") else '-c 1 '
+        
+        # Building the command. Ex: "ping -c 1 google.com"
+        command = ['ping', param, str(host)]
+        # Pinging
+        s = subprocess.call(command)
+        return s == 0

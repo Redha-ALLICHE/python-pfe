@@ -4,7 +4,7 @@ class Net_db():
     """ths class manages the database of the devices """
     def __init__(self, path='network_db/devices.db'):
         self.path = path
-        self.keys = ["ip","host","username","password","secret","port","device_type"]
+        self.keys = ["ip","host","username","password","secret","port","device_type","type","description","path"]
         self.conn = sqlite3.connect(self.path)
         self.cur = self.conn.cursor()
         try:
@@ -24,10 +24,13 @@ class Net_db():
                 ip TEXT NOT NULL UNIQUE,
                 device_type TEXT,
                 host TEXT ,
+                type TEXT,
                 username TEXT,
                 password TEXT,
                 secret TEXT,
-                port INTEGER)
+                port INTEGER,
+                description TEXT,
+                path TEXT)
                 """)
             self.conn.commit()
         except sqlite3.OperationalError:
@@ -53,7 +56,7 @@ class Net_db():
                 print("overwriting")
         else:
             self.cur.execute(
-                "INSERT INTO DEVICES (ip,host,username,password,secret,port,device_type) VALUES (:ip,:host,:username,:password,:secret,:port,:device_type)", (data))
+                "INSERT INTO DEVICES (ip,host,username,password,secret,port,device_type,type,description,path) VALUES (:ip,:host,:username,:password,:secret,:port,:device_type,:type,:description,:type", (data))
             print("A new device added!! ")
             self.ips.add(data['ip'])
         return self.cur.lastrowid

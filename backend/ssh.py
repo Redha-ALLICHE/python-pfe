@@ -2,7 +2,7 @@ import netmiko
 from network_db.net_database import Net_db
 from utility import Utility
 
-class Device():
+class SshDevice():
     """this class ensures the operations on a device"""
 
     def __init__(self, device_path='network_db/devices.db', ):
