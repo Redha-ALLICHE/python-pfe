@@ -1,19 +1,21 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+
 class Ui_Automate(QtWidgets.QWidget):
     """this is the automate widget """
+
     def __init__(self):
         """create the login page object"""
         QtWidgets.QWidget.__init__(
-            self, None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint |QtCore.Qt.WindowMaximizeButtonHint |QtCore.Qt.WindowMinimizeButtonHint)
+            self, None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
         self.setupUi(self)
-    
+
     def setupUi(self, Automate):
             """setup the interface of the automate window """
         #main widget
             Automate.setObjectName("Automate")
             Automate.resize(589, 465)
-        #main vertical layout 
+        #main vertical layout
             self.verticalLayout = QtWidgets.QVBoxLayout(Automate)
             self.verticalLayout.setObjectName("verticalLayout")
         #main toolbox
@@ -27,13 +29,15 @@ class Ui_Automate(QtWidgets.QWidget):
         #toolbox horizontal layout
             self.horizontalLayout = QtWidgets.QHBoxLayout(self.toolbox)
             self.horizontalLayout.setObjectName("horizontalLayout")
-        #toolbox select button 
+        #toolbox select button
             self.select_btn = QtWidgets.QPushButton(self.toolbox)
             self.select_btn.setMinimumSize(QtCore.QSize(50, 50))
-            self.select_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            self.select_btn.setCursor(
+                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.select_btn.setText("")
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap("img/mouse-cursor.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon.addPixmap(QtGui.QPixmap("img/mouse-cursor.png"),
+                           QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.select_btn.setIcon(icon)
             self.select_btn.setIconSize(QtCore.QSize(50, 50))
             self.select_btn.setObjectName("select_btn")
@@ -41,10 +45,12 @@ class Ui_Automate(QtWidgets.QWidget):
         #toolbox from script button as script_btn
             self.script_btn = QtWidgets.QPushButton(self.toolbox)
             self.script_btn.setMinimumSize(QtCore.QSize(50, 50))
-            self.script_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            self.script_btn.setCursor(
+                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.script_btn.setText("")
             icon1 = QtGui.QIcon()
-            icon1.addPixmap(QtGui.QPixmap("img/script.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon1.addPixmap(QtGui.QPixmap("img/script.png"),
+                            QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.script_btn.setIcon(icon1)
             self.script_btn.setIconSize(QtCore.QSize(50, 50))
             self.script_btn.setObjectName("script_btn")
@@ -52,10 +58,12 @@ class Ui_Automate(QtWidgets.QWidget):
         #toolbox invoque shell as invoqueShell_btn
             self.invoqueShell_btn = QtWidgets.QPushButton(self.toolbox)
             self.invoqueShell_btn.setMinimumSize(QtCore.QSize(50, 50))
-            self.invoqueShell_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            self.invoqueShell_btn.setCursor(
+                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.invoqueShell_btn.setText("")
             icon2 = QtGui.QIcon()
-            icon2.addPixmap(QtGui.QPixmap("img/command-window.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon2.addPixmap(QtGui.QPixmap("img/command-window.png"),
+                            QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.invoqueShell_btn.setIcon(icon2)
             self.invoqueShell_btn.setIconSize(QtCore.QSize(50, 50))
             self.invoqueShell_btn.setObjectName("invoqueShell_btn")
@@ -63,10 +71,12 @@ class Ui_Automate(QtWidgets.QWidget):
         #toolbox backup button as backup_btn
             self.backup_btn = QtWidgets.QPushButton(self.toolbox)
             self.backup_btn.setMinimumSize(QtCore.QSize(50, 50))
-            self.backup_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            self.backup_btn.setCursor(
+                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.backup_btn.setText("")
             icon3 = QtGui.QIcon()
-            icon3.addPixmap(QtGui.QPixmap("img/save.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon3.addPixmap(QtGui.QPixmap("img/save.png"),
+                            QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.backup_btn.setIcon(icon3)
             self.backup_btn.setIconSize(QtCore.QSize(50, 50))
             self.backup_btn.setObjectName("backup_btn")
@@ -74,10 +84,12 @@ class Ui_Automate(QtWidgets.QWidget):
         #toolbox restore button as restore_btn
             self.restore_btn = QtWidgets.QPushButton(self.toolbox)
             self.restore_btn.setMinimumSize(QtCore.QSize(50, 50))
-            self.restore_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            self.restore_btn.setCursor(
+                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.restore_btn.setText("")
             icon4 = QtGui.QIcon()
-            icon4.addPixmap(QtGui.QPixmap("img/restore.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon4.addPixmap(QtGui.QPixmap("img/restore.png"),
+                            QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.restore_btn.setIcon(icon4)
             self.restore_btn.setIconSize(QtCore.QSize(50, 50))
             self.restore_btn.setObjectName("restore_btn")
@@ -85,10 +97,12 @@ class Ui_Automate(QtWidgets.QWidget):
         #toolbox browse functions button as functions_btn
             self.functions_btn = QtWidgets.QPushButton(self.toolbox)
             self.functions_btn.setMinimumSize(QtCore.QSize(50, 50))
-            self.functions_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            self.functions_btn.setCursor(
+                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.functions_btn.setText("")
             icon5 = QtGui.QIcon()
-            icon5.addPixmap(QtGui.QPixmap("img/web-development.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon5.addPixmap(QtGui.QPixmap("img/web-development.png"),
+                            QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.functions_btn.setIcon(icon5)
             self.functions_btn.setIconSize(QtCore.QSize(50, 50))
             self.functions_btn.setObjectName("functions_btn")
@@ -96,10 +110,12 @@ class Ui_Automate(QtWidgets.QWidget):
         #toolbox other options button as otherFn_btn
             self.otherFn_btn = QtWidgets.QPushButton(self.toolbox)
             self.otherFn_btn.setMinimumSize(QtCore.QSize(50, 50))
-            self.otherFn_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            self.otherFn_btn.setCursor(
+                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.otherFn_btn.setText("")
             icon6 = QtGui.QIcon()
-            icon6.addPixmap(QtGui.QPixmap("img/menu.png"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+            icon6.addPixmap(QtGui.QPixmap("img/menu.png"),
+                            QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.otherFn_btn.setIcon(icon6)
             self.otherFn_btn.setIconSize(QtCore.QSize(30, 50))
             self.otherFn_btn.setObjectName("otherFn_btn")
@@ -141,7 +157,7 @@ class Ui_Automate(QtWidgets.QWidget):
         #from database widget as from_db
             self.from_db = QtWidgets.QWidget()
             self.from_db.setObjectName("from_db")
-        #from database vertical layout 
+        #from database vertical layout
             self.from_db_layout = QtWidgets.QVBoxLayout(self.from_db)
             self.from_db_layout.setObjectName("from_db_layout")
         #from database scroll area
@@ -150,12 +166,14 @@ class Ui_Automate(QtWidgets.QWidget):
             self.scrollArea.setObjectName("scrollArea")
         #from database scroll area widget
             self.scrollAreaWidgetContents = QtWidgets.QWidget()
-            self.scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 545, 327))
-            self.scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents")
+            self.scrollAreaWidgetContents.setGeometry(
+                QtCore.QRect(0, 0, 545, 327))
+            self.scrollAreaWidgetContents.setObjectName(
+                "scrollAreaWidgetContents")
             self.scrollArea.setWidget(self.scrollAreaWidgetContents)
             self.from_db_layout.addWidget(self.scrollArea)
             self.automate_tab.addTab(self.from_db, "")
-        #from file widget 
+        ##from file widget
             self.from_file = QtWidgets.QWidget()
             self.from_file.setObjectName("from_file")
         #from file horizontal layout
@@ -163,11 +181,12 @@ class Ui_Automate(QtWidgets.QWidget):
             self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
             self.horizontalLayout_2.setSpacing(0)
             self.horizontalLayout_2.setObjectName("horizontalLayout_2")
-        #from file widget container 
+        #from file widget container
             self.fromfile_container = QtWidgets.QWidget(self.from_file)
             self.fromfile_container.setObjectName("fromfile_container")
         #from file wigdet container vertical layout
-            self.verticalLayout_2 = QtWidgets.QVBoxLayout(self.fromfile_container)
+            self.verticalLayout_2 = QtWidgets.QVBoxLayout(
+                self.fromfile_container)
             self.verticalLayout_2.setObjectName("verticalLayout_2")
         #from file widget container toolbar
             self.fromfile_toolbar = QtWidgets.QFrame(self.fromfile_container)
@@ -175,7 +194,8 @@ class Ui_Automate(QtWidgets.QWidget):
             self.fromfile_toolbar.setFrameShadow(QtWidgets.QFrame.Raised)
             self.fromfile_toolbar.setObjectName("fromfile_toolbar")
         #from file toolbar horizontal layout
-            self.horizontalLayout_3 = QtWidgets.QHBoxLayout(self.fromfile_toolbar)
+            self.horizontalLayout_3 = QtWidgets.QHBoxLayout(
+                self.fromfile_toolbar)
             self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         #from file toolbar path input as path_input
             self.path_input = QtWidgets.QLineEdit(self.fromfile_toolbar)
@@ -183,20 +203,21 @@ class Ui_Automate(QtWidgets.QWidget):
             self.path_input.setText("")
             self.path_input.setObjectName("path_input")
             self.horizontalLayout_3.addWidget(self.path_input)
-        #from file toolbar open and reset button as open_reset_btn
-            self.open_reset_btn = QtWidgets.QDialogButtonBox(self.fromfile_toolbar)
-            self.open_reset_btn.setLayoutDirection(QtCore.Qt.RightToLeft)
-            self.open_reset_btn.setOrientation(QtCore.Qt.Horizontal)
-            self.open_reset_btn.setStandardButtons(QtWidgets.QDialogButtonBox.Open|QtWidgets.QDialogButtonBox.Reset)
-            self.open_reset_btn.setCenterButtons(True)
-            self.open_reset_btn.setObjectName("open_reset_btn")
-            self.horizontalLayout_3.addWidget(self.open_reset_btn)
+        #from file toolbar open button as open_btn
+            self.open_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
+            self.open_btn.setObjectName("open_btn")
+            self.horizontalLayout_3.addWidget(self.open_btn)
+        #from file toolbar reset button as reset_btn
+            self.reset_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
+            self.reset_btn.setObjectName("reset_btn")
+            self.horizontalLayout_3.addWidget(self.reset_btn)
         #from file toolbar edit button as edit_btn
             self.edit_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.edit_btn.setObjectName("edit_btn")
             self.horizontalLayout_3.addWidget(self.edit_btn)
         #from file toolbar spacer item
-            spacerItem = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+            spacerItem = QtWidgets.QSpacerItem(
+                40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
             self.horizontalLayout_3.addItem(spacerItem)
             self.verticalLayout_2.addWidget(self.fromfile_toolbar)
         #from file list view as fromfile_view
@@ -215,7 +236,8 @@ class Ui_Automate(QtWidgets.QWidget):
             self.fromrange_container = QtWidgets.QWidget(self.from_range)
             self.fromrange_container.setObjectName("fromrange_container")
         #from range container vertical layout
-            self.verticalLayout_5 = QtWidgets.QVBoxLayout(self.fromrange_container)
+            self.verticalLayout_5 = QtWidgets.QVBoxLayout(
+                self.fromrange_container)
             self.verticalLayout_5.setObjectName("verticalLayout_5")
         #from range toolbar
             self.fromrange_toolbar = QtWidgets.QFrame(self.fromrange_container)
@@ -223,18 +245,21 @@ class Ui_Automate(QtWidgets.QWidget):
             self.fromrange_toolbar.setFrameShadow(QtWidgets.QFrame.Raised)
             self.fromrange_toolbar.setObjectName("fromrange_toolbar")
         #from range toolbar horizontal layout
-            self.horizontalLayout_5 = QtWidgets.QHBoxLayout(self.fromrange_toolbar)
+            self.horizontalLayout_5 = QtWidgets.QHBoxLayout(
+                self.fromrange_toolbar)
             self.horizontalLayout_5.setObjectName("horizontalLayout_5")
         #from range toolbar range label as range_label
             self.range_label = QtWidgets.QLabel(self.fromrange_toolbar)
             self.range_label.setObjectName("range_label")
             self.horizontalLayout_5.addWidget(self.range_label)
         #from range toolbar starting address input as start_address_input
-            self.start_address_input = QtWidgets.QLineEdit(self.fromrange_toolbar)
+            self.start_address_input = QtWidgets.QLineEdit(
+                self.fromrange_toolbar)
             self.start_address_input.setObjectName("start_address_input")
             self.horizontalLayout_5.addWidget(self.start_address_input)
         #from range toolbar ending address input as end_address_input
-            self.end_address_input = QtWidgets.QLineEdit(self.fromrange_toolbar)
+            self.end_address_input = QtWidgets.QLineEdit(
+                self.fromrange_toolbar)
             self.end_address_input.setObjectName("end_address_input")
             self.horizontalLayout_5.addWidget(self.end_address_input)
         #from range toolbar increment label as increment_label
@@ -242,22 +267,22 @@ class Ui_Automate(QtWidgets.QWidget):
             self.increment_label.setObjectName("increment_label")
             self.horizontalLayout_5.addWidget(self.increment_label)
             self.spinBox_3 = QtWidgets.QSpinBox(self.fromrange_toolbar)
-            self.spinBox_3.setButtonSymbols(QtWidgets.QAbstractSpinBox.UpDownArrows)
+            self.spinBox_3.setButtonSymbols(
+                QtWidgets.QAbstractSpinBox.UpDownArrows)
             self.spinBox_3.setSpecialValueText("")
             self.spinBox_3.setAccelerated(False)
             self.spinBox_3.setSuffix("")
             self.spinBox_3.setMinimum(1)
             self.spinBox_3.setObjectName("spinBox_3")
             self.horizontalLayout_5.addWidget(self.spinBox_3)
-        #from range toolbar apply reset buttons as apply_reset_btn
-            self.apply_reset_btn = QtWidgets.QDialogButtonBox(self.fromrange_toolbar)
-            self.apply_reset_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.apply_reset_btn.setLayoutDirection(QtCore.Qt.RightToLeft)
-            self.apply_reset_btn.setOrientation(QtCore.Qt.Horizontal)
-            self.apply_reset_btn.setStandardButtons(QtWidgets.QDialogButtonBox.Apply|QtWidgets.QDialogButtonBox.Reset)
-            self.apply_reset_btn.setCenterButtons(False)
-            self.apply_reset_btn.setObjectName("apply_reset_btn")
-            self.horizontalLayout_5.addWidget(self.apply_reset_btn)
+        #from range toolbar apply buttons as range_apply_btn
+            self.range_apply_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
+            self.range_apply_btn.setObjectName("range_apply_btn")
+            self.horizontalLayout_5.addWidget(self.range_apply_btn)
+        #from range toolbar reset buttons as range_reset_btn
+            self.range_reset_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
+            self.range_reset_btn.setObjectName("range_reset_btn")
+            self.horizontalLayout_5.addWidget(self.range_reset_btn)
             self.verticalLayout_5.addWidget(self.fromrange_toolbar)
         #from range list view as fromrange_view
             self.fromrange_view = QtWidgets.QListView(self.fromrange_container)
@@ -266,11 +291,12 @@ class Ui_Automate(QtWidgets.QWidget):
             self.horizontalLayout_4.addWidget(self.fromrange_container)
             self.automate_tab.addTab(self.from_range, "")
             self.verticalLayout.addWidget(self.automate_tab)
-
+        #other options
             self.retranslateUi(Automate)
             self.automate_tab.setCurrentIndex(0)
             QtCore.QMetaObject.connectSlotsByName(Automate)
-            Automate.setTabOrder(self.start_address_input, self.end_address_input)
+            Automate.setTabOrder(self.start_address_input,
+                                 self.end_address_input)
             Automate.setTabOrder(self.end_address_input, self.spinBox_3)
             Automate.setTabOrder(self.spinBox_3, self.fromrange_view)
             Automate.setTabOrder(self.fromrange_view, self.select_btn)
@@ -288,28 +314,49 @@ class Ui_Automate(QtWidgets.QWidget):
             Automate.setTabOrder(self.scrollArea, self.path_input)
 
     def retranslateUi(self, Automate):
+        """setting the labels and titles """
         _translate = QtCore.QCoreApplication.translate
         Automate.setWindowTitle(_translate("Automate", "Automate"))
-        self.select_btn.setToolTip(_translate("Automate", "<html><head/><body><p>Select devices</p></body></html>"))
-        self.script_btn.setToolTip(_translate("Automate", "<html><head/><body><p><span style=\" font-size:10pt;\">apply commands from script</span></p></body></html>"))
-        self.invoqueShell_btn.setToolTip(_translate("Automate", "<html><head/><body><p>Invoque shell</p></body></html>"))
-        self.backup_btn.setToolTip(_translate("Automate", "<html><head/><body><p>Backup configuration</p></body></html>"))
-        self.restore_btn.setToolTip(_translate("Automate", "<html><head/><body><p>Restore configuration</p></body></html>"))
-        self.functions_btn.setToolTip(_translate("Automate", "<html><head/><body><p>Browse commun tasks</p></body></html>"))
-        self.otherFn_btn.setToolTip(_translate("Automate", "<html><head/><body><p>Other options</p></body></html>"))
-        self.telnet.setToolTip(_translate("Automate", "<html><head/><body><p>select telnet connection</p></body></html>"))
+        self.select_btn.setToolTip(_translate(
+            "Automate", "<html><head/><body><p>Select devices</p></body></html>"))
+        self.script_btn.setToolTip(_translate(
+            "Automate", "<html><head/><body><p><span style=\" font-size:10pt;\">apply commands from script</span></p></body></html>"))
+        self.invoqueShell_btn.setToolTip(_translate(
+            "Automate", "<html><head/><body><p>Invoque shell</p></body></html>"))
+        self.backup_btn.setToolTip(_translate(
+            "Automate", "<html><head/><body><p>Backup configuration</p></body></html>"))
+        self.restore_btn.setToolTip(_translate(
+            "Automate", "<html><head/><body><p>Restore configuration</p></body></html>"))
+        self.functions_btn.setToolTip(_translate(
+            "Automate", "<html><head/><body><p>Browse commun tasks</p></body></html>"))
+        self.otherFn_btn.setToolTip(_translate(
+            "Automate", "<html><head/><body><p>Other options</p></body></html>"))
+        self.telnet.setToolTip(_translate(
+            "Automate", "<html><head/><body><p>select telnet connection</p></body></html>"))
         self.telnet.setText(_translate("Automate", "telnet"))
-        self.ssh.setToolTip(_translate("Automate", "<html><head/><body><p>Select ssh connection</p></body></html>"))
+        self.ssh.setToolTip(_translate(
+            "Automate", "<html><head/><body><p>Select ssh connection</p></body></html>"))
         self.ssh.setText(_translate("Automate", "ssh"))
-        self.automate_tab.setTabText(self.automate_tab.indexOf(self.from_db), _translate("Automate", "Configure from database"))
+        self.automate_tab.setTabText(self.automate_tab.indexOf(
+            self.from_db), _translate("Automate", "Configure from database"))
         self.path_input.setPlaceholderText(_translate("Automate", "file path"))
+        self.open_btn.setText(_translate("Automate", "Open"))
+        self.reset_btn.setText(_translate("Automate", "Reset"))
         self.edit_btn.setText(_translate("Automate", "Edit"))
-        self.automate_tab.setTabText(self.automate_tab.indexOf(self.from_file), _translate("Automate", "Configure from a file"))
+        self.automate_tab.setTabText(self.automate_tab.indexOf(
+            self.from_file), _translate("Automate", "Configure from a file"))
         self.range_label.setText(_translate("Automate", "Range"))
-        self.start_address_input.setPlaceholderText(_translate("Automate", "Starting address"))
-        self.end_address_input.setPlaceholderText(_translate("Automate", "Ending address"))
+        self.start_address_input.setPlaceholderText(
+            _translate("Automate", "Starting address"))
+        self.end_address_input.setPlaceholderText(
+            _translate("Automate", "Ending address"))
         self.increment_label.setText(_translate("Automate", "Inrement"))
-        self.automate_tab.setTabText(self.automate_tab.indexOf(self.from_range), _translate("Automate", "Configure from a range"))
+        self.range_reset_btn.setText(_translate("Automate", "Reset"))
+        self.range_apply_btn.setText(_translate("Automate", "Apply"))
+        self.automate_tab.setTabText(self.automate_tab.indexOf(
+            self.from_range), _translate("Automate", "Configure from a range"))
+
+
 
 import sys
 app = QtWidgets.QApplication(sys.argv)
