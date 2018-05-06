@@ -118,7 +118,7 @@ class Net_db():
             print(row)
 
             
-def main():
+""" def main():
     dev = Net_db()
     dev.createDb()
     dev.showDb()
@@ -137,3 +137,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+ """

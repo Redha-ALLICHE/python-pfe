@@ -1,6 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-
-
+import regex
+from network_db.net_database import Net_db
 class Ui_Automate(QtWidgets.QWidget):
     """this is the automate widget """
 
@@ -9,6 +9,9 @@ class Ui_Automate(QtWidgets.QWidget):
         QtWidgets.QWidget.__init__(
             self, None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
         self.setupUi(self)
+        cur = Net_db()
+        self.ip_from_db = cur.getIps()
+        cur.closeDb()
 
     def setupUi(self, Automate):
             """setup the interface of the automate window """
@@ -199,32 +202,57 @@ class Ui_Automate(QtWidgets.QWidget):
             self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         #from file toolbar path input as path_input
             self.path_input = QtWidgets.QLineEdit(self.fromfile_toolbar)
+            self.path_input.setReadOnly(True)
             self.path_input.setMinimumSize(QtCore.QSize(300, 0))
             self.path_input.setText("")
             self.path_input.setObjectName("path_input")
             self.horizontalLayout_3.addWidget(self.path_input)
-        #from file toolbar open button as open_btn
-            self.open_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
-            self.open_btn.setObjectName("open_btn")
-            self.horizontalLayout_3.addWidget(self.open_btn)
-        #from file toolbar reset button as reset_btn
-            self.reset_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
-            self.reset_btn.setObjectName("reset_btn")
-            self.horizontalLayout_3.addWidget(self.reset_btn)
-        #from file toolbar edit button as edit_btn
-            self.edit_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
-            self.edit_btn.setObjectName("edit_btn")
-            self.horizontalLayout_3.addWidget(self.edit_btn)
+        #from file toolbar open button as file_open_btn
+            self.file_open_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
+            self.file_open_btn.setObjectName("file_open_btn")
+            self.horizontalLayout_3.addWidget(self.file_open_btn)
+        #from file toolbar edit button as file_edit_btn
+            self.file_edit_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
+            self.file_edit_btn.setObjectName("file_edit_btn")
+            self.horizontalLayout_3.addWidget(self.file_edit_btn)
+        #from file toolbar reset button as file_reset_btn
+            self.file_reset_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
+            self.file_reset_btn.setObjectName("file_reset_btn")
+            self.horizontalLayout_3.addWidget(self.file_reset_btn)
+        #from file toolbar apply button as file_apply_btn
+            self.file_apply_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
+            self.file_apply_btn.setObjectName("file_apply_btn")
+            self.horizontalLayout_3.addWidget(self.file_apply_btn)
         #from file toolbar spacer item
             spacerItem = QtWidgets.QSpacerItem(
                 40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
             self.horizontalLayout_3.addItem(spacerItem)
             self.verticalLayout_2.addWidget(self.fromfile_toolbar)
-        #from file list view as fromfile_view
-            self.fromfile_view = QtWidgets.QListView(self.fromfile_container)
+        #from file toolbar events handler 
+            self.file_open_btn.setDefault(True)
+            self.file_open_btn.clicked.connect(self.choose_file)
+            self.file_edit_btn.clicked.connect(self.edit_file)
+            self.file_reset_btn.clicked.connect(self.reset_file)
+            self.file_apply_btn.clicked.connect(self.apply_file)
+        #from file text view as fromfile_view
+            self.fromfile_view = QtWidgets.QTextEdit(self.fromfile_container)
+            self.fromfile_view.setReadOnly(True)
             self.fromfile_view.setObjectName("fromfile_view")
             self.verticalLayout_2.addWidget(self.fromfile_view)
             self.horizontalLayout_2.addWidget(self.fromfile_container)
+        #from file list ip view 
+            self.fromfile_ips = QtWidgets.QTableWidget(self.fromfile_container)
+            self.fromfile_ips.setColumnCount(4)
+            self.fromfile_ips.verticalHeader().hide()
+            self.fromfile_ips.setHorizontalHeaderLabels(['','ip address','Found','Connected'])
+            fromfile_header = self.fromfile_ips.horizontalHeader()
+            fromfile_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
+            fromfile_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
+            fromfile_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+            fromfile_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+            self.fromfile_ips.setObjectName("fromfile_ips")
+            self.fromfile_ips.hide()
+            self.verticalLayout_2.addWidget(self.fromfile_ips)
         #from range widget
             self.automate_tab.addTab(self.from_file, "")
             self.from_range = QtWidgets.QWidget()
@@ -293,7 +321,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.verticalLayout.addWidget(self.automate_tab)
         #other options
             self.retranslateUi(Automate)
-            self.automate_tab.setCurrentIndex(0)
+            self.automate_tab.setCurrentIndex(1)
             QtCore.QMetaObject.connectSlotsByName(Automate)
             Automate.setTabOrder(self.start_address_input,
                                  self.end_address_input)
@@ -338,13 +366,14 @@ class Ui_Automate(QtWidgets.QWidget):
             "Automate", "<html><head/><body><p>Select ssh connection</p></body></html>"))
         self.ssh.setText(_translate("Automate", "ssh"))
         self.automate_tab.setTabText(self.automate_tab.indexOf(
-            self.from_db), _translate("Automate", "Configure from database"))
-        self.path_input.setPlaceholderText(_translate("Automate", "file path"))
-        self.open_btn.setText(_translate("Automate", "Open"))
-        self.reset_btn.setText(_translate("Automate", "Reset"))
-        self.edit_btn.setText(_translate("Automate", "Edit"))
+            self.from_db), _translate("Automate", "IP from database"))
+        self.path_input.setPlaceholderText(_translate("Automate", "File path , Please press Open --->"))
+        self.file_open_btn.setText(_translate("Automate", "Open"))
+        self.file_apply_btn.setText(_translate("Automate", "Apply"))
+        self.file_edit_btn.setText(_translate("Automate", "Edit"))
+        self.file_reset_btn.setText(_translate("Automate", "Reset"))
         self.automate_tab.setTabText(self.automate_tab.indexOf(
-            self.from_file), _translate("Automate", "Configure from a file"))
+            self.from_file), _translate("Automate", "IP from a file"))
         self.range_label.setText(_translate("Automate", "Range"))
         self.start_address_input.setPlaceholderText(
             _translate("Automate", "Starting address"))
@@ -354,12 +383,73 @@ class Ui_Automate(QtWidgets.QWidget):
         self.range_reset_btn.setText(_translate("Automate", "Reset"))
         self.range_apply_btn.setText(_translate("Automate", "Apply"))
         self.automate_tab.setTabText(self.automate_tab.indexOf(
-            self.from_range), _translate("Automate", "Configure from a range"))
+            self.from_range), _translate("Automate", "IP from a range"))
 
+    #event functions
+    def choose_file(self):
+        """action when from file open button is pressed"""
+        self.switchview_file(False)
+        path = QtWidgets.QFileDialog.getOpenFileName(self, QtCore.QCoreApplication.translate("Automate","Choose the ip addresses file "), "backend/", QtCore.QCoreApplication.translate("Automate","Text File(*.txt)"))[0]
+        self.path_input.setText(path)
+        try:
+            with open(path ,'r') as f:
+                text = ''.join(f.readlines())
+                self.fromfile_view.setReadOnly(True)
+                self.fromfile_view.setPlainText(text)
+                ##changes!!! restorer le style de self.fromfile_view 
+        except Exception:
+            pass
 
+    def edit_file(self):
+        """action when from file edit button is pressed"""
+        self.switchview_file(False)
+        self.fromfile_view.setReadOnly(False)
+            ##changes!!! changer la couleur de fond de self.fromfile_view
+        
+    def reset_file(self):
+        """action when from file reset button is pressed"""
+        self.switchview_file(False)
+        self.fromfile_view.clear()
+        self.fromfile_view.setReadOnly(True)
+        self.path_input.clear()
 
-import sys
-app = QtWidgets.QApplication(sys.argv)
-window = Ui_Automate()
-window.show()
-sys.exit(app.exec_())
+    def apply_file(self):
+        """action when from file apply button is pressed"""
+        #getting the ips from the widget
+        ips = [item for item in (self.fromfile_view.toPlainText().split('\n')) if self.check_ip(item)]
+        if ips:
+            #clearing the view
+            self.fromfile_view.clear()
+            self.fromfile_view.setReadOnly(True)
+            #creating rows 
+            self.fromfile_ips.setRowCount(len(ips))
+            for i, ip in enumerate(ips):
+                #creating items 
+                checkbox = QtWidgets.QTableWidgetItem()
+                checkbox.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+                checkbox.setCheckState(QtCore.Qt.Checked)
+                item_ip = QtWidgets.QTableWidgetItem(ip)
+                item_ip.setFlags(QtCore.Qt.ItemIsEnabled)
+                #adding the items to the table
+                self.fromfile_ips.setItem(i,0,checkbox)
+                self.fromfile_ips.setItem(i,1,item_ip)
+            print(self.ip_from_db)
+            #display the table and hide the view
+            self.switchview_file(True)
+
+    def checkIpInDb(self, ip):
+        """checks if the ip is in the db """
+
+    def switchview_file(self, goIp):
+        """switch between list view and text edit"""
+        if goIp:
+            self.fromfile_view.hide()
+            self.fromfile_ips.show()
+        else:
+            self.fromfile_view.show()
+            self.fromfile_ips.hide()
+    
+    def check_ip(self, text):
+        """check if the text is a valid ip address"""
+        pattern = regex.compile(r"(^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$)")
+        return regex.fullmatch(pattern, text)
