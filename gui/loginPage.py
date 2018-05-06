@@ -47,7 +47,7 @@ class Ui_loginPage(QtWidgets.QDialog):
 
     def setupUi(self, loginPage):
         """the login page setup ui"""
-        loginPage.setWindowIcon(QtGui.QIcon("gui\\logo.png"))
+        loginPage.setWindowIcon(QtGui.QIcon("gui\\img\\logo.png"))
         loginPage.setObjectName("loginPage")
         loginPage.resize(430, 480)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
