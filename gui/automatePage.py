@@ -259,7 +259,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.fromfile_ips.setColumnCount(3)
             self.fromfile_ips.verticalHeader().hide()
             self.fromfile_ips.setHorizontalHeaderLabels(
-                ['', 'ip address', 'Is in the DB?', 'Is Connected?'])
+                ['ip address', 'Is in the DB?', 'Is Connected?'])
             fromfile_header = self.fromfile_ips.horizontalHeader()
             fromfile_header.setSectionResizeMode(
                 0, QtWidgets.QHeaderView.Stretch)
@@ -352,7 +352,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.fromrange_ips.setColumnCount(3)
             self.fromrange_ips.verticalHeader().hide()
             self.fromrange_ips.setHorizontalHeaderLabels(
-                ['', 'Ip address', 'Is in the DB?', 'Is Connected?'])
+                [ 'Ip address', 'Is in the DB?', 'Is Connected?'])
             fromrange_header = self.fromrange_ips.horizontalHeader()
             fromrange_header.setSectionResizeMode(
                 0, QtWidgets.QHeaderView.Stretch)
@@ -474,9 +474,6 @@ class Ui_Automate(QtWidgets.QWidget):
         #getting the ips from the widget
         ips = [item for item in (
             self.fromfile_view.toPlainText().split('\n')) if self.check_ip(item)]
-        #clearing the view
-        self.fromfile_view.clear()
-        self.fromfile_view.setReadOnly(True)
         if ips:
             self.fillTablewithIps(self.fromfile_ips,ips)
             #display the table and hide the view
@@ -510,6 +507,7 @@ class Ui_Automate(QtWidgets.QWidget):
         start = self.start_address_input.text()
         end = self.end_address_input.text()
         increment = int(self.spinBox_3.value())
+        self.fromrange_ips.setRowCount(0)
         ips = self.generateRange(start,end,increment)
         if ips:
             self.fillTablewithIps(self.fromrange_ips, ips)
@@ -573,8 +571,8 @@ class Ui_Automate(QtWidgets.QWidget):
         else:
             return "No"
 
-    def checkIpConnected(self, ip):
-        """checks if the ip is connected"""
+    def ping(self, ip):
+        """ping the device"""
         info = subprocess.STARTUPINFO()
         info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
         info.wShowWindow = subprocess.SW_HIDE
@@ -582,11 +580,19 @@ class Ui_Automate(QtWidgets.QWidget):
         output = subprocess.Popen(['ping', '-n', '1', '-w', '500', ip],
                                   stdout=subprocess.PIPE, startupinfo=info).communicate()[0]
         if "Destination host unreachable" in output.decode('utf-8'):
-            return "No"
+            return False
         elif "Request timed out" in output.decode('utf-8'):
-            return "No"
+            return False
         else:
+            return True
+
+    def checkIpConnected(self, ip):
+        """checks if the ip is connected"""
+        result = self.ping(ip)
+        if result:
             return "Yes"
+        else:
+            return "No"
 
     def switchview_file(self, listview, tableview, checkall_btn, goIp):
         """switch between list view and text edit"""
@@ -601,9 +607,14 @@ class Ui_Automate(QtWidgets.QWidget):
 
     def check_ip(self, text):
         """check if the text is a valid ip address"""
-        pattern = regex.compile(
-            r"(^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)")
-        return regex.fullmatch(pattern, text)
+        #         pattern = regex.compile(
+        #           return regex.fullmatch(pattern, text)
+        #          r"(^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)")
+        try :
+            ipaddress.IPv4Address(text)
+        except Exception:
+            return False
+        return True
 
     def errorMsg(self, msg):
         """display an error msg to the screen"""
@@ -616,10 +627,14 @@ class Ui_Automate(QtWidgets.QWidget):
         if self.check_ip(start) and self.check_ip(end):
             starting = ipaddress.ip_address(start)
             ending = ipaddress.ip_address(end)
-            while starting <= ending:
-                ip = starting.compressed
-                ips.append(ip)
-                starting += increment
+            if (int(ending)-int(starting))<300:
+                try:
+                    while starting <= ending:
+                        ip = starting.compressed
+                        ips.append(ip)
+                        starting += increment
+                except Exception:
+                    return None
         else:
             return None
         return ips
