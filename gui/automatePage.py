@@ -1,6 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import regex
 from network_db.net_database import Net_db
+import subprocess
+import ipaddress
+
+
 class Ui_Automate(QtWidgets.QWidget):
     """this is the automate widget """
 
@@ -39,7 +43,7 @@ class Ui_Automate(QtWidgets.QWidget):
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.select_btn.setText("")
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap("img/mouse-cursor.png"),
+            icon.addPixmap(QtGui.QPixmap("gui/img/mouse-cursor.png"),
                            QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.select_btn.setIcon(icon)
             self.select_btn.setIconSize(QtCore.QSize(50, 50))
@@ -52,7 +56,7 @@ class Ui_Automate(QtWidgets.QWidget):
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.script_btn.setText("")
             icon1 = QtGui.QIcon()
-            icon1.addPixmap(QtGui.QPixmap("img/script.png"),
+            icon1.addPixmap(QtGui.QPixmap("gui/img/script.png"),
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.script_btn.setIcon(icon1)
             self.script_btn.setIconSize(QtCore.QSize(50, 50))
@@ -65,7 +69,7 @@ class Ui_Automate(QtWidgets.QWidget):
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.invoqueShell_btn.setText("")
             icon2 = QtGui.QIcon()
-            icon2.addPixmap(QtGui.QPixmap("img/command-window.png"),
+            icon2.addPixmap(QtGui.QPixmap("gui/img/command-window.png"),
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.invoqueShell_btn.setIcon(icon2)
             self.invoqueShell_btn.setIconSize(QtCore.QSize(50, 50))
@@ -78,7 +82,7 @@ class Ui_Automate(QtWidgets.QWidget):
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.backup_btn.setText("")
             icon3 = QtGui.QIcon()
-            icon3.addPixmap(QtGui.QPixmap("img/save.png"),
+            icon3.addPixmap(QtGui.QPixmap("gui/img/save.png"),
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.backup_btn.setIcon(icon3)
             self.backup_btn.setIconSize(QtCore.QSize(50, 50))
@@ -91,7 +95,7 @@ class Ui_Automate(QtWidgets.QWidget):
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.restore_btn.setText("")
             icon4 = QtGui.QIcon()
-            icon4.addPixmap(QtGui.QPixmap("img/restore.png"),
+            icon4.addPixmap(QtGui.QPixmap("gui/img/restore.png"),
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.restore_btn.setIcon(icon4)
             self.restore_btn.setIconSize(QtCore.QSize(50, 50))
@@ -104,7 +108,7 @@ class Ui_Automate(QtWidgets.QWidget):
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.functions_btn.setText("")
             icon5 = QtGui.QIcon()
-            icon5.addPixmap(QtGui.QPixmap("img/web-development.png"),
+            icon5.addPixmap(QtGui.QPixmap("gui/img/web-development.png"),
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.functions_btn.setIcon(icon5)
             self.functions_btn.setIconSize(QtCore.QSize(50, 50))
@@ -117,7 +121,7 @@ class Ui_Automate(QtWidgets.QWidget):
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.otherFn_btn.setText("")
             icon6 = QtGui.QIcon()
-            icon6.addPixmap(QtGui.QPixmap("img/menu.png"),
+            icon6.addPixmap(QtGui.QPixmap("gui/img/menu.png"),
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.otherFn_btn.setIcon(icon6)
             self.otherFn_btn.setIconSize(QtCore.QSize(30, 50))
@@ -176,7 +180,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.scrollArea.setWidget(self.scrollAreaWidgetContents)
             self.from_db_layout.addWidget(self.scrollArea)
             self.automate_tab.addTab(self.from_db, "")
-        ##from file widget
+        #from file widget
             self.from_file = QtWidgets.QWidget()
             self.from_file.setObjectName("from_file")
         #from file horizontal layout
@@ -228,29 +232,43 @@ class Ui_Automate(QtWidgets.QWidget):
                 40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
             self.horizontalLayout_3.addItem(spacerItem)
             self.verticalLayout_2.addWidget(self.fromfile_toolbar)
-        #from file toolbar events handler 
+        #from file check all checkbox button as file_checkall_btn
+            self.file_checkall_btn = QtWidgets.QCheckBox(
+                'Check All', self.fromfile_container)
+            self.file_checkall_btn.setTristate(False)
+            self.file_checkall_btn.setChecked(True)
+            self.file_checkall_btn.setStyleSheet(
+                'margin-left: 5px; font: bold')
+            self.file_checkall_btn.hide()
+            self.verticalLayout_2.addWidget(self.file_checkall_btn)
+        #from file toolbar events handler
             self.file_open_btn.setDefault(True)
-            self.file_open_btn.clicked.connect(self.choose_file)
-            self.file_edit_btn.clicked.connect(self.edit_file)
-            self.file_reset_btn.clicked.connect(self.reset_file)
-            self.file_apply_btn.clicked.connect(self.apply_file)
+            self.file_open_btn.clicked.connect(self.choose_file_action)
+            self.file_edit_btn.clicked.connect(self.edit_file_action)
+            self.file_reset_btn.clicked.connect(self.reset_file_action)
+            self.file_apply_btn.clicked.connect(self.apply_file_action)
+            self.file_checkall_btn.clicked.connect(self.selectAllCheckChanged_action)
         #from file text view as fromfile_view
             self.fromfile_view = QtWidgets.QTextEdit(self.fromfile_container)
             self.fromfile_view.setReadOnly(True)
             self.fromfile_view.setObjectName("fromfile_view")
             self.verticalLayout_2.addWidget(self.fromfile_view)
             self.horizontalLayout_2.addWidget(self.fromfile_container)
-        #from file list ip view 
+        #from file list ip table widget as self.fromfile_ips
             self.fromfile_ips = QtWidgets.QTableWidget(self.fromfile_container)
-            self.fromfile_ips.setColumnCount(4)
+            self.fromfile_ips.setColumnCount(3)
             self.fromfile_ips.verticalHeader().hide()
-            self.fromfile_ips.setHorizontalHeaderLabels(['','ip address','Found','Connected'])
+            self.fromfile_ips.setHorizontalHeaderLabels(
+                ['', 'ip address', 'Is in the DB?', 'Is Connected?'])
             fromfile_header = self.fromfile_ips.horizontalHeader()
-            fromfile_header.setSectionResizeMode(0, QtWidgets.QHeaderView.ResizeToContents)
-            fromfile_header.setSectionResizeMode(1, QtWidgets.QHeaderView.Stretch)
-            fromfile_header.setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
-            fromfile_header.setSectionResizeMode(3, QtWidgets.QHeaderView.ResizeToContents)
+            fromfile_header.setSectionResizeMode(
+                0, QtWidgets.QHeaderView.Stretch)
+            fromfile_header.setSectionResizeMode(
+                1, QtWidgets.QHeaderView.ResizeToContents)
+            fromfile_header.setSectionResizeMode(
+                2, QtWidgets.QHeaderView.ResizeToContents)
             self.fromfile_ips.setObjectName("fromfile_ips")
+            self.fromfile_ips.clicked.connect(self.checkall_file_action)
             self.fromfile_ips.hide()
             self.verticalLayout_2.addWidget(self.fromfile_ips)
         #from range widget
@@ -303,15 +321,24 @@ class Ui_Automate(QtWidgets.QWidget):
             self.spinBox_3.setMinimum(1)
             self.spinBox_3.setObjectName("spinBox_3")
             self.horizontalLayout_5.addWidget(self.spinBox_3)
-        #from range toolbar apply buttons as range_apply_btn
-            self.range_apply_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
-            self.range_apply_btn.setObjectName("range_apply_btn")
-            self.horizontalLayout_5.addWidget(self.range_apply_btn)
         #from range toolbar reset buttons as range_reset_btn
             self.range_reset_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.range_reset_btn.setObjectName("range_reset_btn")
             self.horizontalLayout_5.addWidget(self.range_reset_btn)
             self.verticalLayout_5.addWidget(self.fromrange_toolbar)
+        #from range toolbar apply buttons as range_apply_btn
+            self.range_apply_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
+            self.range_apply_btn.setObjectName("range_apply_btn")
+            self.horizontalLayout_5.addWidget(self.range_apply_btn)
+        #from file check all checkbox button as range_checkall_btn
+            self.range_checkall_btn = QtWidgets.QCheckBox(
+                'Check All', self.fromrange_container)
+            self.range_checkall_btn.setTristate(False)
+            self.range_checkall_btn.setChecked(True)
+            self.range_checkall_btn.setStyleSheet(
+                'margin-left: 5px; font: bold')
+            self.range_checkall_btn.hide()
+            self.verticalLayout_5.addWidget(self.range_checkall_btn)
         #from range list view as fromrange_view
             self.fromrange_view = QtWidgets.QListView(self.fromrange_container)
             self.fromrange_view.setObjectName("fromrange_view")
@@ -319,6 +346,29 @@ class Ui_Automate(QtWidgets.QWidget):
             self.horizontalLayout_4.addWidget(self.fromrange_container)
             self.automate_tab.addTab(self.from_range, "")
             self.verticalLayout.addWidget(self.automate_tab)
+        #from range list ip table widget as self.fromrange_ips
+            self.fromrange_ips = QtWidgets.QTableWidget(
+                self.fromrange_container)
+            self.fromrange_ips.setColumnCount(3)
+            self.fromrange_ips.verticalHeader().hide()
+            self.fromrange_ips.setHorizontalHeaderLabels(
+                ['', 'Ip address', 'Is in the DB?', 'Is Connected?'])
+            fromrange_header = self.fromrange_ips.horizontalHeader()
+            fromrange_header.setSectionResizeMode(
+                0, QtWidgets.QHeaderView.Stretch)
+            fromrange_header.setSectionResizeMode(
+                1, QtWidgets.QHeaderView.ResizeToContents)
+            fromrange_header.setSectionResizeMode(
+                2, QtWidgets.QHeaderView.ResizeToContents)
+            self.fromrange_ips.setObjectName("fromrange_ips")
+            self.fromrange_ips.hide()
+            self.verticalLayout_5.addWidget(self.fromrange_ips)
+        #from range toolbar connect functions
+            self.range_apply_btn.setDefault(True)
+            self.range_apply_btn.clicked.connect(self.apply_range_action)
+            self.range_reset_btn.clicked.connect(self.reset_range_action)
+            self.range_checkall_btn.clicked.connect(self.checkall_range_action)
+            self.fromrange_ips.clicked.connect(self.unchecked_range_action)
         #other options
             self.retranslateUi(Automate)
             self.automate_tab.setCurrentIndex(1)
@@ -367,7 +417,8 @@ class Ui_Automate(QtWidgets.QWidget):
         self.ssh.setText(_translate("Automate", "ssh"))
         self.automate_tab.setTabText(self.automate_tab.indexOf(
             self.from_db), _translate("Automate", "IP from database"))
-        self.path_input.setPlaceholderText(_translate("Automate", "File path , Please press Open --->"))
+        self.path_input.setPlaceholderText(_translate(
+            "Automate", "File path , Please press Open --->"))
         self.file_open_btn.setText(_translate("Automate", "Open"))
         self.file_apply_btn.setText(_translate("Automate", "Apply"))
         self.file_edit_btn.setText(_translate("Automate", "Edit"))
@@ -386,70 +437,189 @@ class Ui_Automate(QtWidgets.QWidget):
             self.from_range), _translate("Automate", "IP from a range"))
 
     #event functions
-    def choose_file(self):
+    #from file actions
+    def choose_file_action(self):
         """action when from file open button is pressed"""
-        self.switchview_file(False)
-        path = QtWidgets.QFileDialog.getOpenFileName(self, QtCore.QCoreApplication.translate("Automate","Choose the ip addresses file "), "backend/", QtCore.QCoreApplication.translate("Automate","Text File(*.txt)"))[0]
+        self.switchview_file(self.fromfile_view,
+                             self.fromfile_ips, self.file_checkall_btn, False)
+        path = QtWidgets.QFileDialog.getOpenFileName(self, QtCore.QCoreApplication.translate(
+            "Automate", "Choose the ip addresses file "), "backend/", QtCore.QCoreApplication.translate("Automate", "Text File(*.txt)"))[0]
         self.path_input.setText(path)
         try:
-            with open(path ,'r') as f:
+            with open(path, 'r') as f:
                 text = ''.join(f.readlines())
                 self.fromfile_view.setReadOnly(True)
                 self.fromfile_view.setPlainText(text)
-                ##changes!!! restorer le style de self.fromfile_view 
+                ##changes!!! restorer le style de self.fromfile_view
         except Exception:
             pass
 
-    def edit_file(self):
+    def edit_file_action(self):
         """action when from file edit button is pressed"""
-        self.switchview_file(False)
+        self.switchview_file(self.fromfile_view,
+                             self.fromfile_ips, self.file_checkall_btn, False)
         self.fromfile_view.setReadOnly(False)
-            ##changes!!! changer la couleur de fond de self.fromfile_view
-        
-    def reset_file(self):
+        ##changes!!! changer la couleur de fond de self.fromfile_view
+
+    def reset_file_action(self):
         """action when from file reset button is pressed"""
-        self.switchview_file(False)
+        self.switchview_file(self.fromfile_view,
+                             self.fromfile_ips, self.file_checkall_btn, False)
         self.fromfile_view.clear()
         self.fromfile_view.setReadOnly(True)
         self.path_input.clear()
 
-    def apply_file(self):
+    def apply_file_action(self):
         """action when from file apply button is pressed"""
         #getting the ips from the widget
-        ips = [item for item in (self.fromfile_view.toPlainText().split('\n')) if self.check_ip(item)]
+        ips = [item for item in (
+            self.fromfile_view.toPlainText().split('\n')) if self.check_ip(item)]
+        #clearing the view
+        self.fromfile_view.clear()
+        self.fromfile_view.setReadOnly(True)
         if ips:
-            #clearing the view
-            self.fromfile_view.clear()
-            self.fromfile_view.setReadOnly(True)
-            #creating rows 
-            self.fromfile_ips.setRowCount(len(ips))
-            for i, ip in enumerate(ips):
-                #creating items 
-                checkbox = QtWidgets.QTableWidgetItem()
-                checkbox.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-                checkbox.setCheckState(QtCore.Qt.Checked)
-                item_ip = QtWidgets.QTableWidgetItem(ip)
-                item_ip.setFlags(QtCore.Qt.ItemIsEnabled)
-                #adding the items to the table
-                self.fromfile_ips.setItem(i,0,checkbox)
-                self.fromfile_ips.setItem(i,1,item_ip)
-            print(self.ip_from_db)
+            self.fillTablewithIps(self.fromfile_ips,ips)
             #display the table and hide the view
-            self.switchview_file(True)
+            self.switchview_file(
+                    self.fromfile_view, self.fromfile_ips, self.file_checkall_btn, True)
+        else:
+            self.errorMsg("No valid ip found in the section")
 
+    def checkall_file_action(self):
+        """when the row ip is clicked """
+        model = self.fromfile_ips
+        item = model.currentColumn()
+        if item == -1:
+            self.file_checkall_btn.setCheckState(QtCore.Qt.Unchecked)
+
+    def selectAllCheckChanged_action(self):
+        """from file when check all button is pressed"""
+        model = self.fromfile_ips
+        if self.file_checkall_btn.isChecked():
+            state = QtCore.Qt.Checked
+        else:
+            state = QtCore.Qt.Unchecked
+        for index in range(model.rowCount()):
+            item = model.item(index, 0)
+            item.setCheckState(state)
+    
+    #from range actions
+
+    def apply_range_action(self):
+        """action when from range apply button is pressed"""
+        start = self.start_address_input.text()
+        end = self.end_address_input.text()
+        increment = int(self.spinBox_3.value())
+        ips = self.generateRange(start,end,increment)
+        if ips:
+            self.fillTablewithIps(self.fromrange_ips, ips)
+            self.switchview_file(self.fromrange_view,self.fromrange_ips,self.range_checkall_btn,True)
+        else:
+            self.errorMsg("No valid ip found in the section")
+
+    def reset_range_action(self):
+        """action when from range reset button is pressed"""
+        self.start_address_input.setText('')
+        self.end_address_input.setText('')
+        self.spinBox_3.setValue(1)
+        self.range_checkall_btn.hide()
+        self.switchview_file(self.fromrange_view,self.fromrange_ips, self.file_checkall_btn, False)
+
+    def checkall_range_action(self):
+        """action when the range check_all btn is pressed"""
+        model = self.fromrange_ips
+        if self.range_checkall_btn.isChecked():
+            state = QtCore.Qt.Checked
+        else:
+            state = QtCore.Qt.Unchecked
+        for index in range(model.rowCount()):
+            item = model.item(index, 0)
+            item.setCheckState(state)
+    
+    def unchecked_range_action(self):
+        """when the row ip is clicked """
+        model = self.fromrange_ips
+        item = model.currentItemChanged
+        if item == -1:
+            self.range_checkall_btn.setCheckState(QtCore.Qt.Unchecked)
+
+    #utiliy functions
+    def fillTablewithIps(self, table, ips):
+        """create cases of a table and fill it with ips, checkboxes, is in db and is connected"""
+        #creating rows
+        ip_size = len(ips)
+        table.setRowCount(ip_size)
+        for i, ip in enumerate(ips):
+            #creating items
+            item_ip = QtWidgets.QTableWidgetItem(ip)
+            item_ip.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            item_ip.setCheckState(QtCore.Qt.Checked)
+            inDb = QtWidgets.QTableWidgetItem(self.checkIpInDb(ip))
+            inDb.setFlags(QtCore.Qt.ItemIsEnabled)
+            if ip_size < 15:
+                connected = QtWidgets.QTableWidgetItem(self.checkIpConnected(ip))
+            else:
+                connected = QtWidgets.QTableWidgetItem("Timeout")
+            connected.setFlags(QtCore.Qt.ItemIsEnabled)
+            #adding the items to the table
+            table.setItem(i, 0, item_ip)
+            table.setItem(i, 1, inDb)
+            table.setItem(i, 2, connected)
+            
     def checkIpInDb(self, ip):
         """checks if the ip is in the db """
+        if ip in self.ip_from_db:
+            return "Yes"
+        else:
+            return "No"
 
-    def switchview_file(self, goIp):
+    def checkIpConnected(self, ip):
+        """checks if the ip is connected"""
+        info = subprocess.STARTUPINFO()
+        info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+        info.wShowWindow = subprocess.SW_HIDE
+        # run the ping command with subprocess.popen interface
+        output = subprocess.Popen(['ping', '-n', '1', '-w', '500', ip],
+                                  stdout=subprocess.PIPE, startupinfo=info).communicate()[0]
+        if "Destination host unreachable" in output.decode('utf-8'):
+            return "No"
+        elif "Request timed out" in output.decode('utf-8'):
+            return "No"
+        else:
+            return "Yes"
+
+    def switchview_file(self, listview, tableview, checkall_btn, goIp):
         """switch between list view and text edit"""
         if goIp:
-            self.fromfile_view.hide()
-            self.fromfile_ips.show()
+            listview.hide()
+            checkall_btn.show()
+            tableview.show()
         else:
-            self.fromfile_view.show()
-            self.fromfile_ips.hide()
-    
+            checkall_btn.hide()
+            listview.show()
+            tableview.hide()
+
     def check_ip(self, text):
         """check if the text is a valid ip address"""
-        pattern = regex.compile(r"(^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$)")
+        pattern = regex.compile(
+            r"(^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)")
         return regex.fullmatch(pattern, text)
+
+    def errorMsg(self, msg):
+        """display an error msg to the screen"""
+        QtWidgets.QMessageBox.warning(
+            self, "Login", msg, QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
+
+    def generateRange(self, start ,end, increment):
+        """return a list of ips from a given interval"""
+        ips =[]
+        if self.check_ip(start) and self.check_ip(end):
+            starting = ipaddress.ip_address(start)
+            ending = ipaddress.ip_address(end)
+            while starting <= ending:
+                ip = starting.compressed
+                ips.append(ip)
+                starting += increment
+        else:
+            return None
+        return ips

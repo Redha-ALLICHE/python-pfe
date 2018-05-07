@@ -8,7 +8,6 @@ class Utility():
     """this class ensures the access to the files and prove some utility functions""" 
     def __init__(self):
         self.all_info = self.getAllInfo()
-
     def __len__(self):
         """return the number of item in the file"""
         if self.all_info:
