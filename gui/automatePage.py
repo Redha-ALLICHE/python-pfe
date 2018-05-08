@@ -12,10 +12,11 @@ class Ui_Automate(QtWidgets.QWidget):
         """create the login page object"""
         QtWidgets.QWidget.__init__(
             self, None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
-        self.setupUi(self)
         cur = Net_db()
-        self.ip_from_db = cur.getIps()
+        self.data = cur.getAll()
+        self.ip_from_db = cur.ips
         cur.closeDb()
+        self.setupUi(self)
 
     def setupUi(self, Automate):
             """setup the interface of the automate window """
@@ -180,6 +181,23 @@ class Ui_Automate(QtWidgets.QWidget):
             self.scrollArea.setWidget(self.scrollAreaWidgetContents)
             self.from_db_layout.addWidget(self.scrollArea)
             self.automate_tab.addTab(self.from_db, "")
+        #from database grid layout AS gridLayout
+            self.gridLayout = QtWidgets.QGridLayout(
+                self.scrollAreaWidgetContents)
+            self.gridLayout.setContentsMargins(0, 0, 0, 0)
+            self.gridLayout.setSpacing(0)
+            self.gridLayout.setObjectName("gridLayout")
+        #from database add button as fromdb_add
+            self.fromdb_add = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
+        #from database devices
+            self.gridLayout.addWidget(self.fromdb_add)
+            for i in range(1,len(self.data)+1):
+                if i > 4:
+                    i = 0
+                self.gridLayout.addWidget(
+                    self.from_db_object(self.data[i-1]), int(i/4), i)
+
+
         #from file widget
             self.from_file = QtWidgets.QWidget()
             self.from_file.setObjectName("from_file")
@@ -247,7 +265,8 @@ class Ui_Automate(QtWidgets.QWidget):
             self.file_edit_btn.clicked.connect(self.edit_file_action)
             self.file_reset_btn.clicked.connect(self.reset_file_action)
             self.file_apply_btn.clicked.connect(self.apply_file_action)
-            self.file_checkall_btn.clicked.connect(self.selectAllCheckChanged_action)
+            self.file_checkall_btn.clicked.connect(
+                self.selectAllCheckChanged_action)
         #from file text view as fromfile_view
             self.fromfile_view = QtWidgets.QTextEdit(self.fromfile_container)
             self.fromfile_view.setReadOnly(True)
@@ -352,7 +371,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.fromrange_ips.setColumnCount(3)
             self.fromrange_ips.verticalHeader().hide()
             self.fromrange_ips.setHorizontalHeaderLabels(
-                [ 'Ip address', 'Is in the DB?', 'Is Connected?'])
+                ['Ip address', 'Is in the DB?', 'Is Connected?'])
             fromrange_header = self.fromrange_ips.horizontalHeader()
             fromrange_header.setSectionResizeMode(
                 0, QtWidgets.QHeaderView.Stretch)
@@ -435,6 +454,61 @@ class Ui_Automate(QtWidgets.QWidget):
         self.range_apply_btn.setText(_translate("Automate", "Apply"))
         self.automate_tab.setTabText(self.automate_tab.indexOf(
             self.from_range), _translate("Automate", "IP from a range"))
+    
+    #from db item container
+    def from_db_object(self, data):
+        """create an object view for from database tab"""
+        #item container
+        container = QtWidgets.QWidget(self.scrollAreaWidgetContents)
+        vertical = QtWidgets.QVBoxLayout(container)
+        #image label 
+        img = QtWidgets.QLabel(container)
+        if data["type"] == 'switch':
+            img.setStyleSheet(
+                "background-color: red;")
+        else:
+            img.setStyleSheet("background-color: rgb(255,255,255);")
+        #connect push button
+        btn = QtWidgets.QPushButton(container)
+        btn.setText("Connect")
+        if self.ping(data["ip"]):
+            btn.setStyleSheet("color: green;")
+        else:
+            img.setStyleSheet("color: red;")
+        #checkbox
+        check = QtWidgets.QCheckBox(container)
+        check.hide()
+        #table widget 
+        table = QtWidgets.QTableWidget(container)
+        table.horizontalHeader().hide()
+        vheader = table.verticalHeader()
+        table.setColumnCount(1)
+        table.setRowCount(3)
+        table.setVerticalHeaderLabels(
+            ['IP address', 'Host', 'Description'])
+        vheader.setSectionResizeMode(
+            0, QtWidgets.QHeaderView.ResizeToContents)
+        vheader.setSectionResizeMode(
+                1, QtWidgets.QHeaderView.ResizeToContents)
+        vheader.setSectionResizeMode(
+                2, QtWidgets.QHeaderView.ResizeToContents)
+        item_ip = QtWidgets.QTableWidgetItem(data["ip"])
+        item_ip.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+        item_host = QtWidgets.QTableWidgetItem(data["host"])
+        item_host.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+        item_description = QtWidgets.QTableWidgetItem(data["description"])
+        item_description.setFlags(QtCore.Qt.ItemIsUserCheckable |
+                         QtCore.Qt.ItemIsEnabled)
+        table.setItem(0, 0,item_ip)
+        table.setItem(0, 1,item_host)
+        table.setItem(0, 2, item_description)
+        #adding to layout
+        vertical.addWidget(img)
+        vertical.addWidget(check)
+        vertical.addWidget(table)
+        vertical.addWidget(btn)
+        print(container.size())
+        return container
 
     #event functions
     #from file actions
@@ -475,10 +549,10 @@ class Ui_Automate(QtWidgets.QWidget):
         ips = [item for item in (
             self.fromfile_view.toPlainText().split('\n')) if self.check_ip(item)]
         if ips:
-            self.fillTablewithIps(self.fromfile_ips,ips)
+            self.fillTablewithIps(self.fromfile_ips, ips)
             #display the table and hide the view
             self.switchview_file(
-                    self.fromfile_view, self.fromfile_ips, self.file_checkall_btn, True)
+                self.fromfile_view, self.fromfile_ips, self.file_checkall_btn, True)
         else:
             self.errorMsg("No valid ip found in the section")
 
@@ -499,19 +573,19 @@ class Ui_Automate(QtWidgets.QWidget):
         for index in range(model.rowCount()):
             item = model.item(index, 0)
             item.setCheckState(state)
-    
-    #from range actions
 
+    #from range actions
     def apply_range_action(self):
         """action when from range apply button is pressed"""
         start = self.start_address_input.text()
         end = self.end_address_input.text()
         increment = int(self.spinBox_3.value())
         self.fromrange_ips.setRowCount(0)
-        ips = self.generateRange(start,end,increment)
+        ips = self.generateRange(start, end, increment)
         if ips:
             self.fillTablewithIps(self.fromrange_ips, ips)
-            self.switchview_file(self.fromrange_view,self.fromrange_ips,self.range_checkall_btn,True)
+            self.switchview_file(
+                self.fromrange_view, self.fromrange_ips, self.range_checkall_btn, True)
         else:
             self.errorMsg("No valid ip found in the section")
 
@@ -521,7 +595,8 @@ class Ui_Automate(QtWidgets.QWidget):
         self.end_address_input.setText('')
         self.spinBox_3.setValue(1)
         self.range_checkall_btn.hide()
-        self.switchview_file(self.fromrange_view,self.fromrange_ips, self.file_checkall_btn, False)
+        self.switchview_file(self.fromrange_view,
+                             self.fromrange_ips, self.file_checkall_btn, False)
 
     def checkall_range_action(self):
         """action when the range check_all btn is pressed"""
@@ -533,7 +608,7 @@ class Ui_Automate(QtWidgets.QWidget):
         for index in range(model.rowCount()):
             item = model.item(index, 0)
             item.setCheckState(state)
-    
+
     def unchecked_range_action(self):
         """when the row ip is clicked """
         model = self.fromrange_ips
@@ -550,12 +625,14 @@ class Ui_Automate(QtWidgets.QWidget):
         for i, ip in enumerate(ips):
             #creating items
             item_ip = QtWidgets.QTableWidgetItem(ip)
-            item_ip.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+            item_ip.setFlags(QtCore.Qt.ItemIsUserCheckable |
+                             QtCore.Qt.ItemIsEnabled)
             item_ip.setCheckState(QtCore.Qt.Checked)
             inDb = QtWidgets.QTableWidgetItem(self.checkIpInDb(ip))
             inDb.setFlags(QtCore.Qt.ItemIsEnabled)
             if ip_size < 15:
-                connected = QtWidgets.QTableWidgetItem(self.checkIpConnected(ip))
+                connected = QtWidgets.QTableWidgetItem(
+                    self.checkIpConnected(ip))
             else:
                 connected = QtWidgets.QTableWidgetItem("Timeout")
             connected.setFlags(QtCore.Qt.ItemIsEnabled)
@@ -563,7 +640,7 @@ class Ui_Automate(QtWidgets.QWidget):
             table.setItem(i, 0, item_ip)
             table.setItem(i, 1, inDb)
             table.setItem(i, 2, connected)
-            
+
     def checkIpInDb(self, ip):
         """checks if the ip is in the db """
         if ip in self.ip_from_db:
@@ -610,7 +687,7 @@ class Ui_Automate(QtWidgets.QWidget):
         #         pattern = regex.compile(
         #           return regex.fullmatch(pattern, text)
         #          r"(^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$)")
-        try :
+        try:
             ipaddress.IPv4Address(text)
         except Exception:
             return False
@@ -621,13 +698,13 @@ class Ui_Automate(QtWidgets.QWidget):
         QtWidgets.QMessageBox.warning(
             self, "Login", msg, QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
 
-    def generateRange(self, start ,end, increment):
+    def generateRange(self, start, end, increment):
         """return a list of ips from a given interval"""
-        ips =[]
+        ips = []
         if self.check_ip(start) and self.check_ip(end):
             starting = ipaddress.ip_address(start)
             ending = ipaddress.ip_address(end)
-            if (int(ending)-int(starting))<300:
+            if (int(ending)-int(starting)) < 300:
                 try:
                     while starting <= ending:
                         ip = starting.compressed

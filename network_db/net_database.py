@@ -1,15 +1,18 @@
 import sqlite3
 
+
 class Net_db():
     """ths class manages the database of the devices """
+
     def __init__(self, path='network_db/devices.db'):
         self.path = path
-        self.keys = ["ip","host","username","password","secret","port","device_type","type","description","path"]
+        self.keys = ["ip", "host", "username", "password",
+                     "secret", "device_type", "type", "description", "path"]
         self.conn = sqlite3.connect(self.path)
         self.cur = self.conn.cursor()
         try:
             self.ips = self.getIps()
-        except :
+        except:
             self.createDb()
             self.ips = self.getIps()
 
@@ -22,13 +25,12 @@ class Net_db():
             self.cur.execute(
                 """CREATE TABLE DEVICES (id INTEGER PRIMARY KEY AUTOINCREMENT ,
                 ip TEXT NOT NULL UNIQUE,
-                device_type TEXT,
                 host TEXT ,
-                type TEXT,
                 username TEXT,
                 password TEXT,
                 secret TEXT,
-                port INTEGER,
+                device_type TEXT,
+                type TEXT,
                 description TEXT,
                 path TEXT)
                 """)
@@ -56,11 +58,11 @@ class Net_db():
                 print("overwriting")
         else:
             self.cur.execute(
-                "INSERT INTO DEVICES (ip,host,username,password,secret,port,device_type,type,description,path) VALUES (:ip,:host,:username,:password,:secret,:port,:device_type,:type,:description,:type", (data))
+                "INSERT INTO DEVICES (ip,host,username,password,secret,device_type,type,description,path) VALUES (:ip,:host,:username,:password,:secret,:device_type,:type,:description,:path)", (data))
             print("A new device added!! ")
             self.ips.add(data['ip'])
         return self.cur.lastrowid
-    
+
     def closeDb(self):
         """close the database"""
         self.conn.close()
@@ -72,7 +74,7 @@ class Net_db():
     def deleteDevice(self, ip):
         """delete the device from the database"""
         if ip in self.ips:
-            self.cur.execute("DELETE FROM DEVICES WHERE ip = (?)",(ip,))
+            self.cur.execute("DELETE FROM DEVICES WHERE ip = (?)", (ip,))
             print("deleting the ip = " + ip)
             self.ips.remove(ip)
         else:
@@ -94,10 +96,11 @@ class Net_db():
         """return a dectionnary of the information about the device"""
         data = {}
         if ip in self.ips:
-            temp = self.cur.execute("SELECT * FROM DEVICES WHERE ip = ?", (ip,)).fetchone()
+            temp = self.cur.execute(
+                "SELECT * FROM DEVICES WHERE ip = ?", (ip,)).fetchone()
             for i, item in enumerate(self.keys):
-                data[item]=temp[i+1]
-            return data           
+                data[item] = temp[i+1]
+            return data
         else:
             print("didn't find the ip in the database")
             return None
@@ -108,7 +111,8 @@ class Net_db():
         if old:
             for info in self.keys:
                 if data[info] != old[info] and info != 'ip':
-                    self.cur.execute("UPDATE DEVICES SET {} = ? WHERE ip = ?".format(info),(data[info],data["ip"]))
+                    self.cur.execute("UPDATE DEVICES SET {} = ? WHERE ip = ?".format(
+                        info), (data[info], data["ip"]))
         else:
             self.addDevice(data)
 
@@ -117,24 +121,25 @@ class Net_db():
         for row in self.cur:
             print(row)
 
-            
+
 """ def main():
     dev = Net_db()
     dev.createDb()
     dev.showDb()
-    dev.addDevice({"ip":"192.168.1.1", "host":"enst", "device_type":"", "username":"root",
-                   "password":"root", "secret":"1234", "port":23})
+    dev.addDevice({"ip": "192.168.1.1", "host": "enst", "device_type": "cisco_ios", "type": "switch" ,"username": "root",
+                   "password": "root","description":"", "secret": "1234","path":""})
     #dev.showDb()
-    dev.addDevice({"ip": "192.168.1.2", "host": "enst", "device_type": "", "username": "root",
-                   "password": "root", "secret": "1234", "port": 23})
+    dev.addDevice({"ip": "192.168.1.2", "host": "enst", "device_type": "cisco_ios", "type": "router", "username": "root",
+                   "password": "root", "secret": "1234", "description": "", "path": ""})
     print("**")
-    dev.updateDevice({"ip": "192.168.1.3", "host": "farr", "device_type": "", "username": "root",
-                            "password": "root", "secret": "1234", "port": 23})
+    dev.updateDevice({"ip": "192.168.1.3", "host": "farr", "device_type": "cisco_ios", "type": "switch", "username": "root",
+                            "password": "root", "description":"","secret": "1234", "path": ""})
     print(dev.getDevice("192.168.1.1"))
     print(dev.getAll())
+    dev.saveDb()
     dev.closeDb()
-  
+
 
 if __name__ == '__main__':
-    main()
- """
+    main() """
+
