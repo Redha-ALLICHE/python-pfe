@@ -3,6 +3,7 @@ import regex
 from network_db.net_database import Net_db
 import subprocess
 import ipaddress
+import functools
 
 
 class Ui_Automate(QtWidgets.QWidget):
@@ -14,6 +15,8 @@ class Ui_Automate(QtWidgets.QWidget):
             self, None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
         cur = Net_db()
         self.data = cur.getAll()
+        self.elements = []
+        self.selected = []
         self.ip_from_db = cur.ips
         cur.closeDb()
         self.setupUi(self)
@@ -168,6 +171,16 @@ class Ui_Automate(QtWidgets.QWidget):
         #from database vertical layout
             self.from_db_layout = QtWidgets.QVBoxLayout(self.from_db)
             self.from_db_layout.setObjectName("from_db_layout")
+        #from database check all checkbox as fromdb_checkall
+            self.fromdb_checkall = QtWidgets.QCheckBox(self.from_db)
+            self.fromdb_checkall.setTristate(False)
+            self.fromdb_checkall.setChecked(False)
+            self.fromdb_checkall.setStyleSheet(
+                'margin-left: 5px; font: bold')
+            self.fromdb_checkall.setText("Check All")
+            #self.fromdb_checkall.hide()
+            self.fromdb_checkall.pressed.connect(self.checkall_db_action)
+            self.from_db_layout.addWidget(self.fromdb_checkall)
         #from database scroll area
             self.scrollArea = QtWidgets.QScrollArea(self.from_db)
             self.scrollArea.setWidgetResizable(True)
@@ -186,18 +199,10 @@ class Ui_Automate(QtWidgets.QWidget):
                 self.scrollAreaWidgetContents)
             self.gridLayout.setContentsMargins(0, 0, 0, 0)
             self.gridLayout.setSpacing(0)
+            self.gridLayout.setAlignment(QtCore.Qt.AlignTop)
             self.gridLayout.setObjectName("gridLayout")
-        #from database add button as fromdb_add
-            self.fromdb_add = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
         #from database devices
-            self.gridLayout.addWidget(self.fromdb_add)
-            for i in range(1,len(self.data)+1):
-                if i > 4:
-                    i = 0
-                self.gridLayout.addWidget(
-                    self.from_db_object(self.data[i-1]), int(i/4), i)
-
-
+            self.putIngrid(self.gridLayout)
         #from file widget
             self.from_file = QtWidgets.QWidget()
             self.from_file.setObjectName("from_file")
@@ -454,60 +459,94 @@ class Ui_Automate(QtWidgets.QWidget):
         self.range_apply_btn.setText(_translate("Automate", "Apply"))
         self.automate_tab.setTabText(self.automate_tab.indexOf(
             self.from_range), _translate("Automate", "IP from a range"))
-    
+
     #from db item container
+    def putIngrid(self, grid):
+        """puts all data in the grid layout"""
+        max_column = 4
+        j = 0
+        i = 0
+        for x, item in enumerate(self.data):
+            if i == max_column:
+                j += 1
+                i = 0
+            element = self.from_db_object(item)
+            element.clicked.connect(functools.partial(
+                self.fromdb_isChecked_action, x))
+            grid.addWidget(element, j, i)
+            self.elements.append(element)
+            i += 1
+
+    def checkall_db_action(self):
+        """when check all from db is checked"""
+        if not self.fromdb_checkall.isChecked():
+            for element in self.elements:
+                element.setChecked(True)
+            self.selected = self.data.copy()
+        else:
+            for element in self.elements:
+                element.setChecked(False)
+            self.selected = []
+
+    def fromdb_isChecked_action(self, x):
+        """when the element is checked"""
+        item = self.elements[x]
+        if item.isChecked():
+            self.selected.append(self.data[x])
+        else:
+            if self.data[x] in self.selected:
+                self.selected.remove(self.data[x])
+            self.fromdb_checkall.setChecked(False)
+
     def from_db_object(self, data):
         """create an object view for from database tab"""
         #item container
-        container = QtWidgets.QWidget(self.scrollAreaWidgetContents)
+        container = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
         vertical = QtWidgets.QVBoxLayout(container)
-        #image label 
+        container.setCheckable(True)
+        #image label
         img = QtWidgets.QLabel(container)
         if data["type"] == 'switch':
-            img.setStyleSheet(
-                "background-color: red;")
+            img.setPixmap(QtGui.QPixmap("gui/img/switchIcon.png"))
         else:
-            img.setStyleSheet("background-color: rgb(255,255,255);")
+            img.setPixmap(QtGui.QPixmap("gui/img/routerIcon.png"))
+        img.setMaximumHeight(100)
+        img.setScaledContents(True)
         #connect push button
         btn = QtWidgets.QPushButton(container)
         btn.setText("Connect")
         if self.ping(data["ip"]):
             btn.setStyleSheet("color: green;")
         else:
-            img.setStyleSheet("color: red;")
+            btn.setStyleSheet("color: red;")
         #checkbox
         check = QtWidgets.QCheckBox(container)
         check.hide()
-        #table widget 
+        #table widget
         table = QtWidgets.QTableWidget(container)
-        table.horizontalHeader().hide()
-        vheader = table.verticalHeader()
         table.setColumnCount(1)
         table.setRowCount(3)
+        head = table.horizontalHeader()
+        head.hide()
+        head.setSectionResizeMode(
+            0, QtWidgets.QHeaderView.Stretch)
         table.setVerticalHeaderLabels(
             ['IP address', 'Host', 'Description'])
-        vheader.setSectionResizeMode(
-            0, QtWidgets.QHeaderView.ResizeToContents)
-        vheader.setSectionResizeMode(
-                1, QtWidgets.QHeaderView.ResizeToContents)
-        vheader.setSectionResizeMode(
-                2, QtWidgets.QHeaderView.ResizeToContents)
         item_ip = QtWidgets.QTableWidgetItem(data["ip"])
-        item_ip.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+        item_ip.setFlags(QtCore.Qt.ItemIsEnabled)
         item_host = QtWidgets.QTableWidgetItem(data["host"])
-        item_host.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+        item_host.setFlags(QtCore.Qt.ItemIsEnabled)
         item_description = QtWidgets.QTableWidgetItem(data["description"])
-        item_description.setFlags(QtCore.Qt.ItemIsUserCheckable |
-                         QtCore.Qt.ItemIsEnabled)
-        table.setItem(0, 0,item_ip)
-        table.setItem(0, 1,item_host)
+        item_description.setFlags(QtCore.Qt.ItemIsEnabled)
+        table.setItem(0, 0, item_ip)
+        table.setItem(0, 1, item_host)
         table.setItem(0, 2, item_description)
         #adding to layout
         vertical.addWidget(img)
         vertical.addWidget(check)
         vertical.addWidget(table)
         vertical.addWidget(btn)
-        print(container.size())
+        container.setMinimumSize(120, 260)
         return container
 
     #event functions
