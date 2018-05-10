@@ -27,16 +27,16 @@ class Ui_Automate(QtWidgets.QWidget):
         #main widget
             Automate.setObjectName("Automate")
             Automate.resize(589, 465)
+            Automate.setStyleSheet("background-color: rgb(30, 30, 30)")
         #main vertical layout
             self.verticalLayout = QtWidgets.QVBoxLayout(Automate)
             self.verticalLayout.setObjectName("verticalLayout")
+            self.verticalLayout.setContentsMargins(0, 0, 0, 0)
         #main toolbox
-            self.toolbox = QtWidgets.QFrame(Automate)
+            self.toolbox = QtWidgets.QWidget(Automate)
             self.toolbox.setMinimumSize(QtCore.QSize(50, 50))
-            self.toolbox.setFrameShape(QtWidgets.QFrame.Panel)
-            self.toolbox.setFrameShadow(QtWidgets.QFrame.Plain)
-            self.toolbox.setLineWidth(0)
-            self.toolbox.setMidLineWidth(0)
+            self.toolbox.setStyleSheet(
+                "QPushButton{ color: rgb(25, 151, 198);border: none; padding:5px 0; font-size:16px;border-radius: 10px;}QPushButton:hover{background-color:rgb(50, 50, 50)}QPushButton:Pressed{border: 2px solid rgb(60, 60, 60)}")
             self.toolbox.setObjectName("toolbox")
         #toolbox horizontal layout
             self.horizontalLayout = QtWidgets.QHBoxLayout(self.toolbox)
@@ -48,10 +48,10 @@ class Ui_Automate(QtWidgets.QWidget):
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.select_btn.setText("")
             icon = QtGui.QIcon()
-            icon.addPixmap(QtGui.QPixmap("gui/img/mouse-cursor.png"),
+            icon.addPixmap(QtGui.QPixmap("gui/img/cursor.png"),
                            QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.select_btn.setIcon(icon)
-            self.select_btn.setIconSize(QtCore.QSize(50, 50))
+            self.select_btn.setIconSize(QtCore.QSize(30, 30))
             self.select_btn.setObjectName("select_btn")
             self.select_btn.clicked.connect(self.get_selected)
             self.horizontalLayout.addWidget(self.select_btn)
@@ -65,7 +65,7 @@ class Ui_Automate(QtWidgets.QWidget):
             icon1.addPixmap(QtGui.QPixmap("gui/img/script.png"),
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.script_btn.setIcon(icon1)
-            self.script_btn.setIconSize(QtCore.QSize(50, 50))
+            self.script_btn.setIconSize(QtCore.QSize(30, 40))
             self.script_btn.setObjectName("script_btn")
             self.horizontalLayout.addWidget(self.script_btn)
         #toolbox invoque shell as invoqueShell_btn
@@ -75,10 +75,10 @@ class Ui_Automate(QtWidgets.QWidget):
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.invoqueShell_btn.setText("")
             icon2 = QtGui.QIcon()
-            icon2.addPixmap(QtGui.QPixmap("gui/img/command-window.png"),
+            icon2.addPixmap(QtGui.QPixmap("gui/img/terminal.png"),
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.invoqueShell_btn.setIcon(icon2)
-            self.invoqueShell_btn.setIconSize(QtCore.QSize(50, 50))
+            self.invoqueShell_btn.setIconSize(QtCore.QSize(40, 35))
             self.invoqueShell_btn.setObjectName("invoqueShell_btn")
             self.horizontalLayout.addWidget(self.invoqueShell_btn)
         #toolbox backup button as backup_btn
@@ -91,7 +91,7 @@ class Ui_Automate(QtWidgets.QWidget):
             icon3.addPixmap(QtGui.QPixmap("gui/img/save.png"),
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.backup_btn.setIcon(icon3)
-            self.backup_btn.setIconSize(QtCore.QSize(50, 50))
+            self.backup_btn.setIconSize(QtCore.QSize(30, 30))
             self.backup_btn.setObjectName("backup_btn")
             self.horizontalLayout.addWidget(self.backup_btn)
         #toolbox restore button as restore_btn
@@ -101,10 +101,10 @@ class Ui_Automate(QtWidgets.QWidget):
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.restore_btn.setText("")
             icon4 = QtGui.QIcon()
-            icon4.addPixmap(QtGui.QPixmap("gui/img/restore.png"),
+            icon4.addPixmap(QtGui.QPixmap("gui/img/undo.png"),
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.restore_btn.setIcon(icon4)
-            self.restore_btn.setIconSize(QtCore.QSize(50, 50))
+            self.restore_btn.setIconSize(QtCore.QSize(30, 30))
             self.restore_btn.setObjectName("restore_btn")
             self.horizontalLayout.addWidget(self.restore_btn)
         #toolbox browse functions button as functions_btn
@@ -114,10 +114,10 @@ class Ui_Automate(QtWidgets.QWidget):
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.functions_btn.setText("")
             icon5 = QtGui.QIcon()
-            icon5.addPixmap(QtGui.QPixmap("gui/img/web-development.png"),
+            icon5.addPixmap(QtGui.QPixmap("gui/img/browser.png"),
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.functions_btn.setIcon(icon5)
-            self.functions_btn.setIconSize(QtCore.QSize(50, 50))
+            self.functions_btn.setIconSize(QtCore.QSize(30, 30))
             self.functions_btn.setObjectName("functions_btn")
             self.horizontalLayout.addWidget(self.functions_btn)
         #toolbox other options button as otherFn_btn
@@ -127,19 +127,21 @@ class Ui_Automate(QtWidgets.QWidget):
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.otherFn_btn.setText("")
             icon6 = QtGui.QIcon()
-            icon6.addPixmap(QtGui.QPixmap("gui/img/menu.png"),
+            icon6.addPixmap(QtGui.QPixmap("gui/img/menu(1).png"),
                             QtGui.QIcon.Normal, QtGui.QIcon.Off)
             self.otherFn_btn.setIcon(icon6)
-            self.otherFn_btn.setIconSize(QtCore.QSize(30, 50))
+            self.otherFn_btn.setIconSize(QtCore.QSize(30, 30))
             self.otherFn_btn.setObjectName("otherFn_btn")
             self.horizontalLayout.addWidget(self.otherFn_btn)
         #toolbox telnet radio button as telnet
             self.telnet = QtWidgets.QRadioButton(self.toolbox)
             self.telnet.setMinimumSize(QtCore.QSize(50, 50))
             font = QtGui.QFont()
-            font.setFamily("Arial")
-            font.setPointSize(10)
+            font.setFamily("Calibri")
+            font.setPointSize(12)
             self.telnet.setFont(font)
+            self.telnet.setStyleSheet(
+                "QRadioButton{background-color:rgb(30, 30, 30);color:rgb(255, 255, 255);}QRadioButton:indicator {width:10px;height:10px;border-radius:5px;}QRadioButton:indicator:checked {background-color:rgb(227, 0, 80);border:2px solid white;}QRadioButton:indicator:unchecked {background-color:rgb(255, 255, 255); border:2px solid white;}")
             self.telnet.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.telnet.setChecked(True)
             self.telnet.setObjectName("telnet")
@@ -148,13 +150,15 @@ class Ui_Automate(QtWidgets.QWidget):
             self.ssh = QtWidgets.QRadioButton(self.toolbox)
             self.ssh.setMinimumSize(QtCore.QSize(50, 50))
             font = QtGui.QFont()
-            font.setFamily("Arial")
-            font.setPointSize(10)
+            font.setFamily("Calibri")
+            font.setPointSize(12)
             self.ssh.setFont(font)
+            self.ssh.setStyleSheet("QRadioButton{background-color:rgb(30, 30, 30);color:rgb(255, 255, 255);}QRadioButton:indicator {width:10px;height:10px;border-radius:5px;}QRadioButton:indicator:checked {background-color:rgb(227, 0, 80);border:2px solid white;}QRadioButton:indicator:unchecked {background-color:rgb(255, 255, 255); border:2px solid white;}")
             self.ssh.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.ssh.setObjectName("ssh")
             self.horizontalLayout.addWidget(self.ssh)
             self.verticalLayout.addWidget(self.toolbox)
+
         #main automate tab as automate_tab
             self.automate_tab = QtWidgets.QTabWidget(Automate)
             self.automate_tab.setTabPosition(QtWidgets.QTabWidget.North)
@@ -166,10 +170,17 @@ class Ui_Automate(QtWidgets.QWidget):
             self.automate_tab.setTabsClosable(False)
             self.automate_tab.setMovable(False)
             self.automate_tab.setTabBarAutoHide(False)
+            font = QtGui.QFont()
+            font.setFamily("Calibri")
+            font.setPointSize(11)
+            self.automate_tab.setFont(font)
+            self.automate_tab.setStyleSheet(
+                "QTabWidget:pane{border-top:5px solid #2e2e2e}QWidget{background-color:rgb(46, 46, 46);color:white;}QTabBar:tab{background-color:rgb(60, 60, 60);color: white;padding: 10px ;qproperty-drawBase:0;}QTabBar:tab:selected{background-color:rgb(46, 46, 46)}")
             self.automate_tab.setObjectName("automate_tab")
         #from database widget as from_db
             self.from_db = QtWidgets.QWidget()
             self.from_db.setObjectName("from_db")
+            self.from_db.setStyleSheet("QWidget{border-top:none}")
         #from database vertical layout
             self.from_db_layout = QtWidgets.QVBoxLayout(self.from_db)
             self.from_db_layout.setObjectName("from_db_layout")
@@ -208,6 +219,7 @@ class Ui_Automate(QtWidgets.QWidget):
         #from file widget
             self.from_file = QtWidgets.QWidget()
             self.from_file.setObjectName("from_file")
+            self.from_file.setStyleSheet("QWidget{border-top:none}")
         #from file horizontal layout
             self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.from_file)
             self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -220,38 +232,56 @@ class Ui_Automate(QtWidgets.QWidget):
             self.verticalLayout_2 = QtWidgets.QVBoxLayout(
                 self.fromfile_container)
             self.verticalLayout_2.setObjectName("verticalLayout_2")
+            self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
         #from file widget container toolbar
-            self.fromfile_toolbar = QtWidgets.QFrame(self.fromfile_container)
-            self.fromfile_toolbar.setFrameShape(QtWidgets.QFrame.StyledPanel)
-            self.fromfile_toolbar.setFrameShadow(QtWidgets.QFrame.Raised)
+            self.fromfile_toolbar = QtWidgets.QWidget(self.fromfile_container)
             self.fromfile_toolbar.setObjectName("fromfile_toolbar")
         #from file toolbar horizontal layout
             self.horizontalLayout_3 = QtWidgets.QHBoxLayout(
                 self.fromfile_toolbar)
             self.horizontalLayout_3.setObjectName("horizontalLayout_3")
+            self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
         #from file toolbar path input as path_input
             self.path_input = QtWidgets.QLineEdit(self.fromfile_toolbar)
             self.path_input.setReadOnly(True)
-            self.path_input.setMinimumSize(QtCore.QSize(300, 0))
+            self.path_input.setMinimumSize(QtCore.QSize(300, 2))
             self.path_input.setText("")
             self.path_input.setObjectName("path_input")
+            self.path_input.setStyleSheet(
+                "QLineEdit{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QLineEdit:hover{background-color: rgb(30, 30, 30)}QLineEdit:Pressed{background-color: rgb(227, 0, 80)}")
+
             self.horizontalLayout_3.addWidget(self.path_input)
         #from file toolbar open button as file_open_btn
             self.file_open_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.file_open_btn.setObjectName("file_open_btn")
+            self.file_open_btn.setMinimumWidth(100)
+            self.file_open_btn.setStyleSheet(
+                "QPushButton{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
             self.horizontalLayout_3.addWidget(self.file_open_btn)
         #from file toolbar edit button as file_edit_btn
             self.file_edit_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.file_edit_btn.setObjectName("file_edit_btn")
+            self.file_edit_btn.setMinimumWidth(100)
             self.horizontalLayout_3.addWidget(self.file_edit_btn)
+            self.file_edit_btn.setStyleSheet(
+                "QPushButton{ margin:5px;color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
+
         #from file toolbar reset button as file_reset_btn
             self.file_reset_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.file_reset_btn.setObjectName("file_reset_btn")
+            self.file_reset_btn.setMinimumWidth(100)
             self.horizontalLayout_3.addWidget(self.file_reset_btn)
+            self.file_reset_btn.setStyleSheet(
+                "QPushButton{ margin: 5px;color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
+
         #from file toolbar apply button as file_apply_btn
             self.file_apply_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.file_apply_btn.setObjectName("file_apply_btn")
+            self.file_apply_btn.setMinimumWidth(100)
             self.horizontalLayout_3.addWidget(self.file_apply_btn)
+            self.file_apply_btn.setStyleSheet(
+                "QPushButton{ margin: 5px;color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
+
         #from file toolbar spacer item
             spacerItem = QtWidgets.QSpacerItem(
                 40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -301,21 +331,36 @@ class Ui_Automate(QtWidgets.QWidget):
             self.automate_tab.addTab(self.from_file, "")
             self.from_range = QtWidgets.QWidget()
             self.from_range.setObjectName("from_range")
+            self.from_range.setStyleSheet("QWidget{border-top:none}")
+            self.from_range.setStyleSheet(
+                "QPushButton{ margin:3px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
+
         #from range horizontal layout
             self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.from_range)
             self.horizontalLayout_4.setObjectName("horizontalLayout_4")
+            self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
         #from range container as fromrange_container
             self.fromrange_container = QtWidgets.QWidget(self.from_range)
             self.fromrange_container.setObjectName("fromrange_container")
+            self.fromrange_container.setContentsMargins(0, 0, 0, 0)
+            self.fromrange_container.setStyleSheet("QWidget{border:none}")
+
         #from range container vertical layout
             self.verticalLayout_5 = QtWidgets.QVBoxLayout(
                 self.fromrange_container)
             self.verticalLayout_5.setObjectName("verticalLayout_5")
+            self.verticalLayout_5.setContentsMargins(0, 0, 0, 0)
         #from range toolbar
-            self.fromrange_toolbar = QtWidgets.QFrame(self.fromrange_container)
-            self.fromrange_toolbar.setFrameShape(QtWidgets.QFrame.StyledPanel)
-            self.fromrange_toolbar.setFrameShadow(QtWidgets.QFrame.Raised)
+            self.fromrange_toolbar = QtWidgets.QWidget(
+                self.fromrange_container)
             self.fromrange_toolbar.setObjectName("fromrange_toolbar")
+            font = QtGui.QFont()
+            font.setFamily("Calibri")
+            font.setPointSize(14)
+            self.fromrange_toolbar.setFont(font)
+            self.fromrange_toolbar.setStyleSheet(
+                "QPushButton{ margin:3px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
+
         #from range toolbar horizontal layout
             self.horizontalLayout_5 = QtWidgets.QHBoxLayout(
                 self.fromrange_toolbar)
@@ -329,11 +374,17 @@ class Ui_Automate(QtWidgets.QWidget):
                 self.fromrange_toolbar)
             self.start_address_input.setObjectName("start_address_input")
             self.horizontalLayout_5.addWidget(self.start_address_input)
+            self.start_address_input.setStyleSheet(
+                "QLineEdit{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QLineEdit:hover{background-color: rgb(30, 30, 30)}QLineEdit:Pressed{background-color: rgb(227, 0, 80)}")
+
         #from range toolbar ending address input as end_address_input
             self.end_address_input = QtWidgets.QLineEdit(
                 self.fromrange_toolbar)
             self.end_address_input.setObjectName("end_address_input")
             self.horizontalLayout_5.addWidget(self.end_address_input)
+            self.end_address_input.setStyleSheet(
+                "QLineEdit{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QLineEdit:hover{background-color: rgb(30, 30, 30)}QLineEdit:Pressed{background-color: rgb(227, 0, 80)}")
+
         #from range toolbar increment label as increment_label
             self.increment_label = QtWidgets.QLabel(self.fromrange_toolbar)
             self.increment_label.setObjectName("increment_label")
@@ -347,14 +398,18 @@ class Ui_Automate(QtWidgets.QWidget):
             self.spinBox_3.setMinimum(1)
             self.spinBox_3.setObjectName("spinBox_3")
             self.horizontalLayout_5.addWidget(self.spinBox_3)
+            self.spinBox_3.setStyleSheet(
+                "QSpinBox{ background-color:rgb(60, 60, 60);margin:5px; color: white;border: none; padding:2px; font-size:12px;border-radius: 20px;}QSpinBox:hover{background-color: rgb(30, 30, 30)}")
         #from range toolbar reset buttons as range_reset_btn
             self.range_reset_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.range_reset_btn.setObjectName("range_reset_btn")
             self.horizontalLayout_5.addWidget(self.range_reset_btn)
+            self.range_reset_btn.setMinimumWidth(60)
             self.verticalLayout_5.addWidget(self.fromrange_toolbar)
         #from range toolbar apply buttons as range_apply_btn
             self.range_apply_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.range_apply_btn.setObjectName("range_apply_btn")
+            self.range_apply_btn.setMinimumWidth(60)
             self.horizontalLayout_5.addWidget(self.range_apply_btn)
         #from file check all checkbox button as range_checkall_btn
             self.range_checkall_btn = QtWidgets.QCheckBox(
@@ -397,7 +452,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.fromrange_ips.clicked.connect(self.unchecked_range_action)
         #other options
             self.retranslateUi(Automate)
-            self.automate_tab.setCurrentIndex(1)
+            self.automate_tab.setCurrentIndex(0)
             QtCore.QMetaObject.connectSlotsByName(Automate)
             Automate.setTabOrder(self.start_address_input,
                                  self.end_address_input)
@@ -437,10 +492,10 @@ class Ui_Automate(QtWidgets.QWidget):
             "Automate", "<html><head/><body><p>Other options</p></body></html>"))
         self.telnet.setToolTip(_translate(
             "Automate", "<html><head/><body><p>select telnet connection</p></body></html>"))
-        self.telnet.setText(_translate("Automate", "telnet"))
+        self.telnet.setText(_translate("Automate", "Telnet"))
         self.ssh.setToolTip(_translate(
             "Automate", "<html><head/><body><p>Select ssh connection</p></body></html>"))
-        self.ssh.setText(_translate("Automate", "ssh"))
+        self.ssh.setText(_translate("Automate", "SSH"))
         self.automate_tab.setTabText(self.automate_tab.indexOf(
             self.from_db), _translate("Automate", "IP from database"))
         self.path_input.setPlaceholderText(_translate(
@@ -453,10 +508,10 @@ class Ui_Automate(QtWidgets.QWidget):
             self.from_file), _translate("Automate", "IP from a file"))
         self.range_label.setText(_translate("Automate", "Range"))
         self.start_address_input.setPlaceholderText(
-            _translate("Automate", "Starting address"))
+            _translate("Automate", "Starting ip address..."))
         self.end_address_input.setPlaceholderText(
-            _translate("Automate", "Ending address"))
-        self.increment_label.setText(_translate("Automate", "Inrement"))
+            _translate("Automate", "Ending ip address..."))
+        self.increment_label.setText(_translate("Automate", "Increment :"))
         self.range_reset_btn.setText(_translate("Automate", "Reset"))
         self.range_apply_btn.setText(_translate("Automate", "Apply"))
         self.automate_tab.setTabText(self.automate_tab.indexOf(
@@ -762,11 +817,12 @@ class Ui_Automate(QtWidgets.QWidget):
             for i in range(self.gridLayout.count()):
                 item = self.gridLayout.itemAt(i)
                 if item.widget().isChecked():
-                    self.selected.append(item.widget().children()[4].itemAt(0,0).text())
+                    self.selected.append(item.widget().children()[
+                                         4].itemAt(0, 0).text())
         elif self.automate_tab.currentIndex() == 1:
             for i in range(self.fromfile_ips.rowCount()):
                 if self.fromfile_ips.item(i, 0).checkState():
-                    self.selected.append(self.fromfile_ips.item(i,0).text())
+                    self.selected.append(self.fromfile_ips.item(i, 0).text())
         elif self.automate_tab.currentIndex() == 2:
             for i in range(self.fromrange_ips.rowCount()):
                 if self.fromrange_ips.item(i, 0).checkState():
