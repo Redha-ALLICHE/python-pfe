@@ -771,3 +771,7 @@ class Ui_Automate(QtWidgets.QWidget):
             for i in range(self.fromrange_ips.rowCount()):
                 if self.fromrange_ips.item(i, 0).checkState():
                     self.selected.append(self.fromrange_ips.item(i, 0).text())
+
+    def checkin_selection(self):
+        """checks if teh user is in selection mode"""
+        pass

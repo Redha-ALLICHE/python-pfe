@@ -4,7 +4,7 @@ from backend.background import Background
 item = TelnetDevice()
 #item.automate(ips=['192.168.1.15'],commands=item.showRun(),mode='check', silent=False, backup=True)
 #item.configureMultipleFromRange("192.168.1.15", "192.168.1.15", command_path=item.rename("kkk"), privelege=True, silent=False, mode="check", backup=True)
-#item.configureMultipleFromRange("192.168.1.15", "192.168.1.17", command_path=['show run'], privelege=True, silent=False, mode="check", backup=False)
+item.configureMultipleFromRange("192.168.1.15", "192.168.1.17", command_path=['show run'], privelege=True, silent=False, save=True,mode="check", backup=False)
 #item.undo()
 """base = Background(['192.168.1.15'])
 import time 

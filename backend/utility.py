@@ -149,6 +149,7 @@ class Utility():
         if mode == "ask":
             data["username"] = input("Enter the username : ")
             data["password"] = getpass.getpass("Enter the password : ")
+            data["type"] = input("Enter the type : ")
         elif mode == "check":
             index = self.searchDevice(data)
             if index != "EOL" and self.all_info[index]["username"] and self.all_info[index]["password"]:
@@ -157,6 +158,7 @@ class Utility():
             else:
                 data["username"] = input("Enter the username : ")
                 data["password"] = getpass.getpass("Enter the password : ")
+                data["type"] = input("Enter the type : ")
         return data
 
     def generateRange(self, start, end):
