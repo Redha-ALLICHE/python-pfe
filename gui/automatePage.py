@@ -15,6 +15,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self, None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
         cur = Net_db()
         self.data = cur.getAll()
+        self.ready = False
         self.elements = []
         self.selected = []
         self.ip_from_db = cur.ips
@@ -52,6 +53,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.select_btn.setIcon(icon)
             self.select_btn.setIconSize(QtCore.QSize(50, 50))
             self.select_btn.setObjectName("select_btn")
+            self.select_btn.clicked.connect(self.get_selected)
             self.horizontalLayout.addWidget(self.select_btn)
         #toolbox from script button as script_btn
             self.script_btn = QtWidgets.QPushButton(self.toolbox)
@@ -491,11 +493,7 @@ class Ui_Automate(QtWidgets.QWidget):
     def fromdb_isChecked_action(self, x):
         """when the element is checked"""
         item = self.elements[x]
-        if item.isChecked():
-            self.selected.append(self.data[x])
-        else:
-            if self.data[x] in self.selected:
-                self.selected.remove(self.data[x])
+        if not item.isChecked():
             self.fromdb_checkall.setChecked(False)
 
     def from_db_object(self, data):
@@ -587,6 +585,8 @@ class Ui_Automate(QtWidgets.QWidget):
         #getting the ips from the widget
         ips = [item for item in (
             self.fromfile_view.toPlainText().split('\n')) if self.check_ip(item)]
+        self.all_selections = ips.copy()
+        self.selected = ips.copy()
         if ips:
             self.fillTablewithIps(self.fromfile_ips, ips)
             #display the table and hide the view
@@ -754,3 +754,20 @@ class Ui_Automate(QtWidgets.QWidget):
         else:
             return None
         return ips
+
+    def get_selected(self):
+        """get the list of selected ips """
+        self.selected = []
+        if self.automate_tab.currentIndex() == 0:
+            for i in range(self.gridLayout.count()):
+                item = self.gridLayout.itemAt(i)
+                if item.widget().isChecked():
+                    self.selected.append(item.widget().children()[4].itemAt(0,0).text())
+        elif self.automate_tab.currentIndex() == 1:
+            for i in range(self.fromfile_ips.rowCount()):
+                if self.fromfile_ips.item(i, 0).checkState():
+                    self.selected.append(self.fromfile_ips.item(i,0).text())
+        elif self.automate_tab.currentIndex() == 2:
+            for i in range(self.fromrange_ips.rowCount()):
+                if self.fromrange_ips.item(i, 0).checkState():
+                    self.selected.append(self.fromrange_ips.item(i, 0).text())
