@@ -6,6 +6,7 @@ import ipaddress
 import functools
 
 
+
 class Ui_Automate(QtWidgets.QWidget):
     """this is the automate widget """
 
@@ -158,7 +159,6 @@ class Ui_Automate(QtWidgets.QWidget):
             self.ssh.setObjectName("ssh")
             self.horizontalLayout.addWidget(self.ssh)
             self.verticalLayout.addWidget(self.toolbox)
-
         #main automate tab as automate_tab
             self.automate_tab = QtWidgets.QTabWidget(Automate)
             self.automate_tab.setTabPosition(QtWidgets.QTabWidget.North)
@@ -265,7 +265,6 @@ class Ui_Automate(QtWidgets.QWidget):
             self.horizontalLayout_3.addWidget(self.file_edit_btn)
             self.file_edit_btn.setStyleSheet(
                 "QPushButton{ margin:5px;color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
-
         #from file toolbar reset button as file_reset_btn
             self.file_reset_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.file_reset_btn.setObjectName("file_reset_btn")
@@ -273,7 +272,6 @@ class Ui_Automate(QtWidgets.QWidget):
             self.horizontalLayout_3.addWidget(self.file_reset_btn)
             self.file_reset_btn.setStyleSheet(
                 "QPushButton{ margin: 5px;color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
-
         #from file toolbar apply button as file_apply_btn
             self.file_apply_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.file_apply_btn.setObjectName("file_apply_btn")
@@ -281,7 +279,6 @@ class Ui_Automate(QtWidgets.QWidget):
             self.horizontalLayout_3.addWidget(self.file_apply_btn)
             self.file_apply_btn.setStyleSheet(
                 "QPushButton{ margin: 5px;color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
-
         #from file toolbar spacer item
             spacerItem = QtWidgets.QSpacerItem(
                 40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -334,7 +331,6 @@ class Ui_Automate(QtWidgets.QWidget):
             self.from_range.setStyleSheet("QWidget{border-top:none}")
             self.from_range.setStyleSheet(
                 "QPushButton{ margin:3px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
-
         #from range horizontal layout
             self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.from_range)
             self.horizontalLayout_4.setObjectName("horizontalLayout_4")
@@ -344,7 +340,6 @@ class Ui_Automate(QtWidgets.QWidget):
             self.fromrange_container.setObjectName("fromrange_container")
             self.fromrange_container.setContentsMargins(0, 0, 0, 0)
             self.fromrange_container.setStyleSheet("QWidget{border:none}")
-
         #from range container vertical layout
             self.verticalLayout_5 = QtWidgets.QVBoxLayout(
                 self.fromrange_container)
@@ -360,7 +355,6 @@ class Ui_Automate(QtWidgets.QWidget):
             self.fromrange_toolbar.setFont(font)
             self.fromrange_toolbar.setStyleSheet(
                 "QPushButton{ margin:3px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
-
         #from range toolbar horizontal layout
             self.horizontalLayout_5 = QtWidgets.QHBoxLayout(
                 self.fromrange_toolbar)
@@ -376,7 +370,6 @@ class Ui_Automate(QtWidgets.QWidget):
             self.horizontalLayout_5.addWidget(self.start_address_input)
             self.start_address_input.setStyleSheet(
                 "QLineEdit{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QLineEdit:hover{background-color: rgb(30, 30, 30)}QLineEdit:Pressed{background-color: rgb(227, 0, 80)}")
-
         #from range toolbar ending address input as end_address_input
             self.end_address_input = QtWidgets.QLineEdit(
                 self.fromrange_toolbar)
@@ -384,7 +377,6 @@ class Ui_Automate(QtWidgets.QWidget):
             self.horizontalLayout_5.addWidget(self.end_address_input)
             self.end_address_input.setStyleSheet(
                 "QLineEdit{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QLineEdit:hover{background-color: rgb(30, 30, 30)}QLineEdit:Pressed{background-color: rgb(227, 0, 80)}")
-
         #from range toolbar increment label as increment_label
             self.increment_label = QtWidgets.QLabel(self.fromrange_toolbar)
             self.increment_label.setObjectName("increment_label")
@@ -744,19 +736,28 @@ class Ui_Automate(QtWidgets.QWidget):
 
     def ping(self, ip):
         """ping the device"""
-        info = subprocess.STARTUPINFO()
-        info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-        info.wShowWindow = subprocess.SW_HIDE
-        # run the ping command with subprocess.popen interface
-        output = subprocess.Popen(['ping', '-n', '1', '-w', '500', ip],
-                                  stdout=subprocess.PIPE, startupinfo=info).communicate()[0]
-        if "Destination host unreachable" in output.decode('utf-8'):
-            return False
-        elif "Request timed out" in output.decode('utf-8'):
-            return False
+        system = subprocess.sys.platform.lower()
+        if system.startswith('win'):
+            info = subprocess.STARTUPINFO()
+            info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+            info.wShowWindow = subprocess.SW_HIDE
+            # run the ping command with subprocess.popen interface
+            output = subprocess.Popen(['ping', '-n', '1', '-w', '500', ip],
+                                    stdout=subprocess.PIPE, startupinfo=info).communicate()[0]
+            if "Destination host unreachable" in output.decode('utf-8'):
+                return False
+            elif "Request timed out" in output.decode('utf-8'):
+                return False
+            else:
+                return True
         else:
-            return True
-
+            output = subprocess.Popen(['ping', '-w', '1', ip],
+                                    stdout=subprocess.PIPE).communicate()[0]
+            if "100% packet loss" in output.decode('utf-8').lower():
+                return False
+            else:
+                return True
+                
     def checkIpConnected(self, ip):
         """checks if the ip is connected"""
         result = self.ping(ip)
