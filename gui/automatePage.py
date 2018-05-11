@@ -17,6 +17,7 @@ class Ui_Automate(QtWidgets.QWidget):
         cur = Net_db()
         self.data = cur.getAll()
         self.ready = False
+        self.select = False
         self.elements = []
         self.selected = []
         self.ip_from_db = cur.ips
@@ -36,8 +37,8 @@ class Ui_Automate(QtWidgets.QWidget):
         #main toolbox
             self.toolbox = QtWidgets.QWidget(Automate)
             self.toolbox.setMinimumSize(QtCore.QSize(50, 50))
-            self.toolbox.setStyleSheet(
-                "QPushButton{ color: rgb(25, 151, 198);border: none; padding:5px 0; font-size:16px;border-radius: 10px;}QPushButton:hover{background-color:rgb(50, 50, 50)}QPushButton:Pressed{border: 2px solid rgb(60, 60, 60)}")
+            """ #self.toolbox.setStyleSheet(
+                "QPushButton{ color: rgb(25, 151, 198);border: none; padding:5px 0; font-size:16px;border-radius: 10px;}QPushButton:hover{background-color:rgb(50, 50, 50)}QPushButton:Pressed{border: 2px solid rgb(60, 60, 60)}") """
             self.toolbox.setObjectName("toolbox")
         #toolbox horizontal layout
             self.horizontalLayout = QtWidgets.QHBoxLayout(self.toolbox)
@@ -54,7 +55,8 @@ class Ui_Automate(QtWidgets.QWidget):
             self.select_btn.setIcon(icon)
             self.select_btn.setIconSize(QtCore.QSize(30, 30))
             self.select_btn.setObjectName("select_btn")
-            self.select_btn.clicked.connect(self.get_selected)
+            self.select_btn.setCheckable(True)
+            self.select_btn.clicked.connect(self.select_btn_action)
             self.horizontalLayout.addWidget(self.select_btn)
         #toolbox from script button as script_btn
             self.script_btn = QtWidgets.QPushButton(self.toolbox)
@@ -191,7 +193,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.fromdb_checkall.setStyleSheet(
                 'margin-left: 5px; font: bold')
             self.fromdb_checkall.setText("Check All")
-            #self.fromdb_checkall.hide()
+            self.fromdb_checkall.hide()
             self.fromdb_checkall.pressed.connect(self.checkall_db_action)
             self.from_db_layout.addWidget(self.fromdb_checkall)
         #from database scroll area
@@ -548,7 +550,7 @@ class Ui_Automate(QtWidgets.QWidget):
         #item container
         container = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
         vertical = QtWidgets.QVBoxLayout(container)
-        container.setCheckable(True)
+        container.setCheckable(False)
         #image label
         img = QtWidgets.QLabel(container)
         if data["type"] == 'switch':
@@ -702,6 +704,16 @@ class Ui_Automate(QtWidgets.QWidget):
         if item == -1:
             self.range_checkall_btn.setCheckState(QtCore.Qt.Unchecked)
 
+    #main toolbar actions
+    def select_btn_action(self):
+        """this is when the select button is pressed"""
+        if self.select_btn.isChecked():
+            self.show_checkable()
+            self.select_btn.setChecked(True)     
+        else:
+            self.hide_checkable()
+            self.select_btn.setChecked(False)
+
     #utiliy functions
     def fillTablewithIps(self, table, ips):
         """create cases of a table and fill it with ips, checkboxes, is in db and is connected"""
@@ -711,9 +723,7 @@ class Ui_Automate(QtWidgets.QWidget):
         for i, ip in enumerate(ips):
             #creating items
             item_ip = QtWidgets.QTableWidgetItem(ip)
-            item_ip.setFlags(QtCore.Qt.ItemIsUserCheckable |
-                             QtCore.Qt.ItemIsEnabled)
-            item_ip.setCheckState(QtCore.Qt.Checked)
+            item_ip.setFlags(QtCore.Qt.ItemIsEnabled)
             inDb = QtWidgets.QTableWidgetItem(self.checkIpInDb(ip))
             inDb.setFlags(QtCore.Qt.ItemIsEnabled)
             if ip_size < 15:
@@ -768,9 +778,9 @@ class Ui_Automate(QtWidgets.QWidget):
 
     def switchview_file(self, listview, tableview, checkall_btn, goIp):
         """switch between list view and text edit"""
+        self.select_btn.setChecked(False)
         if goIp:
             listview.hide()
-            checkall_btn.show()
             tableview.show()
         else:
             checkall_btn.hide()
@@ -811,6 +821,53 @@ class Ui_Automate(QtWidgets.QWidget):
             return None
         return ips
 
+    def show_checkable(self):
+        """shows the checkable items"""
+        if self.automate_tab.currentIndex() == 0:
+            self.fromdb_checkall.show()
+            for i in range(self.gridLayout.count()):
+                self.gridLayout.itemAt(i).widget().setCheckable(True)
+        elif self.automate_tab.currentIndex() == 1:
+            if self.fromfile_ips.isVisible():
+                self.file_checkall_btn.show()
+                for i in range(self.fromfile_ips.rowCount()):
+                    self.fromfile_ips.item(i, 0).setFlags(
+                        QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.fromfile_ips.item(
+                        i, 0).setCheckState(QtCore.Qt.Checked)
+        elif self.automate_tab.currentIndex() == 2:
+            if self.fromrange_ips.isVisible():
+                self.range_checkall_btn.show()
+                for i in range(self.fromrange_ips.rowCount()):
+                    self.fromrange_ips.item(i, 0).setFlags(
+                        QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsUserCheckable)
+                    self.fromrange_ips.item(
+                        i, 0).setCheckState(QtCore.Qt.Checked)
+
+    def hide_checkable(self):
+        """hide the checkable items""" 
+        self.select_btn.setChecked(False)
+        if self.automate_tab.currentIndex() == 0:
+            self.fromdb_checkall.hide()
+            for i in range(self.gridLayout.count()):
+                self.gridLayout.itemAt(i).widget().setCheckable(False)
+        elif self.automate_tab.currentIndex() == 1:
+            if self.fromfile_ips.isVisible():
+                self.file_checkall_btn.hide()
+                for i in range(self.fromfile_ips.rowCount()):
+                    flags = self.fromfile_ips.item(i, 0).flags()
+                    flags &= ~QtCore.Qt.ItemIsEnabled
+                    flags &= ~QtCore.Qt.ItemIsUserCheckable
+                    self.fromfile_ips.item(i, 0).setFlags(flags)
+        elif self.automate_tab.currentIndex() == 2:
+            if self.fromrange_ips.isVisible():
+                self.range_checkall_btn.hide()
+                for i in range(self.fromrange_ips.rowCount()):
+                    flags = self.fromrange_ips.item(i, 0).flags()
+                    flags &= ~QtCore.Qt.ItemIsEnabled
+                    flags &= ~QtCore.Qt.ItemIsUserCheckable
+                    self.fromrange_ips.item(i, 0).setFlags(flags)
+                      
     def get_selected(self):
         """get the list of selected ips """
         self.selected = []
