@@ -1,11 +1,10 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-import regex
 from network_db.net_database import Net_db
+from gui.script_dialog import Script_dialog
+import regex
 import subprocess
 import ipaddress
 import functools
-
-
 
 class Ui_Automate(QtWidgets.QWidget):
     """this is the automate widget """
@@ -16,10 +15,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self, None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
         cur = Net_db()
         self.data = cur.getAll()
-        self.ready = False
-        self.select = False
         self.elements = []
-        self.selected = []
         self.ip_from_db = cur.ips
         cur.closeDb()
         self.setupUi(self)
@@ -70,6 +66,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.script_btn.setIcon(icon1)
             self.script_btn.setIconSize(QtCore.QSize(30, 40))
             self.script_btn.setObjectName("script_btn")
+            self.script_btn.clicked.connect(self.script_btn_action)
             self.horizontalLayout.addWidget(self.script_btn)
         #toolbox invoque shell as invoqueShell_btn
             self.invoqueShell_btn = QtWidgets.QPushButton(self.toolbox)
@@ -709,10 +706,20 @@ class Ui_Automate(QtWidgets.QWidget):
         """this is when the select button is pressed"""
         if self.select_btn.isChecked():
             self.show_checkable()
-            self.select_btn.setChecked(True)     
+            self.select_btn.setChecked(True)
         else:
             self.hide_checkable()
             self.select_btn.setChecked(False)
+
+    def script_btn_action(self):
+        """when the script button is pressed"""
+        ips = self.get_selected()
+        print(ips)
+        if ips:
+            self.script_window = Script_dialog(ips)
+            self.script_window.show()
+        else:
+            self.errorMsg("Please selected devices ...")
 
     #utiliy functions
     def fillTablewithIps(self, table, ips):
@@ -753,7 +760,7 @@ class Ui_Automate(QtWidgets.QWidget):
             info.wShowWindow = subprocess.SW_HIDE
             # run the ping command with subprocess.popen interface
             output = subprocess.Popen(['ping', '-n', '1', '-w', '500', ip],
-                                    stdout=subprocess.PIPE, startupinfo=info).communicate()[0]
+                                      stdout=subprocess.PIPE, startupinfo=info).communicate()[0]
             if "Destination host unreachable" in output.decode('utf-8'):
                 return False
             elif "Request timed out" in output.decode('utf-8'):
@@ -762,12 +769,12 @@ class Ui_Automate(QtWidgets.QWidget):
                 return True
         else:
             output = subprocess.Popen(['ping', '-w', '1', ip],
-                                    stdout=subprocess.PIPE).communicate()[0]
+                                      stdout=subprocess.PIPE).communicate()[0]
             if "100% packet loss" in output.decode('utf-8').lower():
                 return False
             else:
                 return True
-                
+
     def checkIpConnected(self, ip):
         """checks if the ip is connected"""
         result = self.ping(ip)
@@ -845,46 +852,49 @@ class Ui_Automate(QtWidgets.QWidget):
                         i, 0).setCheckState(QtCore.Qt.Checked)
 
     def hide_checkable(self):
-        """hide the checkable items""" 
+        """hide the checkable items"""
         self.select_btn.setChecked(False)
         if self.automate_tab.currentIndex() == 0:
+            self.fromdb_checkall.setChecked(False)
             self.fromdb_checkall.hide()
             for i in range(self.gridLayout.count()):
                 self.gridLayout.itemAt(i).widget().setCheckable(False)
         elif self.automate_tab.currentIndex() == 1:
             if self.fromfile_ips.isVisible():
+                self.file_checkall_btn.setChecked(False)
                 self.file_checkall_btn.hide()
                 for i in range(self.fromfile_ips.rowCount()):
                     flags = self.fromfile_ips.item(i, 0).flags()
-                    flags &= ~QtCore.Qt.ItemIsEnabled
-                    flags &= ~QtCore.Qt.ItemIsUserCheckable
+                    flags &= ~flags
                     self.fromfile_ips.item(i, 0).setFlags(flags)
         elif self.automate_tab.currentIndex() == 2:
             if self.fromrange_ips.isVisible():
+                self.range_checkall_btn.setChecked(False)
                 self.range_checkall_btn.hide()
                 for i in range(self.fromrange_ips.rowCount()):
                     flags = self.fromrange_ips.item(i, 0).flags()
                     flags &= ~QtCore.Qt.ItemIsEnabled
                     flags &= ~QtCore.Qt.ItemIsUserCheckable
                     self.fromrange_ips.item(i, 0).setFlags(flags)
-                      
+
     def get_selected(self):
         """get the list of selected ips """
-        self.selected = []
+        selected = []
         if self.automate_tab.currentIndex() == 0:
             for i in range(self.gridLayout.count()):
                 item = self.gridLayout.itemAt(i)
                 if item.widget().isChecked():
-                    self.selected.append(item.widget().children()[
+                    selected.append(item.widget().children()[
                                          4].itemAt(0, 0).text())
         elif self.automate_tab.currentIndex() == 1:
             for i in range(self.fromfile_ips.rowCount()):
                 if self.fromfile_ips.item(i, 0).checkState():
-                    self.selected.append(self.fromfile_ips.item(i, 0).text())
+                    selected.append(self.fromfile_ips.item(i, 0).text())
         elif self.automate_tab.currentIndex() == 2:
             for i in range(self.fromrange_ips.rowCount()):
                 if self.fromrange_ips.item(i, 0).checkState():
-                    self.selected.append(self.fromrange_ips.item(i, 0).text())
+                    selected.append(self.fromrange_ips.item(i, 0).text())
+        return selected
 
     def checkin_selection(self):
         """checks if teh user is in selection mode"""
