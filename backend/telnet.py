@@ -13,6 +13,7 @@ class TelnetDevice(Utility):
         """declare the variables neeeded to specify a device """
         self.myDb = Utility()
         self.data = {'host': '', 'device_type': '','type':'', 'ip': '','port': '23', 'username': '', 'password': '', 'secret': '','description':'','path':'device_data/'}
+        self.temp = []
 
 #""""global""""
 
@@ -21,8 +22,8 @@ class TelnetDevice(Utility):
         self.data = self.myDb.fillData(self.data)
 
     def show_info(self):
-        """print on the screen the informations about the device """
-        print(self.data)
+        """self.temp[2].insertPlainText on the screen the informations about the device """
+        self.temp[2].insertPlainText(self.data)
 
     def setData(self, newData):
         """the setter of data"""
@@ -40,13 +41,11 @@ class TelnetDevice(Utility):
             if self.data["ip"] == "":
                 return None
             target = tn.Telnet()
-            print((" Trying to connect to " + self.data["ip"]+' ').center(80,"#"))
-            target.open(host=self.data['ip'], port=self.data['port'])
-            self.data = self.myDb.getInputs(self.data, mode=mode)
-            print("Establishing the connection...")
-            #print(target.get_socket().getsockname())
+            self.temp[2].insertPlainText("Trying to connect to " + self.data["ip"]+'\n')
+            target.open(host=self.data['ip'])
+            self.temp[2].insertPlainText("Establishing the connection...\n")
         except (TimeoutError, OSError):
-            print("Error !!! device unreacheable ")
+            self.temp[2].insertPlainText("Error !!! device unreacheable \n")
             return None
         else:
             target.read_until("Username: ".encode())
@@ -58,12 +57,12 @@ class TelnetDevice(Utility):
                 if self.data["host"] != answer[2:-1] and refreshing:
                     self.data["host"] = answer[2:-1]
                     self.myDb.refreshDevice(self.data)
-                print("Connection successful to " + self.data["ip"])
+                self.temp[2].insertPlainText("Connection successful to " + self.data["ip"] + "\n")
                 if privelege:
                     return self.loginPrivelegeMode(target)
                 return target
             else:
-                print("Failed to connect to " + self.data["ip"])
+                self.temp[2].insertPlainText("Failed to connect to " + self.data["ip"] + "\n")
                 return None
 
     def loginPrivelegeMode(self, target):
@@ -76,10 +75,10 @@ class TelnetDevice(Utility):
             self.executeLine(target, self.data['secret'])
             answer = target.read_some().decode()
             if answer.endswith("#"):
-                print("Getting into the privelege mode")
+                self.temp[2].insertPlainText("Getting into the privelege mode\n")
                 return target
             else:
-                print("incorrect password", end=' ')
+                self.temp[2].insertPlainText("incorrect password\n")
                 target.close()
                 return None
 
@@ -95,12 +94,12 @@ class TelnetDevice(Utility):
                 self.executeLine(target, command)
             self.executeLine(target, "exit")
             if silent:
-                print("All the commands are done")
+                self.temp[2].insertPlainText("All the commands are done\n")
             else:
-                print(target.read_all().decode())
+                self.temp[2].insertPlainText(target.read_all().decode()+"\n")
             target.close()
         else:
-            print("Commands did not apply!!")
+            self.temp[2].insertPlainText("Commands did not apply!!\n")
         return None
 
     def executeLine(self, target, command):
@@ -126,30 +125,35 @@ class TelnetDevice(Utility):
         if type(command_path) == str:
             commands = self.myDb.getList(command_path)
         ips = self.myDb.getList(ip_path)
-        print(commands)
+        self.temp[2].insertPlainText(commands)
         self.automate(ips, commands, mode=mode, privelege=privelege, save=save, silent=silent, backup=backup)
         return None
 
-    def automate(self, ips=[], commands=[], mode='check', privelege=True, save=False, silent=True, backup=False, backup_root='temp/'):
+    def automate(self, ips=[], commands=[], mode='check', privelege=True, save=False, silent=True, backup=False, backup_root='temp/', increment=None , funct=None):
         """apply a list of commands into a list of ips """
         marker = False
+        self.temp = increment
         if mode == 'one':
-            print("Enter the common login")
-            self.data = self.myDb.getInputs(self.data, mode='ask')
+            increment[1].setText("Enter the common login")
+            self.data = funct(self.data, mode='ask')
         try:
             if ips and commands:
                 if backup and backup_root=='temp/':
                     backup_root = self.myDb.mktemp(backup_root.rstrip('/'))
                     marker = True
                 for ip in ips:
+                    if increment:
+                        increment[0].setValue(increment[0].value() + 1)
+                        increment[1].setText("Working on : " + ip )
                     self.data.update({'host': '', 'device_type': '', 'ip': ip,
                                       'port': '23', 'username': '', 'password': '', 'secret': ''})
+                    self.data = funct(self.data, mode=mode)
                     self.executeCommands(self.loginTelnet(
                         refreshing=save, privelege=privelege, mode=mode), commands, silent=silent, backup=backup, backup_root=backup_root)
                 if marker:
                     self.myDb.removeTemp(backup_root)     
-        except:
-            print("unknown error")
+        except Exception as ex:
+            self.temp[2].insertPlainText(str(ex))
         return None
 
 #""" Common tasks"""
@@ -170,14 +174,14 @@ class TelnetDevice(Utility):
     def rename(self, name):
         """change the hostname of the device"""
         if name:
-            print("renaming the device")
+            self.temp[2].insertPlainText("renaming the device")
             command = ["conf t", "hostname "+str(name), "exit "]
         return command
 
     def createVlans(self, start, numberOfVlans, nameList=[]):
         """create vlans on the target"""
         commands = []
-        print("Creating the vlans")
+        self.temp[2].insertPlainText("Creating the vlans\n")
         if numberOfVlans > 1:
             text = str(start) + '-' + str(int(start)+int(numberOfVlans-1))
         elif numberOfVlans == 1:
@@ -186,7 +190,7 @@ class TelnetDevice(Utility):
         commands.append("vlan " + text)
         commands.append("exit")
         if nameList and len(nameList) == numberOfVlans:
-            print("Naming the vlans")
+            self.temp[2].insertPlainText("Naming the vlans\n")
             for i, name in enumerate(nameList, start):
                 commands.append("vlan " + str(i))
                 commands.append("name " + str(name))
@@ -212,7 +216,7 @@ class TelnetDevice(Utility):
         with open(config_path) as f:
             data = f.read(5000)
         self.automate(ips=ip, commands=['conf t', str(data)], backup=False, silent=False)
-        print("restoring from : " + config_path + "and merging with the actual config")
+        self.temp[2].insertPlainText("restoring from : " + config_path + "and merging with the actual config")
 
     def save(self):
         """return the commands for saving configs"""
@@ -239,8 +243,8 @@ class TelnetDevice(Utility):
                 self.executeLine(target, "exit")
                 target.close()
             else:
-                print("Commands did not apply!!")
-            print("restoring " + "from : " + config_path)
+                self.temp[2].insertPlainText("Commands did not apply!!")
+            self.temp[2].insertPlainText("restoring " + "from : " + config_path)
         return None
 
     def undo(self):
@@ -256,6 +260,6 @@ class TelnetDevice(Utility):
         if len(domain_name) == len(ips):
             for i,ip in enumerate(ips):
                 self.automate(ips=[ip], commands=['conf t','ip domain-name '+ domain_name[i], 'crypto key generate rsa modulus 1024','line vty 0 4','transport input all','exit'], backup=True, silent=True,save=True)
-            print("setting up the ssh")
+            self.temp[2].insertPlainText("setting up the ssh")
         else:
-            print("No matching lengh between input")
+            self.temp[2].insertPlainText("No matching lengh between input")

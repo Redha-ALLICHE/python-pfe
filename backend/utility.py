@@ -4,6 +4,7 @@ import time
 import shutil
 import subprocess
 
+
 class Utility():
     """this class ensures the access to the files and prove some utility functions""" 
     def __init__(self):
@@ -145,7 +146,7 @@ class Utility():
         return "EOL"
 
     def getInputs(self, data, mode="one"):
-        """prompt the login inputs for two modes :ask or check """ 
+        """prompt the login inputs for two modes :ask or check """
         if mode == "ask":
             data["username"] = input("Enter the username : ")
             data["password"] = getpass.getpass("Enter the password : ")
@@ -159,7 +160,7 @@ class Utility():
                 data["username"] = input("Enter the username : ")
                 data["password"] = getpass.getpass("Enter the password : ")
                 data["type"] = input("Enter the type : ")
-        return data
+        return data 
 
     def generateRange(self, start, end):
         """get a starting ip and an ending ip and generate a list of ips 192.168.1.2-52"""
