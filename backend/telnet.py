@@ -4,13 +4,14 @@ import time
 import getpass
 import subprocess
 import sys
+from PyQt5 import QtCore
 
-
-class TelnetDevice(Utility):
+class TelnetDevice(QtCore.QObject):
     """this class models a device like routers ,swithes and servers """
 
     def __init__(self):
         """declare the variables neeeded to specify a device """
+        super().__init__()
         self.myDb = Utility()
         self.data = {'host': '', 'device_type': '','type':'', 'ip': '','port': '23', 'username': '', 'password': '', 'secret': '','description':'','path':'device_data/'}
         self.temp = []
@@ -91,6 +92,7 @@ class TelnetDevice(Utility):
                 target.read_until('#'.encode())
                 self.myDb.prepareBackup(self.data["ip"], backup_root, target.read_until('#'.encode()).decode())
             for command in commands:
+                QtCore.QCoreApplication.processEvents()
                 self.executeLine(target, command)
             self.executeLine(target, "exit")
             if silent:
@@ -142,6 +144,7 @@ class TelnetDevice(Utility):
                     backup_root = self.myDb.mktemp(backup_root.rstrip('/'))
                     marker = True
                 for ip in ips:
+                    QtCore.QCoreApplication.processEvents()
                     if increment:
                         increment[0].setValue(increment[0].value() + 1)
                         increment[1].setText("Working on : " + ip )
@@ -151,7 +154,8 @@ class TelnetDevice(Utility):
                     self.executeCommands(self.loginTelnet(
                         refreshing=save, privelege=privelege, mode=mode), commands, silent=silent, backup=backup, backup_root=backup_root)
                 if marker:
-                    self.myDb.removeTemp(backup_root)     
+                    self.myDb.removeTemp(backup_root)
+                increment[1].setText("Configuration done ")
         except Exception as ex:
             self.temp[2].insertPlainText(str(ex))
         return None

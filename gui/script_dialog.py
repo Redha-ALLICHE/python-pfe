@@ -240,9 +240,9 @@ class Script_dialog(QtWidgets.QWidget):
         self.loading_bar.show()
         if self.privilege_check.isChecked():
             self.login_secret.show()
-        self.device.automate(self.ips, self.commands, self.get_mode(), self.privilege_check.isChecked(), self.add_check.isChecked(), self.silent_check.isChecked(), self.backup_check.isChecked, self.backup_path_input.text(), [self.loading_bar, self.loading_label, self.display_text], funct=self.getInputs)
-
-
+        QtCore.QCoreApplication.processEvents()
+        self.device.automate(self.ips, self.commands, self.get_mode(), self.privilege_check.isChecked(), self.add_check.isChecked(), self.silent_check.isChecked(
+        ), self.backup_check.isChecked, self.backup_path_input.text(), [self.loading_bar, self.loading_label, self.display_text], funct=self.getInputs)
 
     def getInputs(self, data, mode="ask"):
         """input the login info"""
