@@ -20,7 +20,6 @@ class Script_dialog(QtWidgets.QWidget):
         self._thread.finished.connect(self.after_work)
         self.work.moveToThread(self._thread)
         QtWidgets.qApp.aboutToQuit.connect(self._thread.quit)
-        
         self.setupUi(self)
 
     def setupUi(self, script_dialog):

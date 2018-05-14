@@ -753,7 +753,8 @@ class Ui_Automate(QtWidgets.QWidget):
 
     def ping(self, ip):
         """ping the device"""
-        system = subprocess.sys.platform.lower()
+        return True
+        """ system = subprocess.sys.platform.lower()
         if system.startswith('win'):
             info = subprocess.STARTUPINFO()
             info.dwFlags |= subprocess.STARTF_USESHOWWINDOW
@@ -773,7 +774,7 @@ class Ui_Automate(QtWidgets.QWidget):
             if "100% packet loss" in output.decode('utf-8').lower():
                 return False
             else:
-                return True
+                return True """
 
     def checkIpConnected(self, ip):
         """checks if the ip is connected"""

@@ -94,7 +94,6 @@ class TelnetDevice(QtCore.QObject):
             for command in commands:
                 if not self.maintain:
                     break
-                QtCore.QCoreApplication.processEvents()
                 self.executeLine(target, command)
             self.executeLine(target, "exit")
             if silent:
