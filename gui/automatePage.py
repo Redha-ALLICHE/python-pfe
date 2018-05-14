@@ -80,6 +80,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.invoqueShell_btn.setIcon(icon2)
             self.invoqueShell_btn.setIconSize(QtCore.QSize(40, 35))
             self.invoqueShell_btn.setObjectName("invoqueShell_btn")
+            self.invoqueShell_btn.clicked.connect(self.invoque_shell_action)
             self.horizontalLayout.addWidget(self.invoqueShell_btn)
         #toolbox backup button as backup_btn
             self.backup_btn = QtWidgets.QPushButton(self.toolbox)
@@ -585,6 +586,7 @@ class Ui_Automate(QtWidgets.QWidget):
         table.setItem(0, 0, item_ip)
         table.setItem(0, 1, item_host)
         table.setItem(0, 2, item_description)
+        btn.clicked.connect(functools.partial(self.invoque_one_shell, item_ip.text()))
         #adding to layout
         vertical.addWidget(img)
         vertical.addWidget(check)
@@ -721,6 +723,24 @@ class Ui_Automate(QtWidgets.QWidget):
         else:
             self.errorMsg("Please selected devices ...")
 
+    def invoque_shell_action(self):
+        """invoque shells on the selected ips"""
+        ips = self.get_selected()
+        if ips:
+            for ip in ips:
+                self.invoque_one_shell(ip)
+        else:
+            self.errorMsg("Please selected devices ...")
+    
+    def invoque_one_shell(self, ip):
+        """invoque a shell on a ip address"""
+        import sys
+        puttypath = 'putty.exe'
+        if sys.platform.startswith('win'):
+            subprocess.Popen([puttypath, '-telnet', ip])
+        else:
+            subprocess.call(["plink", "-telnet", ip])
+        
     #utiliy functions
     def fillTablewithIps(self, table, ips):
         """create cases of a table and fill it with ips, checkboxes, is in db and is connected"""
