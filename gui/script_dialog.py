@@ -4,6 +4,7 @@ from backend.telnet import TelnetDevice
 
 class Script_dialog(QtWidgets.QWidget):
     """the configure from script dialog window """
+    request = QtCore.pyqtSignal(list)
     def __init__(self, ips):
         """create the login page object"""
         self.ips = ips
@@ -11,6 +12,15 @@ class Script_dialog(QtWidgets.QWidget):
         self.device = TelnetDevice()
         QtWidgets.QDialog.__init__(
             self, None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
+        self._thread = QtCore.QThread()
+        self.work = Threaded(text_signal=self.change_display,
+                                  label_signal=self.change_label, bar_signal=self.change_bar, done_signal=self._thread.quit)
+        self.request.connect(self.work.automate_config)
+        self._thread.started.connect(self.work.start)
+        self._thread.finished.connect(self.after_work)
+        self.work.moveToThread(self._thread)
+        QtWidgets.qApp.aboutToQuit.connect(self._thread.quit)
+        
         self.setupUi(self)
 
     def setupUi(self, script_dialog):
@@ -117,14 +127,23 @@ class Script_dialog(QtWidgets.QWidget):
             self.horizontalLayout_2.addWidget(self.backup_path_container)
             self.verticalLayout_2.addWidget(self.widget)
             self.change_path_btn.clicked.connect(self.change_backup_path)
+            self.verticalLayout.addWidget(self.container)
         #loading label
-            self.loading_label = QtWidgets.QLabel(self.container)
+            self.loading_label = QtWidgets.QLabel(script_dialog)
             self.loading_label.setAlignment(QtCore.Qt.AlignCenter)
             self.loading_label.setObjectName("loading_label")
             self.loading_label.hide()
-            self.verticalLayout_2.addWidget(self.loading_label)
+            self.verticalLayout.addWidget(self.loading_label)
+        #loading container 
+            self.loading_container = QtWidgets.QWidget(script_dialog)
+            self.loading_container.setObjectName("loading_container")
+            self.verticalLayout.addWidget(self.loading_container)
+            self.loading_container.hide()
+        #loading hlayout
+            self.loading_layout = QtWidgets.QHBoxLayout(self.loading_container)
+            self.loading_layout.setObjectName("loading_layout")
         #loading bar
-            self.loading_bar = QtWidgets.QProgressBar(self.container)
+            self.loading_bar = QtWidgets.QProgressBar(self.loading_container)
             self.loading_bar.setProperty("value", 0)
             self.loading_bar.setMaximum(len(self.ips))
             self.loading_bar.setTextVisible(True)
@@ -132,11 +151,20 @@ class Script_dialog(QtWidgets.QWidget):
             self.loading_bar.setFormat(" %p%")
             self.loading_bar.setObjectName("loading_bar")
             self.loading_bar.hide()
-            self.verticalLayout_2.addWidget(self.loading_bar)
+            self.loading_layout.addWidget(self.loading_bar)
+        #cancel button
+            self.retry_btn = QtWidgets.QPushButton(self.loading_container)
+            self.retry_btn.setCursor(
+                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+            self.retry_btn.setObjectName("retry_btn")
+            self.retry_btn.setText("Retry")
+            self.retry_btn.hide()
+            self.retry_btn.clicked.connect(self.reset_display)
+            self.loading_layout.addWidget(self.retry_btn)
         #input login container
-            self.login_container = QtWidgets.QWidget(self.container)
+            self.login_container = QtWidgets.QWidget(script_dialog)
             self.login_container.setObjectName("login_container")
-            self.verticalLayout_2.addWidget(self.login_container)
+            self.verticalLayout.addWidget(self.login_container)
             self.login_container.hide()
         #input login horizontal layout
             self.login_layout = QtWidgets.QHBoxLayout(self.login_container)
@@ -167,10 +195,9 @@ class Script_dialog(QtWidgets.QWidget):
             self.login_button.clicked.connect(self.toogle)
             self.login_layout.addWidget(self.login_button)
         #display text widget
-            self.display_text = QtWidgets.QTextEdit(self.container)
+            self.display_text = QtWidgets.QTextEdit(script_dialog)
             self.display_text.setObjectName("display_text")
-            self.verticalLayout_2.addWidget(self.display_text)
-            self.verticalLayout.addWidget(self.container)
+            self.verticalLayout.addWidget(self.display_text)
 
             self.retranslateUi(script_dialog)
             QtCore.QMetaObject.connectSlotsByName(script_dialog)
@@ -204,7 +231,7 @@ class Script_dialog(QtWidgets.QWidget):
             pass
 
     def clear_display(self):
-        """action when the reseet button is pressed"""
+        """action when the reset button is pressed"""
         self.path_input.clear()
         self.display_text.clear()
         self.privilege_check.setChecked(False)
@@ -236,13 +263,16 @@ class Script_dialog(QtWidgets.QWidget):
         self.loading_label.show()
         self.commands = self.display_text.toPlainText().split('\n')
         self.loading_bar.setValue(0)
+        self.toolbox.setEnabled(False)
+        self.container.setEnabled(False)
+        self.display_text.setReadOnly(True)
         self.loading_label.setText("Working on :" + self.ips[0])
+        self.loading_container.show()
         self.loading_bar.show()
         if self.privilege_check.isChecked():
             self.login_secret.show()
-        QtCore.QCoreApplication.processEvents()
-        self.device.automate(self.ips, self.commands, self.get_mode(), self.privilege_check.isChecked(), self.add_check.isChecked(), self.silent_check.isChecked(
-        ), self.backup_check.isChecked, self.backup_path_input.text(), [self.loading_bar, self.loading_label, self.display_text], funct=self.getInputs)
+        self._thread.start()
+        self.request.emit([self.ips, self.commands, self.get_mode(), self.privilege_check.isChecked(), self.add_check.isChecked(), self.silent_check.isChecked(), self.backup_check.isChecked,self.backup_path_input.text(),self.getInputs])
 
     def getInputs(self, data, mode="ask"):
         """input the login info"""
@@ -270,7 +300,6 @@ class Script_dialog(QtWidgets.QWidget):
         elif mode == "check":
             index = self.device.myDb.searchDevice(data)
             if index != "EOL" and self.device.myDb.all_info[index]["username"] and self.device.myDb.all_info[index]["password"]:
-                self.display_text.insertPlainText("Found login informations\n")
                 if self.privilege_check.isChecked() and self.device.myDb.all_info[index]["secret"]=='':
                     self.getInputs(data, mode='privilegeOnly')
                 data = self.device.myDb.all_info[index].copy()
@@ -300,3 +329,66 @@ class Script_dialog(QtWidgets.QWidget):
         self.login_container.hide()
         self.login_secret.clear()
         self.login_secret.hide()
+
+    @QtCore.pyqtSlot(str)
+    def change_display(self, text):
+        """changes the text in the display text"""
+        self.display_text.insertPlainText(text)
+
+    @QtCore.pyqtSlot(int)
+    def change_bar(self, num):
+        """changes the text in the display text"""
+        self.loading_bar.setValue(num)
+
+    @QtCore.pyqtSlot(str)
+    def change_label(self, text):
+        """changes the text in the display text"""
+        self.loading_label.setText(text)
+
+    @QtCore.pyqtSlot()
+    def reset_display(self):
+        """changes the text in the display text"""
+        self.toolbox.setEnabled(True)
+        self.container.setEnabled(True)
+        self.loading_bar.setValue(0)
+        self.loading_bar.hide()
+        self.retry_btn.hide()
+        self.loading_container.hide()
+        self.clear_display()
+
+    @QtCore.pyqtSlot()
+    def after_work(self):
+        self.display_text.setReadOnly(False)
+        self.retry_btn.show()
+        self.loading_label.setText("Working done")
+
+class Threaded(QtCore.QObject):
+    text_signal=QtCore.pyqtSignal(str)
+    bar_signal=QtCore.pyqtSignal(int)
+    label_signal=QtCore.pyqtSignal(str)
+    done_signal=QtCore.pyqtSignal()
+
+    def __init__(self, parent=None, **kwargs):
+        super().__init__(parent, **kwargs)
+        self.device = TelnetDevice()
+        self.done_signal.connect(self.exit_process)
+
+    @QtCore.pyqtSlot()
+    def start(self): print("Thread started")
+
+    @QtCore.pyqtSlot(list)
+    def automate_config(self, args):
+        """         self.ips, self.commands, self.get_mode(), self.privilege_check.isChecked(), self.add_check.isChecked(), self.silent_check.isChecked(
+                ), self.backup_check.isChecked, self.backup_path_input.text(), [self.loading_bar, self.loading_label, self.display_text], funct = self.getInputs """
+        increment = [self.bar_signal,self.label_signal, self.text_signal,self.done_signal]
+        self.device.automate(args[0], args[1],args[2],args[3],args[4],args[5],args[6],args[7],args[8],increment)
+    
+    @QtCore.pyqtSlot()    
+    def exit_process(self):
+        print("Thread stopped")
+        self.device.exit_process()
+
+ 
+
+
+
