@@ -1,10 +1,12 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from network_db.net_database import Net_db
 from gui.script_dialog import Script_dialog
+from gui.backup_dialog import Backup_dialog
 import regex
 import subprocess
 import ipaddress
 import functools
+
 
 class Ui_Automate(QtWidgets.QWidget):
     """this is the automate widget """
@@ -94,6 +96,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.backup_btn.setIcon(icon3)
             self.backup_btn.setIconSize(QtCore.QSize(30, 30))
             self.backup_btn.setObjectName("backup_btn")
+            self.backup_btn.clicked.connect(self.backup_btn_action)
             self.horizontalLayout.addWidget(self.backup_btn)
         #toolbox restore button as restore_btn
             self.restore_btn = QtWidgets.QPushButton(self.toolbox)
@@ -586,7 +589,8 @@ class Ui_Automate(QtWidgets.QWidget):
         table.setItem(0, 0, item_ip)
         table.setItem(0, 1, item_host)
         table.setItem(0, 2, item_description)
-        btn.clicked.connect(functools.partial(self.invoque_one_shell, item_ip.text()))
+        btn.clicked.connect(functools.partial(
+            self.invoque_one_shell, item_ip.text()))
         #adding to layout
         vertical.addWidget(img)
         vertical.addWidget(check)
@@ -716,7 +720,6 @@ class Ui_Automate(QtWidgets.QWidget):
     def script_btn_action(self):
         """when the script button is pressed"""
         ips = self.get_selected()
-        print(ips)
         if ips:
             self.script_window = Script_dialog(ips)
             self.script_window.show()
@@ -731,7 +734,7 @@ class Ui_Automate(QtWidgets.QWidget):
                 self.invoque_one_shell(ip)
         else:
             self.errorMsg("Please selected devices ...")
-    
+
     def invoque_one_shell(self, ip):
         """invoque a shell on a ip address"""
         import sys
@@ -740,7 +743,16 @@ class Ui_Automate(QtWidgets.QWidget):
             subprocess.Popen([puttypath, '-telnet', ip])
         else:
             subprocess.call(["plink", "-telnet", ip])
-        
+
+    def backup_btn_action(self):
+        """when backup button is pressed"""
+        ips = self.get_selected()
+        if ips:
+            self.script_window = Backup_dialog(ips)
+            self.script_window.show()
+        else:
+            self.errorMsg("Please selected devices ...")
+
     #utiliy functions
     def fillTablewithIps(self, table, ips):
         """create cases of a table and fill it with ips, checkboxes, is in db and is connected"""
@@ -906,7 +918,7 @@ class Ui_Automate(QtWidgets.QWidget):
                 item = self.gridLayout.itemAt(i)
                 if item.widget().isChecked():
                     selected.append(item.widget().children()[
-                                         4].itemAt(0, 0).text())
+                        4].itemAt(0, 0).text())
         elif self.automate_tab.currentIndex() == 1:
             for i in range(self.fromfile_ips.rowCount()):
                 if self.fromfile_ips.item(i, 0).checkState():

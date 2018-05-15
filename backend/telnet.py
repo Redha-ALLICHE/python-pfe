@@ -6,16 +6,19 @@ import subprocess
 import sys
 from PyQt5 import QtCore
 
+
 class TelnetDevice(QtCore.QObject):
     """this class models a device like routers ,swithes and servers """
     done = QtCore.pyqtSignal()
     maintain = True
+
     def __init__(self):
         """declare the variables neeeded to specify a device """
         super().__init__()
         self.myDb = Utility()
-        self.data = {'host': '', 'device_type': '','type':'', 'ip': '','port': '23', 'username': '', 'password': '', 'secret': '','description':'','path':'device_data/'}
-        self.temp= []
+        self.data = {'host': '', 'device_type': '', 'type': '', 'ip': '', 'port': '23',
+                     'username': '', 'password': '', 'secret': '', 'description': '', 'path': 'device_data/'}
+        self.temp = []
 #""""global""""
 
     def getInputFromUser(self):
@@ -42,7 +45,8 @@ class TelnetDevice(QtCore.QObject):
             if self.data["ip"] == "":
                 return None
             target = tn.Telnet()
-            self.temp[2].emit("###Trying to connect to " + self.data["ip"]+' ###\n')
+            self.temp[2].emit("###Trying to connect to " +
+                              self.data["ip"]+' ###\n')
             target.open(host=self.data['ip'])
             self.temp[2].emit("Establishing the connection...\n")
         except (TimeoutError, OSError):
@@ -58,12 +62,14 @@ class TelnetDevice(QtCore.QObject):
                 if self.data["host"] != answer[2:-1] and refreshing:
                     self.data["host"] = answer[2:-1]
                     self.myDb.refreshDevice(self.data)
-                self.temp[2].emit("Connection successful to " + self.data["ip"] + "\n")
+                self.temp[2].emit(
+                    "Connection successful to " + self.data["ip"] + "\n")
                 if privelege:
                     return self.loginPrivelegeMode(target)
                 return target
             else:
-                self.temp[2].emit("Failed to connect to " + self.data["ip"] + "\n")
+                self.temp[2].emit("Failed to connect to " +
+                                  self.data["ip"] + "\n")
                 return None
 
     def loginPrivelegeMode(self, target):
@@ -90,7 +96,8 @@ class TelnetDevice(QtCore.QObject):
             if backup:
                 self.executeLine(target, "show run")
                 target.read_until('#'.encode())
-                self.myDb.prepareBackup(self.data["ip"], backup_root, target.read_until('#'.encode()).decode())
+                self.myDb.prepareBackup(
+                    self.data["ip"], backup_root, target.read_until('#'.encode()).decode())
             for command in commands:
                 if not self.maintain:
                     break
@@ -113,13 +120,14 @@ class TelnetDevice(QtCore.QObject):
 
 #"""automate the configuration """
 
-    def configureMultipleFromRange(self, start, end, command_path="backend/list_of_commands.txt", save=False, silent=True, privelege=False, mode="one",backup=False):
+    def configureMultipleFromRange(self, start, end, command_path="backend/list_of_commands.txt", save=False, silent=True, privelege=False, mode="one", backup=False):
         """configure a range of ips with the same configuration"""
         commands = command_path
-        if type(command_path)==str:
+        if type(command_path) == str:
             commands = self.myDb.getList(command_path)
         ips = self.myDb.generateRange(start, end)
-        self.automate(ips, commands, mode=mode, privelege=privelege, save=save, silent=silent, backup=backup)
+        self.automate(ips, commands, mode=mode, privelege=privelege,
+                      save=save, silent=silent, backup=backup)
         return None
 
     def configureMultipleFromFile(self, ip_path="backend/list_of_ip.txt", command_path="backend/list_of_commands.txt", save=False, silent=True, privelege=False, mode='ask', backup=False):
@@ -129,26 +137,27 @@ class TelnetDevice(QtCore.QObject):
             commands = self.myDb.getList(command_path)
         ips = self.myDb.getList(ip_path)
         self.temp[2].emit(commands)
-        self.automate(ips, commands, mode=mode, privelege=privelege, save=save, silent=silent, backup=backup)
+        self.automate(ips, commands, mode=mode, privelege=privelege,
+                      save=save, silent=silent, backup=backup)
         return None
 
     def automate(self, ips=[], commands=[], mode='check', privelege=True, save=False, silent=True, backup=False, backup_root='temp/', funct=None, increment=None):
         """apply a list of commands into a list of ips """
         marker = False
-        self.temp= increment
+        self.temp = increment
         self.maintain = True
         if mode == 'one':
             increment[1].emit("Enter the common login")
             self.data = funct(self.data, mode='ask')
         try:
             if ips and commands:
-                if backup and backup_root=='temp/':
+                if backup and backup_root == 'temp/':
                     backup_root = self.myDb.mktemp(backup_root.rstrip('/'))
                     marker = True
                 for ip in ips:
                     if increment:
                         increment[0].emit(ips.index(ip))
-                        increment[1].emit("Working on : " + ip )
+                        increment[1].emit("Working on : " + ip)
                     if not self.maintain:
                         break
                     self.data.update({'host': '', 'device_type': '', 'ip': ip,
@@ -164,7 +173,7 @@ class TelnetDevice(QtCore.QObject):
         increment[0].emit(len(ips))
         increment[3].emit()
         return None
-   
+
     def exit_process(self):
         """breaks from the loops"""
         self.maintain = False
@@ -178,7 +187,7 @@ class TelnetDevice(QtCore.QObject):
                             creationflags=subprocess.CREATE_NEW_CONSOLE)
         else:
             subprocess.call(["plink", "-telnet", self.data["ip"]])
-            
+
     def executeCommonTask(self, path):
         """execute a task from a file"""
         self.executeCommands(self.loginTelnet(
@@ -216,9 +225,10 @@ class TelnetDevice(QtCore.QObject):
         command = ["show run"]
         return command
 
-    def backup(self, ips, root_path='backups/'):
+    def backup(self, ips, root_path='backups/', funct=None, increment=None):
         """get the config from a device and store it to a file"""
-        self.automate(ips, [' '],mode='check', backup=True, backup_root=root_path)
+        self.automate(ips, commands=[' '], mode='check', backup=True,
+                      backup_root=root_path, funct=funct, increment=increment)
         return None
 
     def mergeConfig(self, config_path, ips=''):
@@ -228,8 +238,10 @@ class TelnetDevice(QtCore.QObject):
             ip = [config_path.split('_')[0].split('/')[-1]]
         with open(config_path) as f:
             data = f.read(5000)
-        self.automate(ips=ip, commands=['conf t', str(data)], backup=False, silent=False)
-        self.temp[2].emit("restoring from : " + config_path + "and merging with the actual config")
+        self.automate(ips=ip, commands=['conf t', str(
+            data)], backup=False, silent=False)
+        self.temp[2].emit("restoring from : " + config_path +
+                          "and merging with the actual config")
 
     def save(self):
         """return the commands for saving configs"""
@@ -238,18 +250,20 @@ class TelnetDevice(QtCore.QObject):
     def restore(self, config_path, ips=''):
         """apply the configuration from a file to one or many devices"""
         ip = ips
-        if ip=='':
+        if ip == '':
             ip = [config_path.split('_')[0].split('/')[-1]]
         with open(config_path) as f:
             old_config = f.read(5000)
         for addr in ip:
-            self.data.update({'host': '', 'device_type': '', 'ip': addr,'port': '23', 'username': '', 'password': '', 'secret': ''})
+            self.data.update({'host': '', 'device_type': '', 'ip': addr,
+                              'port': '23', 'username': '', 'password': '', 'secret': ''})
             target = self.loginTelnet(privelege=True, mode='check')
             if target:
                 self.executeLine(target, "terminal length 0")
                 self.executeLine(target, "show run")
                 target.read_until('#'.encode())
-                actual_config = target.read_until('#'.encode()).decode().split("\n")[3:-2]
+                actual_config = target.read_until(
+                    '#'.encode()).decode().split("\n")[3:-2]
                 new_config = self.myDb.getRestore(actual_config, old_config)
                 self.executeLine(target, "conf t")
                 self.executeLine(target, str(new_config + '\n'))
@@ -265,14 +279,15 @@ class TelnetDevice(QtCore.QObject):
         path = 'temp/'
         files = self.myDb.getfiles(path)
         for file in files:
-            path = 'temp/'+ str(file)
+            path = 'temp/' + str(file)
             self.restore(path)
 
     def enableSsh(self, ips, domain_name):
         """enables the ssh protocol on the target for remote connection"""
         if len(domain_name) == len(ips):
-            for i,ip in enumerate(ips):
-                self.automate(ips=[ip], commands=['conf t','ip domain-name '+ domain_name[i], 'crypto key generate rsa modulus 1024','line vty 0 4','transport input all','exit'], backup=True, silent=True,save=True)
+            for i, ip in enumerate(ips):
+                self.automate(ips=[ip], commands=['conf t', 'ip domain-name ' + domain_name[i], 'crypto key generate rsa modulus 1024',
+                                                  'line vty 0 4', 'transport input all', 'exit'], backup=True, silent=True, save=True)
             self.temp[2].emit("setting up the ssh")
         else:
             self.temp[2].emit("No matching lengh between input")
