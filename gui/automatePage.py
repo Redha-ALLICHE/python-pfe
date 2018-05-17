@@ -2,6 +2,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from network_db.net_database import Net_db
 from gui.script_dialog import Script_dialog
 from gui.backup_dialog import Backup_dialog
+from gui.restore_dialog import Restore_dialog
 import regex
 import subprocess
 import ipaddress
@@ -110,6 +111,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.restore_btn.setIcon(icon4)
             self.restore_btn.setIconSize(QtCore.QSize(30, 30))
             self.restore_btn.setObjectName("restore_btn")
+            self.restore_btn.clicked.connect(self.restore_btn_action)
             self.horizontalLayout.addWidget(self.restore_btn)
         #toolbox browse functions button as functions_btn
             self.functions_btn = QtWidgets.QPushButton(self.toolbox)
@@ -748,8 +750,17 @@ class Ui_Automate(QtWidgets.QWidget):
         """when backup button is pressed"""
         ips = self.get_selected()
         if ips:
-            self.script_window = Backup_dialog(ips)
-            self.script_window.show()
+            self.backup_window = Backup_dialog(ips)
+            self.backup_window.show()
+        else:
+            self.errorMsg("Please selected devices ...")
+
+    def restore_btn_action(self):
+        """action when restore button is pressed"""
+        ips = self.get_selected()
+        if ips:
+            self.restore_window = Restore_dialog(ips)
+            self.restore_window.show()
         else:
             self.errorMsg("Please selected devices ...")
 

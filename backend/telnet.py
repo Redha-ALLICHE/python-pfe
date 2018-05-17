@@ -231,15 +231,16 @@ class TelnetDevice(QtCore.QObject):
                       backup_root=root_path, funct=funct, increment=increment)
         return None
 
-    def mergeConfig(self, config_path, ips=''):
+    def mergeConfig(self, config_path, ips='', funct =None, increment=None):
         """apply the configuration from a file to one or many devices"""
         ip = ips
+        self.temp = increment
         if ip == '':
             ip = [config_path.split('_')[0].split('/')[-1]]
         with open(config_path) as f:
             data = f.read(5000)
         self.automate(ips=ip, commands=['conf t', str(
-            data)], backup=False, silent=False)
+            data)], backup=False, silent=False, funct=funct , increment=increment)
         self.temp[2].emit("restoring from : " + config_path +
                           "and merging with the actual config")
 
@@ -247,17 +248,21 @@ class TelnetDevice(QtCore.QObject):
         """return the commands for saving configs"""
         return ['copy running-config startup-config', ' ']
 
-    def restore(self, config_path, ips=''):
+    def restore(self, ips='' ,config_path='backups/' , funct= None , increment=None):
         """apply the configuration from a file to one or many devices"""
         ip = ips
+        self.temp = increment
         if ip == '':
             ip = [config_path.split('_')[0].split('/')[-1]]
         with open(config_path) as f:
             old_config = f.read(5000)
         for addr in ip:
+            increment[0].emit(ip.index(addr))
+            increment[1].emit("Working on : " + addr)
             self.data.update({'host': '', 'device_type': '', 'ip': addr,
                               'port': '23', 'username': '', 'password': '', 'secret': ''})
-            target = self.loginTelnet(privelege=True, mode='check')
+            self.data = funct(self.data, mode="check")
+            target = self.loginTelnet(privelege=True)
             if target:
                 self.executeLine(target, "terminal length 0")
                 self.executeLine(target, "show run")
@@ -272,6 +277,8 @@ class TelnetDevice(QtCore.QObject):
             else:
                 self.temp[2].emit("Commands did not apply!!")
             self.temp[2].emit("restoring " + "from : " + config_path)
+        increment[0].emit(len(ips))
+        increment[3].emit()
         return None
 
     def undo(self):
