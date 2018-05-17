@@ -2,14 +2,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from backend.telnet import TelnetDevice
 
 
-class Restore_dialog(QtWidgets.QWidget):
-    """the configure from restore dialog window """
+class Ssh_dialog(QtWidgets.QWidget):
+    """the configure from script dialog window """
     request = QtCore.pyqtSignal(list)
 
     def __init__(self, ips):
-        """create the resotre dialog object"""
+        """create the backup dialog object"""
         self.ips = ips
-        self.path = ''
         self.device = TelnetDevice()
         QtWidgets.QDialog.__init__(
             self, None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
@@ -23,17 +22,17 @@ class Restore_dialog(QtWidgets.QWidget):
         QtWidgets.qApp.aboutToQuit.connect(self._thread.quit)
         self.setupUi(self)
 
-    def setupUi(self, Restore_dialog):
-            """the restore dialog setup  """
+    def setupUi(self, ssh_dialog):
+            """the script dialog setup  """
         #main window
-            Restore_dialog.setObjectName("Restore_dialog")
-            Restore_dialog.setWindowModality(QtCore.Qt.ApplicationModal)
-            Restore_dialog.resize(543, 466)
+            ssh_dialog.setObjectName("ssh_dialog")
+            ssh_dialog.setWindowModality(QtCore.Qt.ApplicationModal)
+            ssh_dialog.resize(543, 466)
         #main window vertical layout
-            self.verticalLayout = QtWidgets.QVBoxLayout(Restore_dialog)
+            self.verticalLayout = QtWidgets.QVBoxLayout(ssh_dialog)
             self.verticalLayout.setObjectName("verticalLayout")
         #toolbox container
-            self.toolbox = QtWidgets.QWidget(Restore_dialog)
+            self.toolbox = QtWidgets.QWidget(ssh_dialog)
             self.toolbox.setObjectName("toolbox")
         #toolbox horizontal layout
             self.horizontalLayout = QtWidgets.QHBoxLayout(self.toolbox)
@@ -43,43 +42,22 @@ class Restore_dialog(QtWidgets.QWidget):
             self.path_input.setReadOnly(True)
             self.path_input.setObjectName("path_input")
             self.horizontalLayout.addWidget(self.path_input)
-        #toolbox open button
-            self.open_btn = QtWidgets.QPushButton(self.toolbox)
-            self.open_btn.setCursor(
+        #toolbox enable SSH button
+            self.enableSSH_btn = QtWidgets.QPushButton(self.toolbox)
+            self.enableSSH_btn.setCursor(
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.open_btn.setObjectName("open_btn")
-            self.horizontalLayout.addWidget(self.open_btn)
-            self.open_btn.setAutoDefault(True)
-            self.open_btn.clicked.connect(self.open_file)
-        #toolbox reset button
-            self.reset_btn = QtWidgets.QPushButton(self.toolbox)
-            self.reset_btn.setCursor(
-                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.reset_btn.setObjectName("reset_btn")
-            self.horizontalLayout.addWidget(self.reset_btn)
-            self.reset_btn.clicked.connect(self.clear_display)
-        #toolbox apply button
-            self.apply_btn = QtWidgets.QPushButton(self.toolbox)
-            self.apply_btn.setCursor(
-                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.apply_btn.setObjectName("apply_btn")
-            self.horizontalLayout.addWidget(self.apply_btn)
-            self.apply_btn.clicked.connect(self.apply_restore)
+            self.enableSSH_btn.setObjectName("enableSSH_btn")
+            self.horizontalLayout.addWidget(self.enableSSH_btn)
+            self.enableSSH_btn.clicked.connect(self.enableSSH_script)
             self.verticalLayout.addWidget(self.toolbox)
-        #toolbox select mode combobox
-            self.select_mode = QtWidgets.QComboBox(self.widget)
-            self.select_mode.addItem("Restore")
-            self.select_mode.addItem("Merge")
-            self.select_mode.setObjectName("select_mode")
-            self.horizontalLayout.addWidget(self.select_mode)
         #loading label
-            self.loading_label = QtWidgets.QLabel(Restore_dialog)
+            self.loading_label = QtWidgets.QLabel(ssh_dialog)
             self.loading_label.setAlignment(QtCore.Qt.AlignCenter)
             self.loading_label.setObjectName("loading_label")
             self.loading_label.hide()
             self.verticalLayout.addWidget(self.loading_label)
         #loading container
-            self.loading_container = QtWidgets.QWidget(Restore_dialog)
+            self.loading_container = QtWidgets.QWidget(ssh_dialog)
             self.loading_container.setObjectName("loading_container")
             self.verticalLayout.addWidget(self.loading_container)
             self.loading_container.hide()
@@ -97,7 +75,7 @@ class Restore_dialog(QtWidgets.QWidget):
             self.loading_bar.setObjectName("loading_bar")
             self.loading_bar.hide()
             self.loading_layout.addWidget(self.loading_bar)
-        #retry button
+        #Clear button
             self.clear_btn = QtWidgets.QPushButton(self.loading_container)
             self.clear_btn.setCursor(
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
@@ -107,7 +85,7 @@ class Restore_dialog(QtWidgets.QWidget):
             self.clear_btn.clicked.connect(self.reset_display)
             self.loading_layout.addWidget(self.clear_btn)
         #input login container
-            self.login_container = QtWidgets.QWidget(Restore_dialog)
+            self.login_container = QtWidgets.QWidget(ssh_dialog)
             self.login_container.setObjectName("login_container")
             self.verticalLayout.addWidget(self.login_container)
             self.login_container.hide()
@@ -139,45 +117,32 @@ class Restore_dialog(QtWidgets.QWidget):
             self.login_button.clicked.connect(self.toogle)
             self.login_layout.addWidget(self.login_button)
         #display text widget
-            self.display_text = QtWidgets.QTextEdit(Restore_dialog)
+            self.display_text = QtWidgets.QTextEdit(ssh_dialog)
             self.display_text.setObjectName("display_text")
+            self.display_text.setReadOnly(False)
+            self.display_text.setPlaceholderText(
+                "The domain-name for  : " + '\nThe domain-name for : '.join(self.ips))
             self.verticalLayout.addWidget(self.display_text)
 
-            self.retranslateUi(Restore_dialog)
-            QtCore.QMetaObject.connectSlotsByName(Restore_dialog)
+            self.retranslateUi(ssh_dialog)
+            QtCore.QMetaObject.connectSlotsByName(ssh_dialog)
 
-    def retranslateUi(self, Restore_dialog):
+    def retranslateUi(self, ssh_dialog):
         _translate = QtCore.QCoreApplication.translate
-        Restore_dialog.setWindowTitle(_translate(
-            "Restore_dialog", "Restoring a device configuration"))
-        self.open_btn.setText(_translate("Restore_dialog", "Open"))
-        self.reset_btn.setText(_translate("Restore_dialog", "Reset"))
-        self.apply_btn.setText(_translate("Restore_dialog", "Apply"))
+        ssh_dialog.setWindowTitle(_translate(
+            "ssh_dialog", "Apply configuration from script"))
+        self.enableSSH_btn.setText(_translate("ssh_dialog", "Enable SSH"))
         self.path_input.setPlaceholderText(
-            _translate("Restore_dialog", "Press open to select a file -->"))
+            _translate("ssh_dialog", "Please input the domain-names down below"))
         self.loading_label.setText(_translate(
-            "Restore_dialog", "Executing the script"))
+            "ssh_dialog", "Executing the script"))
 
-    def open_file(self):
-        """action when toolbox open button is pressed"""
-        path = QtWidgets.QFileDialog.getOpenFileName(self, QtCore.QCoreApplication.translate(
-            "Restore_dialog", "Choose the restore text file"), "backups/", QtCore.QCoreApplication.translate("Restore_dialog", "Text File(*.txt)"))[0]
-        self.path_input.setText(path)
-        try:
-            with open(path, 'r') as f:
-                text = ''.join(f.readlines())
-                self.display_text.setPlainText(text)
-        except Exception:
-            pass
-
-    def clear_display(self):
-        """action when the reset button is pressed"""
-        self.reset_display()
-
-    def apply_restore(self):
+    def enableSSH_script(self):
         """action when the apply button is pressed"""
-        if self.path_input.text():
+        self.name_list = self.display_text.toPlainText().split('\n')
+        if len(self.name_list) == len(self.ips):
             self.display_text.clear()
+            self.path_input.clear()
             self.loading_label.show()
             self.loading_bar.setValue(0)
             self.toolbox.setEnabled(False)
@@ -186,11 +151,10 @@ class Restore_dialog(QtWidgets.QWidget):
             self.loading_container.show()
             self.loading_bar.show()
             self._thread.start()
-            self.path = self.path_input.text()
-            self.request.emit([self.ips, self.path, self.getInputs])
+            self.request.emit([self.ips, self.name_list, self.getInputs])
         else:
-            self.loading_label.setText("Please select a file")
-            self.loading_label.show()
+            self.path_input.setText(
+                "Please input " + str(len(self.ips))+" domain-names ")
 
     def getInputs(self, data, mode="check"):
         """input the login info"""
@@ -234,8 +198,9 @@ class Restore_dialog(QtWidgets.QWidget):
         self.login_username.show()
         self.login_password.clear()
         self.login_password.show()
-        self.login_container.hide()
         self.login_secret.clear()
+        self.login_secret.show()
+        self.login_container.hide()
 
     @QtCore.pyqtSlot(str)
     def change_display(self, text):
@@ -258,20 +223,17 @@ class Restore_dialog(QtWidgets.QWidget):
         self.toolbox.setEnabled(True)
         self.loading_bar.setValue(0)
         self.loading_bar.hide()
-        self.display_text.setReadOnly(False)
+        self.display_text.clear()
+        self.login_container.hide()
+        self.loading_label.hide()
         self.clear_btn.hide()
         self.loading_container.hide()
-        self.path_input.clear()
-        self.display_text.clear()
-        self.loading_label.hide()
-        self.login_container.hide()
-        self.select_mode.setCurrentIndex(0)
 
     @QtCore.pyqtSlot()
     def after_work(self):
-        self.display_text.setReadOnly(False)
         self.clear_btn.show()
         self.loading_label.setText("Working done")
+
 
 class Threaded(QtCore.QObject):
     text_signal = QtCore.pyqtSignal(str)
@@ -289,12 +251,10 @@ class Threaded(QtCore.QObject):
 
     @QtCore.pyqtSlot(list)
     def automate_config(self, args):
+        """         self.ips, name_list, funct = self.getInputs """
         increment = [self.bar_signal, self.label_signal,
                      self.text_signal, self.done_signal]
-        if self.select_mode.currentText() == 'Restore':
-            self.device.backup(args[0], args[1], args[2], increment)
-        elif self.select_mode.currentText() == 'Merge':
-            self.device.backup(args[0], args[1], args[2], increment)
+        self.device.enableSsh(args[0], args[1], args[2], increment)
 
     @QtCore.pyqtSlot()
     def exit_process(self):

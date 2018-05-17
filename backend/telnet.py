@@ -145,7 +145,6 @@ class TelnetDevice(QtCore.QObject):
         """apply a list of commands into a list of ips """
         marker = False
         self.temp = increment
-        self.maintain = True
         if mode == 'one':
             increment[1].emit("Enter the common login")
             self.data = funct(self.data, mode='ask')
@@ -158,8 +157,6 @@ class TelnetDevice(QtCore.QObject):
                     if increment:
                         increment[0].emit(ips.index(ip))
                         increment[1].emit("Working on : " + ip)
-                    if not self.maintain:
-                        break
                     self.data.update({'host': '', 'device_type': '', 'ip': ip,
                                       'port': '23', 'username': '', 'password': '', 'secret': ''})
                     self.data = funct(self.data, mode=mode)
@@ -193,17 +190,37 @@ class TelnetDevice(QtCore.QObject):
         self.executeCommands(self.loginTelnet(
             privelege=True), path, silent=False)
 
-    def rename(self, name):
+    def rename_one(self, name):
         """change the hostname of the device"""
         if name:
-            self.temp[2].emit("renaming the device")
+            self.temp[2].emit("renaming the device\n")
             command = ["conf t", "hostname "+str(name), "exit "]
         return command
+
+    def rename(self, ips, name_list, funct=None, increment=None):
+        """renames multiple devices with a name list"""
+        self.temp = increment
+        try:
+            if ips:
+                for i, ip in enumerate(ips):
+                    if increment:
+                        increment[0].emit(ips.index(ip))
+                        increment[1].emit("Working on : " + ip)
+                    self.data.update({'host': '', 'device_type': '', 'ip': ip,
+                                      'port': '23', 'username': '', 'password': '', 'secret': ''})
+                    self.data = funct(self.data, mode="check")
+                    self.executeCommands(self.loginTelnet(
+                        privelege=True, mode="check"), self.rename_one(name_list[i]), silent=True)
+                increment[1].emit("Configuration done ")
+        except Exception as ex:
+            self.temp[2].emit(str(ex))
+        increment[0].emit(len(ips))
+        increment[3].emit()
+        return None
 
     def createVlans(self, start, numberOfVlans, nameList=[]):
         """create vlans on the target"""
         commands = []
-        self.temp[2].emit("Creating the vlans\n")
         if numberOfVlans > 1:
             text = str(start) + '-' + str(int(start)+int(numberOfVlans-1))
         elif numberOfVlans == 1:
@@ -212,13 +229,16 @@ class TelnetDevice(QtCore.QObject):
         commands.append("vlan " + text)
         commands.append("exit")
         if nameList and len(nameList) == numberOfVlans:
-            self.temp[2].emit("Naming the vlans\n")
             for i, name in enumerate(nameList, start):
                 commands.append("vlan " + str(i))
                 commands.append("name " + str(name))
                 commands.append("exit")
         commands.append("exit")
         return commands
+
+    def vlans(self, ips, start, numberOfVlans, nameList=[], funct=None , increment=None):
+        """creates vlans on multiple target"""
+        self.automate(ips=ips, commands=self.createVlans(start, numberOfVlans, nameList), silent=True, increment=increment, funct=funct)
 
     def showRun(self):
         """displays the show run"""
@@ -231,7 +251,7 @@ class TelnetDevice(QtCore.QObject):
                       backup_root=root_path, funct=funct, increment=increment)
         return None
 
-    def mergeConfig(self, config_path, ips='', funct =None, increment=None):
+    def mergeConfig(self, config_path, ips='', funct=None, increment=None):
         """apply the configuration from a file to one or many devices"""
         ip = ips
         self.temp = increment
@@ -240,7 +260,7 @@ class TelnetDevice(QtCore.QObject):
         with open(config_path) as f:
             data = f.read(5000)
         self.automate(ips=ip, commands=['conf t', str(
-            data)], backup=False, silent=False, funct=funct , increment=increment)
+            data)], backup=False, silent=False, funct=funct, increment=increment)
         self.temp[2].emit("restoring from : " + config_path +
                           "and merging with the actual config")
 
@@ -248,7 +268,11 @@ class TelnetDevice(QtCore.QObject):
         """return the commands for saving configs"""
         return ['copy running-config startup-config', ' ']
 
-    def restore(self, ips='' ,config_path='backups/' , funct= None , increment=None):
+    def commit(self, ips ,funct=None, increment=None):
+        """commit the changes into startup config for multiple ips """
+        self.automate(ips=ips, commands=self.save(), mode="check", privelege=True, silent=False, funct=funct, increment=increment)
+
+    def restore(self, ips='', config_path='backups/', funct=None, increment=None):
         """apply the configuration from a file to one or many devices"""
         ip = ips
         self.temp = increment
@@ -289,12 +313,11 @@ class TelnetDevice(QtCore.QObject):
             path = 'temp/' + str(file)
             self.restore(path)
 
-    def enableSsh(self, ips, domain_name):
+    def enableSsh(self, ips, domain_name, funct=None, increment=None):
         """enables the ssh protocol on the target for remote connection"""
         if len(domain_name) == len(ips):
             for i, ip in enumerate(ips):
-                self.automate(ips=[ip], commands=['conf t', 'ip domain-name ' + domain_name[i], 'crypto key generate rsa modulus 1024',
-                                                  'line vty 0 4', 'transport input all', 'exit'], backup=True, silent=True, save=True)
-            self.temp[2].emit("setting up the ssh")
+                self.automate(ips=[ip], commands=['conf t', 'ip domain-name ' + domain_name[i], 'crypto key generate rsa modulus 1024','line vty 0 4', 'transport input all', 'exit'], silent=True, increment=increment, funct=funct)
+            self.temp[2].emit("Setting up the ssh\n")
         else:
             self.temp[2].emit("No matching lengh between input")

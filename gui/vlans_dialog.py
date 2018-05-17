@@ -2,14 +2,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from backend.telnet import TelnetDevice
 
 
-class Restore_dialog(QtWidgets.QWidget):
-    """the configure from restore dialog window """
+class Vlans_dialog(QtWidgets.QWidget):
+    """the configure from script dialog window """
     request = QtCore.pyqtSignal(list)
 
     def __init__(self, ips):
-        """create the resotre dialog object"""
+        """create the backup dialog object"""
         self.ips = ips
-        self.path = ''
         self.device = TelnetDevice()
         QtWidgets.QDialog.__init__(
             self, None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
@@ -23,63 +22,65 @@ class Restore_dialog(QtWidgets.QWidget):
         QtWidgets.qApp.aboutToQuit.connect(self._thread.quit)
         self.setupUi(self)
 
-    def setupUi(self, Restore_dialog):
-            """the restore dialog setup  """
+    def setupUi(self, vlans_dialog):
+            """the script dialog setup  """
         #main window
-            Restore_dialog.setObjectName("Restore_dialog")
-            Restore_dialog.setWindowModality(QtCore.Qt.ApplicationModal)
-            Restore_dialog.resize(543, 466)
+            vlans_dialog.setObjectName("vlans_dialog")
+            vlans_dialog.setWindowModality(QtCore.Qt.ApplicationModal)
+            vlans_dialog.resize(543, 466)
         #main window vertical layout
-            self.verticalLayout = QtWidgets.QVBoxLayout(Restore_dialog)
+            self.verticalLayout = QtWidgets.QVBoxLayout(vlans_dialog)
             self.verticalLayout.setObjectName("verticalLayout")
         #toolbox container
-            self.toolbox = QtWidgets.QWidget(Restore_dialog)
+            self.toolbox = QtWidgets.QWidget(vlans_dialog)
             self.toolbox.setObjectName("toolbox")
         #toolbox horizontal layout
             self.horizontalLayout = QtWidgets.QHBoxLayout(self.toolbox)
             self.horizontalLayout.setObjectName("horizontalLayout")
-        #toolbox path input
-            self.path_input = QtWidgets.QLineEdit(self.toolbox)
-            self.path_input.setReadOnly(True)
-            self.path_input.setObjectName("path_input")
-            self.horizontalLayout.addWidget(self.path_input)
-        #toolbox open button
-            self.open_btn = QtWidgets.QPushButton(self.toolbox)
-            self.open_btn.setCursor(
+        #toolbox start input
+            self.starting_label = QtWidgets.QLabel(self.toolbox)
+            self.starting_label.setObjectName("starting_label")
+            self.starting_label.setText("Starting vlan number")
+            self.horizontalLayout.addWidget(self.starting_label)
+            self.spinBox = QtWidgets.QSpinBox(self.toolbox)
+            self.spinBox.setButtonSymbols(
+                QtWidgets.QAbstractSpinBox.UpDownArrows)
+            self.spinBox.setSpecialValueText("")
+            self.spinBox.setAccelerated(False)
+            self.spinBox.setSuffix("")
+            self.spinBox.setMinimum(2)
+            self.spinBox.setObjectName("spinBox")
+            self.horizontalLayout.addWidget(self.spinBox)
+         #toolbox number of vlans  input 
+            self.increment_label = QtWidgets.QLabel(self.toolbox)
+            self.increment_label.setObjectName("increment_label")
+            self.increment_label.setText("Number of Vlans")
+            self.horizontalLayout.addWidget(self.increment_label)
+            self.spinBox1 = QtWidgets.QSpinBox(self.toolbox)
+            self.spinBox1.setButtonSymbols(
+                QtWidgets.QAbstractSpinBox.UpDownArrows)
+            self.spinBox1.setSpecialValueText("")
+            self.spinBox1.setAccelerated(False)
+            self.spinBox1.setSuffix("")
+            self.spinBox1.setMinimum(1)
+            self.spinBox1.setObjectName("spinBox1")
+            self.horizontalLayout.addWidget(self.spinBox1)
+        #toolbox create vlans button
+            self.createVlans_btn = QtWidgets.QPushButton(self.toolbox)
+            self.createVlans_btn.setCursor(
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.open_btn.setObjectName("open_btn")
-            self.horizontalLayout.addWidget(self.open_btn)
-            self.open_btn.setAutoDefault(True)
-            self.open_btn.clicked.connect(self.open_file)
-        #toolbox reset button
-            self.reset_btn = QtWidgets.QPushButton(self.toolbox)
-            self.reset_btn.setCursor(
-                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.reset_btn.setObjectName("reset_btn")
-            self.horizontalLayout.addWidget(self.reset_btn)
-            self.reset_btn.clicked.connect(self.clear_display)
-        #toolbox apply button
-            self.apply_btn = QtWidgets.QPushButton(self.toolbox)
-            self.apply_btn.setCursor(
-                QtGui.QCursor(QtCore.Qt.PointingHandCursor))
-            self.apply_btn.setObjectName("apply_btn")
-            self.horizontalLayout.addWidget(self.apply_btn)
-            self.apply_btn.clicked.connect(self.apply_restore)
+            self.createVlans_btn.setObjectName("createVlans_btn")
+            self.horizontalLayout.addWidget(self.createVlans_btn)
+            self.createVlans_btn.clicked.connect(self.createVlans_script)
             self.verticalLayout.addWidget(self.toolbox)
-        #toolbox select mode combobox
-            self.select_mode = QtWidgets.QComboBox(self.widget)
-            self.select_mode.addItem("Restore")
-            self.select_mode.addItem("Merge")
-            self.select_mode.setObjectName("select_mode")
-            self.horizontalLayout.addWidget(self.select_mode)
         #loading label
-            self.loading_label = QtWidgets.QLabel(Restore_dialog)
+            self.loading_label = QtWidgets.QLabel(vlans_dialog)
             self.loading_label.setAlignment(QtCore.Qt.AlignCenter)
             self.loading_label.setObjectName("loading_label")
             self.loading_label.hide()
             self.verticalLayout.addWidget(self.loading_label)
         #loading container
-            self.loading_container = QtWidgets.QWidget(Restore_dialog)
+            self.loading_container = QtWidgets.QWidget(vlans_dialog)
             self.loading_container.setObjectName("loading_container")
             self.verticalLayout.addWidget(self.loading_container)
             self.loading_container.hide()
@@ -97,7 +98,7 @@ class Restore_dialog(QtWidgets.QWidget):
             self.loading_bar.setObjectName("loading_bar")
             self.loading_bar.hide()
             self.loading_layout.addWidget(self.loading_bar)
-        #retry button
+        #Clear button
             self.clear_btn = QtWidgets.QPushButton(self.loading_container)
             self.clear_btn.setCursor(
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
@@ -107,7 +108,7 @@ class Restore_dialog(QtWidgets.QWidget):
             self.clear_btn.clicked.connect(self.reset_display)
             self.loading_layout.addWidget(self.clear_btn)
         #input login container
-            self.login_container = QtWidgets.QWidget(Restore_dialog)
+            self.login_container = QtWidgets.QWidget(vlans_dialog)
             self.login_container.setObjectName("login_container")
             self.verticalLayout.addWidget(self.login_container)
             self.login_container.hide()
@@ -139,44 +140,30 @@ class Restore_dialog(QtWidgets.QWidget):
             self.login_button.clicked.connect(self.toogle)
             self.login_layout.addWidget(self.login_button)
         #display text widget
-            self.display_text = QtWidgets.QTextEdit(Restore_dialog)
+            self.display_text = QtWidgets.QTextEdit(vlans_dialog)
             self.display_text.setObjectName("display_text")
+            self.display_text.setReadOnly(False)
+            self.display_text.setPlaceholderText(
+                "Input the name for each vlan here :")
             self.verticalLayout.addWidget(self.display_text)
 
-            self.retranslateUi(Restore_dialog)
-            QtCore.QMetaObject.connectSlotsByName(Restore_dialog)
+            self.retranslateUi(vlans_dialog)
+            QtCore.QMetaObject.connectSlotsByName(vlans_dialog)
 
-    def retranslateUi(self, Restore_dialog):
+    def retranslateUi(self, vlans_dialog):
         _translate = QtCore.QCoreApplication.translate
-        Restore_dialog.setWindowTitle(_translate(
-            "Restore_dialog", "Restoring a device configuration"))
-        self.open_btn.setText(_translate("Restore_dialog", "Open"))
-        self.reset_btn.setText(_translate("Restore_dialog", "Reset"))
-        self.apply_btn.setText(_translate("Restore_dialog", "Apply"))
-        self.path_input.setPlaceholderText(
-            _translate("Restore_dialog", "Press open to select a file -->"))
+        vlans_dialog.setWindowTitle(_translate(
+            "vlans_dialog", "Create Vlans "))
+        self.createVlans_btn.setText(_translate("vlans_dialog", "Create"))
         self.loading_label.setText(_translate(
-            "Restore_dialog", "Executing the script"))
+            "vlans_dialog", "Executing the script"))
 
-    def open_file(self):
-        """action when toolbox open button is pressed"""
-        path = QtWidgets.QFileDialog.getOpenFileName(self, QtCore.QCoreApplication.translate(
-            "Restore_dialog", "Choose the restore text file"), "backups/", QtCore.QCoreApplication.translate("Restore_dialog", "Text File(*.txt)"))[0]
-        self.path_input.setText(path)
-        try:
-            with open(path, 'r') as f:
-                text = ''.join(f.readlines())
-                self.display_text.setPlainText(text)
-        except Exception:
-            pass
-
-    def clear_display(self):
-        """action when the reset button is pressed"""
-        self.reset_display()
-
-    def apply_restore(self):
+    def createVlans_script(self):
         """action when the apply button is pressed"""
-        if self.path_input.text():
+        self.name_list = self.display_text.toPlainText().split('\n')
+        self.number = self.spinBox1.value()
+        self.start = self.spinBox.value()
+        if len(self.name_list) == self.number:
             self.display_text.clear()
             self.loading_label.show()
             self.loading_bar.setValue(0)
@@ -186,10 +173,9 @@ class Restore_dialog(QtWidgets.QWidget):
             self.loading_container.show()
             self.loading_bar.show()
             self._thread.start()
-            self.path = self.path_input.text()
-            self.request.emit([self.ips, self.path, self.getInputs])
+            self.request.emit([self.ips, self.start, self.number, self.name_list, self.getInputs])
         else:
-            self.loading_label.setText("Please select a file")
+            self.loading_label.setText("The size of the inputs did not match the number of vlans")
             self.loading_label.show()
 
     def getInputs(self, data, mode="check"):
@@ -234,8 +220,9 @@ class Restore_dialog(QtWidgets.QWidget):
         self.login_username.show()
         self.login_password.clear()
         self.login_password.show()
-        self.login_container.hide()
         self.login_secret.clear()
+        self.login_secret.show()
+        self.login_container.hide()
 
     @QtCore.pyqtSlot(str)
     def change_display(self, text):
@@ -257,21 +244,20 @@ class Restore_dialog(QtWidgets.QWidget):
         """changes the text in the display text"""
         self.toolbox.setEnabled(True)
         self.loading_bar.setValue(0)
+        self.spinBox.setValue(2)
+        self.spinBox1.setValue(1)
         self.loading_bar.hide()
-        self.display_text.setReadOnly(False)
+        self.display_text.clear()
+        self.login_container.hide()
+        self.loading_label.hide()
         self.clear_btn.hide()
         self.loading_container.hide()
-        self.path_input.clear()
-        self.display_text.clear()
-        self.loading_label.hide()
-        self.login_container.hide()
-        self.select_mode.setCurrentIndex(0)
 
     @QtCore.pyqtSlot()
     def after_work(self):
-        self.display_text.setReadOnly(False)
         self.clear_btn.show()
         self.loading_label.setText("Working done")
+
 
 class Threaded(QtCore.QObject):
     text_signal = QtCore.pyqtSignal(str)
@@ -289,12 +275,10 @@ class Threaded(QtCore.QObject):
 
     @QtCore.pyqtSlot(list)
     def automate_config(self, args):
+        """         self.ips, name_list, funct = self.getInputs """
         increment = [self.bar_signal, self.label_signal,
                      self.text_signal, self.done_signal]
-        if self.select_mode.currentText() == 'Restore':
-            self.device.backup(args[0], args[1], args[2], increment)
-        elif self.select_mode.currentText() == 'Merge':
-            self.device.backup(args[0], args[1], args[2], increment)
+        self.device.vlans(args[0], args[1], args[2], args[3],args[4], increment)
 
     @QtCore.pyqtSlot()
     def exit_process(self):

@@ -3,6 +3,10 @@ from network_db.net_database import Net_db
 from gui.script_dialog import Script_dialog
 from gui.backup_dialog import Backup_dialog
 from gui.restore_dialog import Restore_dialog
+from gui.rename_dialog import Rename_dialog
+from gui.commit_dialog import Commit_dialog
+from gui.ssh_dialog import Ssh_dialog
+from gui.vlans_dialog import Vlans_dialog
 import regex
 import subprocess
 import ipaddress
@@ -127,10 +131,10 @@ class Ui_Automate(QtWidgets.QWidget):
             self.functions_btn.setObjectName("functions_btn")
             self.horizontalLayout.addWidget(self.functions_btn)
             self.menu = QtWidgets.QMenu(Automate)
-            self.menu.addAction("Rename")
-            self.menu.addAction("Create Vlans")
-            self.menu.addAction("Commit")
-            self.menu.addAction("Enable SSH")
+            self.menu.addAction("Rename").triggered.connect(self.rename_action)
+            self.menu.addAction("Create Vlans").triggered.connect(self.vlans_action)
+            self.menu.addAction("Commit").triggered.connect(self.commit_action)
+            self.menu.addAction("Enable SSH").triggered.connect(self.ssh_action)
             self.functions_btn.setMenu(self.menu)
         #toolbox other options button as otherFn_btn
             self.otherFn_btn = QtWidgets.QPushButton(self.toolbox)
@@ -733,7 +737,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.script_window = Script_dialog(ips)
             self.script_window.show()
         else:
-            self.errorMsg("Please selected devices ...")
+            self.errorMsg("Please select a device ...")
 
     def invoque_shell_action(self):
         """invoque shells on the selected ips"""
@@ -742,7 +746,7 @@ class Ui_Automate(QtWidgets.QWidget):
             for ip in ips:
                 self.invoque_one_shell(ip)
         else:
-            self.errorMsg("Please selected devices ...")
+            self.errorMsg("Please select a device ...")
 
     def invoque_one_shell(self, ip):
         """invoque a shell on a ip address"""
@@ -760,7 +764,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.backup_window = Backup_dialog(ips)
             self.backup_window.show()
         else:
-            self.errorMsg("Please selected devices ...")
+            self.errorMsg("Please select a device ...")
 
     def restore_btn_action(self):
         """action when restore button is pressed"""
@@ -769,7 +773,43 @@ class Ui_Automate(QtWidgets.QWidget):
             self.restore_window = Restore_dialog(ips)
             self.restore_window.show()
         else:
-            self.errorMsg("Please selected devices ...")
+            self.errorMsg("Please select a device ...")
+
+    def rename_action(self):
+        """when rename is triggred """
+        ips = self.get_selected()
+        if ips:
+            self.rename_window = Rename_dialog(ips)
+            self.rename_window.show()
+        else:
+            self.errorMsg("Please select a device ...")
+
+    def vlans_action(self):
+        """when vlans is triggred """
+        ips = self.get_selected()
+        if ips:
+            self.vlans_window = Vlans_dialog(ips)
+            self.vlans_window.show()
+        else:
+            self.errorMsg("Please select a device ...")
+
+    def commit_action(self):
+        """when commit is triggred """
+        ips = self.get_selected()
+        if ips:
+            self.commit_window = Commit_dialog(ips)
+            self.commit_window.show()
+        else:
+            self.errorMsg("Please select a device ...")
+
+    def ssh_action(self):
+        """when ssh is triggred """
+        ips = self.get_selected()
+        if ips:
+            self.ssh_window = Ssh_dialog(ips)
+            self.ssh_window.show()
+        else:
+            self.errorMsg("Please select a device ...")
 
     #utiliy functions
     def fillTablewithIps(self, table, ips):
