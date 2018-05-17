@@ -126,6 +126,12 @@ class Ui_Automate(QtWidgets.QWidget):
             self.functions_btn.setIconSize(QtCore.QSize(30, 30))
             self.functions_btn.setObjectName("functions_btn")
             self.horizontalLayout.addWidget(self.functions_btn)
+            self.menu = QtWidgets.QMenu(Automate)
+            self.menu.addAction("Rename")
+            self.menu.addAction("Create Vlans")
+            self.menu.addAction("Commit")
+            self.menu.addAction("Enable SSH")
+            self.functions_btn.setMenu(self.menu)
         #toolbox other options button as otherFn_btn
             self.otherFn_btn = QtWidgets.QPushButton(self.toolbox)
             self.otherFn_btn.setMinimumSize(QtCore.QSize(50, 50))
@@ -138,6 +144,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.otherFn_btn.setIcon(icon6)
             self.otherFn_btn.setIconSize(QtCore.QSize(30, 30))
             self.otherFn_btn.setObjectName("otherFn_btn")
+            self.otherFn_btn.hide()
             self.horizontalLayout.addWidget(self.otherFn_btn)
         #toolbox telnet radio button as telnet
             self.telnet = QtWidgets.QRadioButton(self.toolbox)
