@@ -47,7 +47,7 @@ class TelnetDevice(QtCore.QObject):
             target = tn.Telnet()
             self.temp[2].emit("###Trying to connect to " +
                               self.data["ip"]+' ###\n')
-            target.open(host=self.data['ip'])
+            target.open(host=self.data['ip'], timeout=3)
             self.temp[2].emit("Establishing the connection...\n")
         except (TimeoutError, OSError):
             self.temp[2].emit("Error !!! device unreacheable \n")
@@ -59,8 +59,9 @@ class TelnetDevice(QtCore.QObject):
             self.executeLine(target, self.data["password"])
             answer = target.read_some().decode()
             if answer.endswith(">"):
-                if self.data["host"] != answer[2:-1] and refreshing:
+                if refreshing:
                     self.data["host"] = answer[2:-1]
+                    print(self.data)
                     self.myDb.refreshDevice(self.data)
                 self.temp[2].emit(
                     "Connection successful to " + self.data["ip"] + "\n")
@@ -75,9 +76,6 @@ class TelnetDevice(QtCore.QObject):
     def loginPrivelegeMode(self, target):
         """login to privelege mode in a cisco device"""
         if target:
-            if self.data['secret'] == '':
-                self.data['secret'] = getpass.getpass(
-                    "Input the enable password : ")
             self.executeLine(target, "en")
             self.executeLine(target, self.data['secret'])
             answer = target.read_some().decode()
@@ -99,8 +97,6 @@ class TelnetDevice(QtCore.QObject):
                 self.myDb.prepareBackup(
                     self.data["ip"], backup_root, target.read_until('#'.encode()).decode())
             for command in commands:
-                if not self.maintain:
-                    break
                 self.executeLine(target, command)
             self.executeLine(target, "exit")
             if silent:
@@ -158,7 +154,9 @@ class TelnetDevice(QtCore.QObject):
                         increment[0].emit(ips.index(ip))
                         increment[1].emit("Working on : " + ip)
                     self.data.update({'host': '', 'device_type': '', 'ip': ip,
-                                      'port': '23', 'username': '', 'password': '', 'secret': ''})
+                                        'port': '23'})
+                    if mode != "one":
+                        self.data.update({'username': '', 'password': '', 'secret': ''})
                     self.data = funct(self.data, mode=mode)
                     self.executeCommands(self.loginTelnet(
                         refreshing=save, privelege=privelege, mode=mode), commands, silent=silent, backup=backup, backup_root=backup_root)

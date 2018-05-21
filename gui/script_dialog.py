@@ -169,6 +169,7 @@ class Script_dialog(QtWidgets.QWidget):
                 QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.retry_btn.setObjectName("retry_btn")
             self.retry_btn.setText("Clear")
+            self.retry_btn.setDefault(True)
             self.retry_btn.hide()
             self.retry_btn.clicked.connect(self.reset_display)
             self.loading_layout.addWidget(self.retry_btn)
@@ -203,7 +204,11 @@ class Script_dialog(QtWidgets.QWidget):
             self.login_button = QtWidgets.QPushButton(self.login_container)
             self.login_button.setObjectName("login_button")
             self.login_button.setText("Confirm")
+            self.login_button.setDefault(True)
             self.login_button.clicked.connect(self.toogle)
+            self.login_password.returnPressed.connect(self.login_button.click)
+            self.login_secret.returnPressed.connect(self.login_button.click)
+            self.login_username.returnPressed.connect(self.login_button.click)
             self.login_layout.addWidget(self.login_button)
         #display text widget
             self.display_text = QtWidgets.QTextEdit(script_dialog)
@@ -273,9 +278,9 @@ class Script_dialog(QtWidgets.QWidget):
 
     def apply_script(self):
         """action when the apply button is pressed"""
+        self.commands = self.display_text.toPlainText().split('\n')
         self.display_text.clear()
         self.loading_label.show()
-        self.commands = self.display_text.toPlainText().split('\n')
         self.loading_bar.setValue(0)
         self.toolbox.setEnabled(False)
         self.container.setEnabled(False)
@@ -287,18 +292,19 @@ class Script_dialog(QtWidgets.QWidget):
             self.login_secret.show()
         self._thread.start()
         self.request.emit([self.ips, self.commands, self.get_mode(), self.privilege_check.isChecked(), self.add_check.isChecked(
-        ), self.silent_check.isChecked(), self.backup_check.isChecked, self.backup_path_input.text(), self.getInputs])
+        ), self.silent_check.isChecked(), self.backup_check.isChecked(), self.backup_path_input.text(), self.getInputs])
 
     def getInputs(self, data, mode="ask"):
         """input the login info"""
         self.loop = True
+        self.loading_bar.hide()
         if mode == "ask":
             self.login_container.show()
             while self.loop:
                 self.loading_label.setText(
                     "Input the login for : " + data["ip"])
                 QtCore.QCoreApplication.processEvents()
-            data["userame"] = self.login_username.text()
+            data["username"] = self.login_username.text()
             data["password"] = self.login_password.text()
             if self.privilege_check.isChecked():
                 data["secret"] = self.login_secret.text()
@@ -307,6 +313,7 @@ class Script_dialog(QtWidgets.QWidget):
             self.login_container.show()
             self.login_username.hide()
             self.login_password.hide()
+            self.login_secret.show()
             while self.loop:
                 self.loading_label.setText(
                     "Input the privilege password for the ip =  " + data["ip"])
@@ -316,10 +323,13 @@ class Script_dialog(QtWidgets.QWidget):
         elif mode == "check":
             index = self.device.myDb.searchDevice(data)
             if index != "EOL" and self.device.myDb.all_info[index]["username"] and self.device.myDb.all_info[index]["password"]:
+                data = self.device.myDb.all_info[index].copy()
                 if self.privilege_check.isChecked() and self.device.myDb.all_info[index]["secret"] == '':
                     self.getInputs(data, mode='privilegeOnly')
-                data = self.device.myDb.all_info[index].copy()
+            else:
+                self.getInputs(data, mode='ask')   
         self.reset_view()
+        self.loading_bar.show()
         return data
 
     def toogle(self):

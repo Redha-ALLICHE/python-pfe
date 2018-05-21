@@ -40,8 +40,8 @@ class Ui_Automate(QtWidgets.QWidget):
         #main toolbox
             self.toolbox = QtWidgets.QWidget(Automate)
             self.toolbox.setMinimumSize(QtCore.QSize(50, 50))
-            """ #self.toolbox.setStyleSheet(
-                "QPushButton{ color: rgb(25, 151, 198);border: none; padding:5px 0; font-size:16px;border-radius: 10px;}QPushButton:hover{background-color:rgb(50, 50, 50)}QPushButton:Pressed{border: 2px solid rgb(60, 60, 60)}") """
+            self.toolbox.setStyleSheet(
+                "QPushButton{ color: rgb(25, 151, 198);border: none; padding:5px 0; font-size:16px;border-radius: 10px;}QPushButton:hover{background-color:rgb(50, 50, 50)}QPushButton:Pressed{border: 2px solid rgb(60, 60, 60)}QPushButton:checked{background-color:rgb(20,20,20)}")
             self.toolbox.setObjectName("toolbox")
         #toolbox horizontal layout
             self.horizontalLayout = QtWidgets.QHBoxLayout(self.toolbox)
@@ -226,8 +226,8 @@ class Ui_Automate(QtWidgets.QWidget):
         #from database grid layout AS gridLayout
             self.gridLayout = QtWidgets.QGridLayout(
                 self.scrollAreaWidgetContents)
-            self.gridLayout.setContentsMargins(0, 0, 0, 0)
-            self.gridLayout.setSpacing(0)
+            self.gridLayout.setContentsMargins(0, 0, 6, 0)
+            self.gridLayout.setSpacing(5)
             self.gridLayout.setAlignment(QtCore.Qt.AlignTop)
             self.gridLayout.setObjectName("gridLayout")
         #from database devices
@@ -564,7 +564,10 @@ class Ui_Automate(QtWidgets.QWidget):
         #item container
         container = QtWidgets.QPushButton(self.scrollAreaWidgetContents)
         vertical = QtWidgets.QVBoxLayout(container)
+        vertical.setContentsMargins(6,6,6,6)
         container.setCheckable(False)
+        container.setStyleSheet(
+            "QPushButton{background-color:rgb(45,45,45);border-radius:5px}QPushButton:checked{border:3px solid rgb(30,30,30);border-radius:5px}")
         #image label
         img = QtWidgets.QLabel(container)
         if data["type"] == 'switch':
@@ -576,15 +579,19 @@ class Ui_Automate(QtWidgets.QWidget):
         #connect push button
         btn = QtWidgets.QPushButton(container)
         btn.setText("Connect")
+        btn.setMinimumHeight(35)
         if self.ping(data["ip"]):
-            btn.setStyleSheet("color: green;")
+            btn.setStyleSheet(
+                "QPushButton{background-color:rgb(30, 30, 30); color: green ;border: none; padding:5px 0; font-size:16px;border-radius: 10px;}QPushButton:hover{background-color:rgb(10, 10, 10)}QPushButton:Pressed{border: 2px solid rgb(60, 60, 60)}")
         else:
-            btn.setStyleSheet("color: red;")
+            btn.setStyleSheet(
+                "QPushButton{background-color:rgb(30, 30, 30); color: red ;border: none; padding:5px 0; font-size:16px;border-radius: 10px;}QPushButton:hover{background-color:rgb(10, 10, 10)}QPushButton:Pressed{border: 2px solid rgb(60, 60, 60)}")
         #checkbox
         check = QtWidgets.QCheckBox(container)
         check.hide()
         #table widget
         table = QtWidgets.QTableWidget(container)
+        table.setStyleSheet("QTableWidget::item{background-color:rgb(30,30,30)}")
         table.setColumnCount(1)
         table.setRowCount(3)
         head = table.horizontalHeader()
@@ -593,6 +600,7 @@ class Ui_Automate(QtWidgets.QWidget):
             0, QtWidgets.QHeaderView.Stretch)
         table.setVerticalHeaderLabels(
             ['IP address', 'Host', 'Description'])
+        table.verticalHeader().setStyleSheet("::section{background-color:rgb(30,30,30)}")
         item_ip = QtWidgets.QTableWidgetItem(data["ip"])
         item_ip.setFlags(QtCore.Qt.ItemIsEnabled)
         item_host = QtWidgets.QTableWidgetItem(data["host"])
@@ -609,7 +617,7 @@ class Ui_Automate(QtWidgets.QWidget):
         vertical.addWidget(check)
         vertical.addWidget(table)
         vertical.addWidget(btn)
-        container.setMinimumSize(120, 260)
+        container.setMinimumHeight(260)
         return container
 
     #event functions
@@ -648,8 +656,8 @@ class Ui_Automate(QtWidgets.QWidget):
     def apply_file_action(self):
         """action when from file apply button is pressed"""
         #getting the ips from the widget
-        ips = [item for item in (
-            self.fromfile_view.toPlainText().split('\n')) if self.check_ip(item)]
+        ips = set([item for item in (
+            self.fromfile_view.toPlainText().split('\n')) if self.check_ip(item)])
         self.all_selections = ips.copy()
         self.selected = ips.copy()
         if ips:
