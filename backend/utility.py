@@ -33,11 +33,11 @@ class Utility():
         """get the names of the files in the folder"""
         return shutil.os.listdir(folder)
 
-    def prepareBackup(self, ip, root, data):
+    def prepareBackup(self, ip, root, data, temp):
         """get the config and store it to a file """
         name = str(root) + str(ip) + time.strftime('_%d_%m_%Y_%Hh%M.conf',time.localtime())
         with open(name, mode='w') as f:
-            print("Saving the configuration in the file : " + name)
+            temp[2].emit("Saving the configuration in the file : " + name + '\n')
             f.write("\n".join(data.split("\n")[3:-2]))
         return name
 
@@ -120,13 +120,13 @@ class Utility():
             print("deleting done")
         return None
 
-    def refreshDevice(self, data):
+    def refreshDevice(self, data, temp):
         """update the settings of one existing device in your devices database"""
         db = Net_db()
         check = self.searchDevice(data)
         if check != "EOL":
             db.updateDevice(data)
-            print("Refreshing the existing info of the device")
+            temp[2].emit("Refreshing the existing info of the device\n")
             db.saveDb()
             db.closeDb()
             return self.all_info[check]
@@ -135,7 +135,7 @@ class Utility():
             db.addDevice(data)
             db.saveDb()
             db.closeDb()
-            print("Adding the device with the ip address " + data["ip"] + " in the list of devices")
+            temp[2].emit("Adding the device with the ip address " + data["ip"] + " in the list of devices\n")
             return None
 
     def searchDevice(self, data):

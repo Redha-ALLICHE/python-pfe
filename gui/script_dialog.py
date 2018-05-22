@@ -127,7 +127,8 @@ class Script_dialog(QtWidgets.QWidget):
                 self.backup_path_container)
             self.backup_path_input.setEnabled(True)
             self.backup_path_input.setObjectName("backup_path_input")
-            self.backup_path_input.setText("backups")
+            self.backup_path_input.setText("backups/")
+            self.backup_path_input.adjustSize()
             self.horizontalLayout_3.addWidget(self.backup_path_input)
         #checkboxes backup path change button
             self.change_path_btn = QtWidgets.QToolButton(
@@ -291,6 +292,8 @@ class Script_dialog(QtWidgets.QWidget):
         if self.privilege_check.isChecked():
             self.login_secret.show()
         self._thread.start()
+        if self.backup_check.isChecked():
+            self.privilege_check.setChecked(True)
         self.request.emit([self.ips, self.commands, self.get_mode(), self.privilege_check.isChecked(), self.add_check.isChecked(
         ), self.silent_check.isChecked(), self.backup_check.isChecked(), self.backup_path_input.text(), self.getInputs])
 

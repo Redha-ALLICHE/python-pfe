@@ -12,7 +12,7 @@ import subprocess
 import ipaddress
 import functools
 
-
+pcolor = "rgb(30,30,30)"
 class Ui_Automate(QtWidgets.QWidget):
     """this is the automate widget """
 
@@ -29,10 +29,11 @@ class Ui_Automate(QtWidgets.QWidget):
 
     def setupUi(self, Automate):
             """setup the interface of the automate window """
+        
         #main widget
             Automate.setObjectName("Automate")
             Automate.resize(589, 465)
-            Automate.setStyleSheet("background-color: rgb(30, 30, 30)")
+            Automate.setStyleSheet("background-color: pcolor".replace("pcolor",pcolor))
         #main vertical layout
             self.verticalLayout = QtWidgets.QVBoxLayout(Automate)
             self.verticalLayout.setObjectName("verticalLayout")
@@ -158,7 +159,7 @@ class Ui_Automate(QtWidgets.QWidget):
             font.setPointSize(12)
             self.telnet.setFont(font)
             self.telnet.setStyleSheet(
-                "QRadioButton{background-color:rgb(30, 30, 30);color:rgb(255, 255, 255);}QRadioButton:indicator {width:10px;height:10px;border-radius:5px;}QRadioButton:indicator:checked {background-color:rgb(227, 0, 80);border:2px solid white;}QRadioButton:indicator:unchecked {background-color:rgb(255, 255, 255); border:2px solid white;}")
+                "QRadioButton{background-color:pcolor;color:rgb(255, 255, 255);}QRadioButton:indicator {width:10px;height:10px;border-radius:5px;}QRadioButton:indicator:checked {background-color:rgb(227, 0, 80);border:2px solid white;}QRadioButton:indicator:unchecked {background-color:rgb(255, 255, 255); border:2px solid white;}".replace("pcolor",pcolor))
             self.telnet.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.telnet.setChecked(True)
             self.telnet.setObjectName("telnet")
@@ -170,7 +171,7 @@ class Ui_Automate(QtWidgets.QWidget):
             font.setFamily("Calibri")
             font.setPointSize(12)
             self.ssh.setFont(font)
-            self.ssh.setStyleSheet("QRadioButton{background-color:rgb(30, 30, 30);color:rgb(255, 255, 255);}QRadioButton:indicator {width:10px;height:10px;border-radius:5px;}QRadioButton:indicator:checked {background-color:rgb(227, 0, 80);border:2px solid white;}QRadioButton:indicator:unchecked {background-color:rgb(255, 255, 255); border:2px solid white;}")
+            self.ssh.setStyleSheet("QRadioButton{background-color:pcolor;color:rgb(255, 255, 255);}QRadioButton:indicator {width:10px;height:10px;border-radius:5px;}QRadioButton:indicator:checked {background-color:rgb(227, 0, 80);border:2px solid white;}QRadioButton:indicator:unchecked {background-color:rgb(255, 255, 255); border:2px solid white;}".replace("pcolor", pcolor))
             self.ssh.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
             self.ssh.setObjectName("ssh")
             self.horizontalLayout.addWidget(self.ssh)
@@ -264,7 +265,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.path_input.setText("")
             self.path_input.setObjectName("path_input")
             self.path_input.setStyleSheet(
-                "QLineEdit{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QLineEdit:hover{background-color: rgb(30, 30, 30)}QLineEdit:Pressed{background-color: rgb(227, 0, 80)}")
+                "QLineEdit{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QLineEdit:hover{background-color: pcolor}QLineEdit:Pressed{background-color: rgb(227, 0, 80)}".replace("pcolor",pcolor))
 
             self.horizontalLayout_3.addWidget(self.path_input)
         #from file toolbar open button as file_open_btn
@@ -272,7 +273,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.file_open_btn.setObjectName("file_open_btn")
             self.file_open_btn.setMinimumWidth(100)
             self.file_open_btn.setStyleSheet(
-                "QPushButton{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
+                "QPushButton{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: pcolor}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
             self.horizontalLayout_3.addWidget(self.file_open_btn)
         #from file toolbar edit button as file_edit_btn
             self.file_edit_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
@@ -280,21 +281,21 @@ class Ui_Automate(QtWidgets.QWidget):
             self.file_edit_btn.setMinimumWidth(100)
             self.horizontalLayout_3.addWidget(self.file_edit_btn)
             self.file_edit_btn.setStyleSheet(
-                "QPushButton{ margin:5px;color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
+                "QPushButton{ margin:5px;color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: pcolor}QPushButton:Pressed{background-color: rgb(227, 0, 80)}".replace("pcolor",pcolor))
         #from file toolbar reset button as file_reset_btn
             self.file_reset_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.file_reset_btn.setObjectName("file_reset_btn")
             self.file_reset_btn.setMinimumWidth(100)
             self.horizontalLayout_3.addWidget(self.file_reset_btn)
             self.file_reset_btn.setStyleSheet(
-                "QPushButton{ margin: 5px;color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
+                "QPushButton{ margin: 5px;color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: pcolor}QPushButton:Pressed{background-color: rgb(227, 0, 80)}".replace("pcolor",pcolor))
         #from file toolbar apply button as file_apply_btn
             self.file_apply_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.file_apply_btn.setObjectName("file_apply_btn")
             self.file_apply_btn.setMinimumWidth(100)
             self.horizontalLayout_3.addWidget(self.file_apply_btn)
             self.file_apply_btn.setStyleSheet(
-                "QPushButton{ margin: 5px;color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
+                "QPushButton{ margin: 5px;color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: pcolor}QPushButton:Pressed{background-color: rgb(227, 0, 80)}".replace("pcolor",pcolor))
         #from file toolbar spacer item
             spacerItem = QtWidgets.QSpacerItem(
                 40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
@@ -346,7 +347,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.from_range.setObjectName("from_range")
             self.from_range.setStyleSheet("QWidget{border-top:none}")
             self.from_range.setStyleSheet(
-                "QPushButton{ margin:3px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
+                "QPushButton{ margin:3px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: pcolor}QPushButton:Pressed{background-color: rgb(227, 0, 80)}".replace("pcolor",pcolor))
         #from range horizontal layout
             self.horizontalLayout_4 = QtWidgets.QHBoxLayout(self.from_range)
             self.horizontalLayout_4.setObjectName("horizontalLayout_4")
@@ -370,7 +371,7 @@ class Ui_Automate(QtWidgets.QWidget):
             font.setPointSize(14)
             self.fromrange_toolbar.setFont(font)
             self.fromrange_toolbar.setStyleSheet(
-                "QPushButton{ margin:3px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: rgb(30, 30, 30)}QPushButton:Pressed{background-color: rgb(227, 0, 80)}")
+                "QPushButton{ margin:3px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QPushButton:hover{background-color: pcolor}QPushButton:Pressed{background-color: rgb(227, 0, 80)}".replace("pcolor",pcolor))
         #from range toolbar horizontal layout
             self.horizontalLayout_5 = QtWidgets.QHBoxLayout(
                 self.fromrange_toolbar)
@@ -385,14 +386,14 @@ class Ui_Automate(QtWidgets.QWidget):
             self.start_address_input.setObjectName("start_address_input")
             self.horizontalLayout_5.addWidget(self.start_address_input)
             self.start_address_input.setStyleSheet(
-                "QLineEdit{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QLineEdit:hover{background-color: rgb(30, 30, 30)}QLineEdit:Pressed{background-color: rgb(227, 0, 80)}")
+                "QLineEdit{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QLineEdit:hover{background-color: pcolor}QLineEdit:Pressed{background-color: rgb(227, 0, 80)}".replace("pcolor",pcolor))
         #from range toolbar ending address input as end_address_input
             self.end_address_input = QtWidgets.QLineEdit(
                 self.fromrange_toolbar)
             self.end_address_input.setObjectName("end_address_input")
             self.horizontalLayout_5.addWidget(self.end_address_input)
             self.end_address_input.setStyleSheet(
-                "QLineEdit{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QLineEdit:hover{background-color: rgb(30, 30, 30)}QLineEdit:Pressed{background-color: rgb(227, 0, 80)}")
+                "QLineEdit{ margin:5px; color: white;border: 2px solid rgb(227, 0, 80); padding:5px; font-size:12px;border-radius: 10px;}QLineEdit:hover{background-color: pcolor}QLineEdit:Pressed{background-color: rgb(227, 0, 80)}".replace("pcolor",pcolor))
         #from range toolbar increment label as increment_label
             self.increment_label = QtWidgets.QLabel(self.fromrange_toolbar)
             self.increment_label.setObjectName("increment_label")
@@ -407,7 +408,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.spinBox_3.setObjectName("spinBox_3")
             self.horizontalLayout_5.addWidget(self.spinBox_3)
             self.spinBox_3.setStyleSheet(
-                "QSpinBox{ background-color:rgb(60, 60, 60);margin:5px; color: white;border: none; padding:2px; font-size:12px;border-radius: 20px;}QSpinBox:hover{background-color: rgb(30, 30, 30)}")
+                "QSpinBox{ background-color:rgb(60, 60, 60);margin:5px; color: white;border: none; padding:2px; font-size:12px;border-radius: 20px;}QSpinBox:hover{background-color: pcolor}".replace("pcolor",pcolor))
         #from range toolbar reset buttons as range_reset_btn
             self.range_reset_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.range_reset_btn.setObjectName("range_reset_btn")
@@ -582,10 +583,10 @@ class Ui_Automate(QtWidgets.QWidget):
         btn.setMinimumHeight(35)
         if self.ping(data["ip"]):
             btn.setStyleSheet(
-                "QPushButton{background-color:rgb(30, 30, 30); color: green ;border: none; padding:5px 0; font-size:16px;border-radius: 10px;}QPushButton:hover{background-color:rgb(10, 10, 10)}QPushButton:Pressed{border: 2px solid rgb(60, 60, 60)}")
+                "QPushButton{background-color:pcolor; color: green ;border: none; padding:5px 0; font-size:16px;border-radius: 10px;}QPushButton:hover{background-color:rgb(10, 10, 10)}QPushButton:Pressed{border: 2px solid rgb(60, 60, 60)}".replace("pcolor", pcolor))
         else:
             btn.setStyleSheet(
-                "QPushButton{background-color:rgb(30, 30, 30); color: red ;border: none; padding:5px 0; font-size:16px;border-radius: 10px;}QPushButton:hover{background-color:rgb(10, 10, 10)}QPushButton:Pressed{border: 2px solid rgb(60, 60, 60)}")
+                "QPushButton{background-color:pcolor; color: red ;border: none; padding:5px 0; font-size:16px;border-radius: 10px;}QPushButton:hover{background-color:rgb(10, 10, 10)}QPushButton:Pressed{border: 2px solid rgb(60, 60, 60)}".replace("pcolor",pcolor))
         #checkbox
         check = QtWidgets.QCheckBox(container)
         check.hide()
@@ -763,7 +764,7 @@ class Ui_Automate(QtWidgets.QWidget):
         if sys.platform.startswith('win'):
             subprocess.Popen([puttypath, '-telnet', ip])
         else:
-            subprocess.call(["plink", "-telnet", ip])
+            subprocess.call(['plink','-telnet' , ip])
 
     def backup_btn_action(self):
         """when backup button is pressed"""

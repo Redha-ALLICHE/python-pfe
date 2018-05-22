@@ -62,7 +62,7 @@ class TelnetDevice(QtCore.QObject):
                 if refreshing:
                     self.data["host"] = answer[2:-1]
                     print(self.data)
-                    self.myDb.refreshDevice(self.data)
+                    self.myDb.refreshDevice(self.data, temp=self.temp)
                 self.temp[2].emit(
                     "Connection successful to " + self.data["ip"] + "\n")
                 if privelege:
@@ -93,9 +93,11 @@ class TelnetDevice(QtCore.QObject):
             self.executeLine(target, "terminal length 0")
             if backup:
                 self.executeLine(target, "show run")
+                if not backup_root.endswith("/"):
+                    backup_root +='/'
                 target.read_until('#'.encode())
                 self.myDb.prepareBackup(
-                    self.data["ip"], backup_root, target.read_until('#'.encode()).decode())
+                    self.data["ip"], backup_root, target.read_until('#'.encode()).decode(),temp=self.temp)
             for command in commands:
                 self.executeLine(target, command)
             self.executeLine(target, "exit")
