@@ -21,6 +21,7 @@ class Restore_dialog(QtWidgets.QWidget):
         self._thread.finished.connect(self.after_work)
         self.work.moveToThread(self._thread)
         QtWidgets.qApp.aboutToQuit.connect(self._thread.quit)
+        print("nrmlment")
         self.setupUi(self)
 
     def setupUi(self, Restore_dialog):
@@ -67,7 +68,7 @@ class Restore_dialog(QtWidgets.QWidget):
             self.apply_btn.clicked.connect(self.apply_restore)
             self.verticalLayout.addWidget(self.toolbox)
         #toolbox select mode combobox
-            self.select_mode = QtWidgets.QComboBox(self.widget)
+            self.select_mode = QtWidgets.QComboBox(self.toolbox)
             self.select_mode.addItem("Restore")
             self.select_mode.addItem("Merge")
             self.select_mode.setObjectName("select_mode")
@@ -161,7 +162,7 @@ class Restore_dialog(QtWidgets.QWidget):
     def open_file(self):
         """action when toolbox open button is pressed"""
         path = QtWidgets.QFileDialog.getOpenFileName(self, QtCore.QCoreApplication.translate(
-            "Restore_dialog", "Choose the restore text file"), "backups/", QtCore.QCoreApplication.translate("Restore_dialog", "Text File(*.txt)"))[0]
+            "Restore_dialog", "Choose the restore text file"), "backups/", QtCore.QCoreApplication.translate("Restore_dialog", "Text File(*.txt),Conf File(*.conf)"))[0]
         self.path_input.setText(path)
         try:
             with open(path, 'r') as f:

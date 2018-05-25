@@ -1,21 +1,25 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from backend.telnet import TelnetDevice
+from backend.ssh import SshDevice
 
 
 class Script_dialog(QtWidgets.QWidget):
     """the configure from script dialog window """
     request = QtCore.pyqtSignal(list)
 
-    def __init__(self, ips):
+    def __init__(self, ips, con):
         """create the script dialog object"""
         self.ips = ips
         self.commands = []
-        self.device = TelnetDevice()
+        if con == 'SSH':
+            self.device = SshDevice()
+        else:
+            self.device = TelnetDevice()
         QtWidgets.QDialog.__init__(
             self, None, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint | QtCore.Qt.WindowMaximizeButtonHint | QtCore.Qt.WindowMinimizeButtonHint)
         self._thread = QtCore.QThread()
-        self.work = Threaded(text_signal=self.change_display,
-                             label_signal=self.change_label, bar_signal=self.change_bar, done_signal=self._thread.quit)
+        self.work = Threaded(con, text_signal=self.change_display,
+                             label_signal=self.change_label, bar_signal=self.change_bar, done_signal=self._thread.quit, )
         self.request.connect(self.work.automate_config)
         self._thread.started.connect(self.work.start)
         self._thread.finished.connect(self.after_work)
@@ -330,7 +334,7 @@ class Script_dialog(QtWidgets.QWidget):
                 if self.privilege_check.isChecked() and self.device.myDb.all_info[index]["secret"] == '':
                     self.getInputs(data, mode='privilegeOnly')
             else:
-                self.getInputs(data, mode='ask')   
+                self.getInputs(data, mode='ask')
         self.reset_view()
         self.loading_bar.show()
         return data
@@ -398,9 +402,12 @@ class Threaded(QtCore.QObject):
     label_signal = QtCore.pyqtSignal(str)
     done_signal = QtCore.pyqtSignal()
 
-    def __init__(self, parent=None, **kwargs):
+    def __init__(self, con, parent=None, **kwargs):
         super().__init__(parent, **kwargs)
-        self.device = TelnetDevice()
+        if con == "SSH":
+            self.device = SshDevice()
+        else:
+            self.device = TelnetDevice()
         self.done_signal.connect(self.exit_process)
 
     @QtCore.pyqtSlot()
@@ -418,4 +425,3 @@ class Threaded(QtCore.QObject):
     @QtCore.pyqtSlot()
     def exit_process(self):
         print("Thread stopped")
-        self.device.exit_process()
