@@ -1,5 +1,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from gui.signinPage import Ui_SigninPage
+from gui.automatePage import Ui_Automate
 import sys
 from users.database import Database
 
@@ -26,9 +27,12 @@ class Ui_loginPage(QtWidgets.QDialog):
         entered_password = self.password_input.text()
         db = Database()
         if db.checkLogin(entered_username,entered_password):
-            print("go to the main")
+            window = Ui_Automate()
+            window.show()
             self.setRemember()
             db.closeDb()
+            self.close()
+            
         else:
             self.errorMsg("Incorrect username or password !")
             self.username_input.setText('')
@@ -60,8 +64,8 @@ class Ui_loginPage(QtWidgets.QDialog):
         loginPage.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
         loginPage.setAutoFillBackground(False)
         loginPage.setStyleSheet(
-        "background-color: rgb(37, 40, 48);\n"
-        "color: rgb(207, 210, 218);\n"
+        "background-color: rgb(30, 30, 30);\n"
+        "color: rgb(240, 240, 240);\n"
         "")
         self.verticalLayout = QtWidgets.QVBoxLayout(loginPage)
         self.verticalLayout.setSizeConstraint(QtWidgets.QLayout.SetNoConstraint)
@@ -76,7 +80,7 @@ class Ui_loginPage(QtWidgets.QDialog):
         self.title.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.title.setStyleSheet("QLabel{\n"
         "    font: 15pt \"Arial\";\n"
-        "    color: rgb(25, 151, 198);    \n"
+        "    color: rgb(200, 200, 200);    \n"
         "    padding :10px;\n"
         "\n"
         "}\n"
@@ -104,7 +108,7 @@ class Ui_loginPage(QtWidgets.QDialog):
         self.verticalLayout.addWidget(self.username_input)
         self.line = QtWidgets.QFrame(loginPage)
         self.line.setStyleSheet(
-        "    background-color: rgb(15, 141, 188);\n"
+        "    background-color: rgb(227, 0, 80);\n"
         "    margin:0 10px 0 10px;\n")
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -125,7 +129,7 @@ class Ui_loginPage(QtWidgets.QDialog):
         self.verticalLayout.addWidget(self.password_input)
         self.line_2 = QtWidgets.QFrame(loginPage)
         self.line_2.setStyleSheet(
-        "    background-color: rgb(15, 141, 188);\n"
+        "    background-color: rgb(227, 0, 80);\n"
         "    margin:0 10px 0 10px;\n")
         self.line_2.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -138,12 +142,7 @@ class Ui_loginPage(QtWidgets.QDialog):
         sizePolicy.setHeightForWidth(self.rememberMe.sizePolicy().hasHeightForWidth())
         self.rememberMe.setSizePolicy(sizePolicy)
         self.rememberMe.setMaximumSize(QtCore.QSize(16777215, 50))
-        self.rememberMe.setStyleSheet("QCheckBox{\n"
-        "    font-size: 16px;\n"
-        "    color: rgb(207, 210, 218);\n"
-        "    margin: 10 0 0 10px;\n"
-        "\n"
-        "}")
+        self.rememberMe.setStyleSheet("QCheckBox{\nfont-size: 16px;\ncolor: rgb(207, 210, 218);\nmargin: 10 0 0 10px;\nbackground-color:rgb(30,30,30);color:rgb(200, 200, 200);}QCheckBox:indicator {width:10px;height:10px;border-radius:5px;}QCheckBox:indicator:checked {background-color:rgb(227, 0, 80);border:2px solid white;}QCheckBox:indicator:unchecked {background-color:rgb(200, 200, 200); border:2px solid white;}")
         self.rememberMe.setObjectName("rememberMe")
         self.verticalLayout.addWidget(self.rememberMe, 0, QtCore.Qt.AlignVCenter)
         spacerItem2 = QtWidgets.QSpacerItem(20, 40, QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Expanding)
@@ -157,10 +156,10 @@ class Ui_loginPage(QtWidgets.QDialog):
         self.signin_btn.setStyleSheet("QPushButton{\n"
         "    \n"
         "    background-color: rgba(240, 240, 240, 0);\n"
-        "    color: rgb(25, 151, 198);    \n"
-        "    border: 1px solid transparent;\n"
+        "    color: rgb(200, 200, 200);    \n"
+        "    border: 2px solid transparent;\n"
         "    padding:5px 0;\n"
-        "    border-color : rgb(25, 151, 198);\n"
+        "    border-color : rgb(227, 0, 80);\n"
         "    font-size:16px;\n"
         "    border-radius: 10px;\n"
         "\n"
@@ -168,11 +167,11 @@ class Ui_loginPage(QtWidgets.QDialog):
         "QPushButton:hover{\n"
         "\n"
         "    color: rgb(255, 255, 255);\n"
-        "    background-color: rgb(25, 151, 198);\n"
+        "    background-color: rgb(50, 50, 50);\n"
         "}\n"
         "QPushButton:pressed{\n"
-        "    background-color: rgb(0, 111, 158);\n"
-        "    border-color: rgb(0, 111, 158);\n"
+        "    background-color: rgb(227, 0, 80);\n"
+        "    border-color: rgb(20, 20, 20);\n"
         "}\n"
         "\n"
         "\n"
@@ -188,19 +187,24 @@ class Ui_loginPage(QtWidgets.QDialog):
         self.login_btn.setMaximumSize(QtCore.QSize(16777215, 40))
         self.login_btn.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         self.login_btn.setStyleSheet("QPushButton{\n"
-        "background-color: rgb(25, 151, 198);\n"
-        "color: rgb(255, 255, 255);\n"
-        "padding:8px 10px;\n"
-        "border : 1px solid rgb(25, 151, 198);\n"
-        "font-size:16px;\n"
-        "font-weight:500;\n"
-        "border-radius: 10px;\n"
+        "    \n"
+        "    background-color: rgba(240, 240, 240, 0);\n"
+        "    color: rgb(200, 200, 200);    \n"
+        "    border: 2px solid transparent;\n"
+        "    padding:5px 0;\n"
+        "    border-color : rgb(227, 0, 80);\n"
+        "    font-size:16px;\n"
+        "    border-radius: 10px;\n"
+        "\n"
         "}\n"
         "QPushButton:hover{\n"
-        "background-color: rgb(5, 131, 178);\n"
+        "\n"
+        "    color: rgb(255, 255, 255);\n"
+        "    background-color: rgb(50, 50, 50);\n"
         "}\n"
         "QPushButton:pressed{\n"
-        "background-color: rgb(0, 111, 158);\n"
+        "    background-color: rgb(227, 0, 80);\n"
+        "    border-color: rgb(20, 20, 20);\n"
         "}\n"
         "\n"
         "\n"

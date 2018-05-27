@@ -248,7 +248,7 @@ class TelnetDevice(QtCore.QObject):
                       backup_root=root_path, funct=funct, increment=increment)
         return None
 
-    def mergeConfig(self, config_path, ips='', funct=None, increment=None):
+    def mergeConfig(self, ips, config_path, funct=None, increment=None):
         """apply the configuration from a file to one or many devices"""
         ip = ips
         self.temp = increment
@@ -257,9 +257,9 @@ class TelnetDevice(QtCore.QObject):
         with open(config_path) as f:
             data = f.read(5000)
         self.automate(ips=ip, commands=['conf t', str(
-            data)], backup=False, silent=False, funct=funct, increment=increment)
-        self.temp[2].emit("restoring from : " + config_path +
-                          "and merging with the actual config")
+            data)], backup=False, silent=True, funct=funct, increment=increment)
+        self.temp[2].emit("Restoring from : " + config_path +
+                          " and merging with the actual config\n")
 
     def save(self):
         """return the commands for saving configs"""

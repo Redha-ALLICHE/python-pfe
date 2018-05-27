@@ -129,7 +129,7 @@ class Commit_dialog(QtWidgets.QWidget):
     def retranslateUi(self, commit_dialog):
         _translate = QtCore.QCoreApplication.translate
         commit_dialog.setWindowTitle(_translate(
-            "commit_dialog", "Apply configuration from script"))
+            "commit_dialog", "Commit the changes"))
         self.commit_btn.setText(_translate("commit_dialog", "Commit"))
         self.path_input.setPlaceholderText(
             _translate("commit_dialog", "Press the commit button to save configs -->"))
@@ -254,4 +254,3 @@ class Threaded(QtCore.QObject):
     @QtCore.pyqtSlot()
     def exit_process(self):
         print("Thread stopped")
-        self.device.exit_process()

@@ -413,7 +413,7 @@ class Ui_Automate(QtWidgets.QWidget):
             self.spinBox_3.setObjectName("spinBox_3")
             self.horizontalLayout_5.addWidget(self.spinBox_3)
             self.spinBox_3.setStyleSheet(
-                "QSpinBox{ background-color:rgb(60, 60, 60);margin:5px; color: white;border: none; padding:2px; font-size:12px;border-radius: 20px;}QSpinBox:hover{background-color: pcolor}".replace("pcolor", pcolor))
+                "QSpinBox{ background-color:rgb(60, 60, 60); color: white;border: none; padding:5px; font-size:12px;border-radius: 20px;}QSpinBox:hover{background-color: pcolor}".replace("pcolor", pcolor))
         #from range toolbar reset buttons as range_reset_btn
             self.range_reset_btn = QtWidgets.QPushButton(self.fromfile_toolbar)
             self.range_reset_btn.setObjectName("range_reset_btn")
@@ -878,13 +878,13 @@ class Ui_Automate(QtWidgets.QWidget):
             else:
                 return True
         else:
-            return True
-            """ output = subprocess.Popen(['ping', '-w', '1', ip],
+            
+            output = subprocess.Popen(['ping', '-w', '1', ip],
                                       stdout=subprocess.PIPE).communicate()[0]
             if "100% packet loss" in output.decode('utf-8').lower():
                 return False
             else:
-                return True """
+                return True 
 
     def checkIpConnected(self, ip):
         """checks if the ip is connected"""

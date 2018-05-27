@@ -14,8 +14,8 @@ class Ui_SigninPage(QtWidgets.QDialog):
         SigninPage.resize(430, 480)
         SigninPage.setWindowModality(QtCore.Qt.ApplicationModal)
         SigninPage.setMaximumSize(QtCore.QSize(430, 480))
-        SigninPage.setStyleSheet("background-color: rgb(37, 40, 48);\n"
-        "color: rgb(207, 210, 218);\n"
+        SigninPage.setStyleSheet("background-color: rgb(30, 30, 30);\n"
+        "color: rgb(200, 200, 200);\n"
         "")
         self.gridLayout = QtWidgets.QGridLayout(SigninPage)
         self.gridLayout.setHorizontalSpacing(5)
@@ -27,7 +27,7 @@ class Ui_SigninPage(QtWidgets.QDialog):
         self.title.setLayoutDirection(QtCore.Qt.LeftToRight)
         self.title.setStyleSheet("QLabel{\n"
         "    font: 19pt \"Arial\";\n"
-        "    color: rgb(25, 151, 198);    \n"
+        "    color: rgb(200, 200, 200);    \n"
         "    padding :10px;\n"
         "\n"
         "\n"
@@ -43,7 +43,7 @@ class Ui_SigninPage(QtWidgets.QDialog):
         self.username_input = QtWidgets.QLineEdit(SigninPage)
         self.username_input.setToolTip("")
         self.username_input.setStyleSheet("QLineEdit{\n"
-        "    background-color: rgb(255, 255, 255,0);\n"
+        "    background-color: rgb(200, 200, 200,0);\n"
         "    color: rgb(207, 210, 218);\n"
         "    padding: 10px;\n"
         "    font-size: 16px;\n"
@@ -75,9 +75,9 @@ class Ui_SigninPage(QtWidgets.QDialog):
         self.submit_btn.setStyleSheet("QPushButton{\n"
         "    \n"
         "    background-color: rgba(240, 240, 240, 0);\n"
-        "    color: rgb(25, 151, 198);    \n"
-        "    border: 3px solid transparent;\n"
-        "    border-color: rgb(25, 151, 198);\n"
+        "    color: rgb(200, 200, 200);    \n"
+        "    border: 2px solid transparent;\n"
+        "    border-color: rgb(227, 0, 80);\n"
         "    font-size:16px;\n"
         "    border-radius: 10px;\n"
         "\n"
@@ -85,11 +85,11 @@ class Ui_SigninPage(QtWidgets.QDialog):
         "QPushButton:hover{\n"
         "\n"
         "    color: rgb(255, 255, 255);\n"
-        "    background-color: rgb(25, 151, 198);\n"
+        "    background-color: rgb(50, 50, 50);\n"
         "}\n"
         "QPushButton:pressed{\n"
-        "    background-color: rgb(0, 111, 158);\n"
-        "    border-color: rgb(0, 111, 158);\n"
+        "    background-color: rgb(227, 0, 80);\n"
+        "    border-color: rgb(30, 30, 30);\n"
         "}\n"
         "\n"
         "\n"
@@ -99,7 +99,7 @@ class Ui_SigninPage(QtWidgets.QDialog):
         self.gridLayout.addWidget(self.submit_btn, 13, 0, 1, 1)
         self.line_3 = QtWidgets.QFrame(SigninPage)
         self.line_3.setStyleSheet(
-        "    background-color: rgb(15, 141, 188);\n"
+        "    background-color: rgb(227, 0, 80);\n"
         "    margin:0 10px 0 10px;\n")
         self.line_3.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_3.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -107,7 +107,7 @@ class Ui_SigninPage(QtWidgets.QDialog):
         self.gridLayout.addWidget(self.line_3, 8, 0, 1, 1)
         self.line = QtWidgets.QFrame(SigninPage)
         self.line.setStyleSheet(
-        "    background-color: rgb(15, 141, 188);\n"
+        "    background-color: rgb(227, 0, 80);\n"
         "    margin:0 10px 0 10px;\n")
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -133,7 +133,7 @@ class Ui_SigninPage(QtWidgets.QDialog):
         self.gridLayout.addWidget(self.copyright, 15, 0, 1, 1, QtCore.Qt.AlignHCenter)
         self.line_4 = QtWidgets.QFrame(SigninPage)
         self.line_4.setStyleSheet(
-        "    background-color: rgb(15, 141, 188);\n"
+        "    background-color: rgb(227, 0, 80);\n"
         "    margin:0 10px 0 10px;\n")
         self.line_4.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_4.setFrameShadow(QtWidgets.QFrame.Sunken)
@@ -141,7 +141,7 @@ class Ui_SigninPage(QtWidgets.QDialog):
         self.gridLayout.addWidget(self.line_4, 10, 0, 1, 1)
         self.line_2 = QtWidgets.QFrame(SigninPage)
         self.line_2.setStyleSheet(
-        "    background-color: rgb(15, 141, 188);\n"
+        "    background-color: rgb(227, 0, 80);\n"
         "    margin:0 10px 0 10px;\n")
         self.line_2.setFrameShape(QtWidgets.QFrame.HLine)
         self.line_2.setFrameShadow(QtWidgets.QFrame.Sunken)

@@ -130,7 +130,7 @@ class Ssh_dialog(QtWidgets.QWidget):
     def retranslateUi(self, ssh_dialog):
         _translate = QtCore.QCoreApplication.translate
         ssh_dialog.setWindowTitle(_translate(
-            "ssh_dialog", "Apply configuration from script"))
+            "ssh_dialog", "Enabling SSH"))
         self.enableSSH_btn.setText(_translate("ssh_dialog", "Enable SSH"))
         self.path_input.setPlaceholderText(
             _translate("ssh_dialog", "Please input the domain-names down below"))
@@ -259,4 +259,4 @@ class Threaded(QtCore.QObject):
     @QtCore.pyqtSlot()
     def exit_process(self):
         print("Thread stopped")
-        self.device.exit_process()
+        

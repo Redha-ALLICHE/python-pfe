@@ -140,7 +140,7 @@ class Backup_dialog(QtWidgets.QWidget):
     def retranslateUi(self, Backup_dialog):
         _translate = QtCore.QCoreApplication.translate
         Backup_dialog.setWindowTitle(_translate(
-            "Backup_dialog", "Apply configuration from script"))
+            "Backup_dialog", "Backup devices"))
         self.choose_folder_btn.setText(_translate("Backup_dialog", "Open"))
         self.backup_btn.setText(_translate("Backup_dialog", "Apply"))
         self.path_input.setPlaceholderText(
@@ -274,4 +274,3 @@ class Threaded(QtCore.QObject):
     @QtCore.pyqtSlot()
     def exit_process(self):
         print("Thread stopped")
-        self.device.exit_process()

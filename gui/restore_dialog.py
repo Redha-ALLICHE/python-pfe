@@ -188,7 +188,7 @@ class Restore_dialog(QtWidgets.QWidget):
             self.loading_bar.show()
             self._thread.start()
             self.path = self.path_input.text()
-            self.request.emit([self.ips, self.path, self.getInputs])
+            self.request.emit([self.ips, self.path, self.getInputs, self.select_mode])
         else:
             self.loading_label.setText("Please select a file")
             self.loading_label.show()
@@ -292,12 +292,12 @@ class Threaded(QtCore.QObject):
     def automate_config(self, args):
         increment = [self.bar_signal, self.label_signal,
                      self.text_signal, self.done_signal]
-        if self.select_mode.currentText() == 'Restore':
-            self.device.backup(args[0], args[1], args[2], increment)
-        elif self.select_mode.currentText() == 'Merge':
-            self.device.backup(args[0], args[1], args[2], increment)
+        if args[3].currentText() == 'Restore':
+            self.device.restore(args[0], args[1], args[2], increment)
+        elif args[3].currentText() == 'Merge':
+            self.device.mergeConfig(args[0], args[1], args[2], increment)
 
     @QtCore.pyqtSlot()
     def exit_process(self):
         print("Thread stopped")
-        self.device.exit_process()
+        

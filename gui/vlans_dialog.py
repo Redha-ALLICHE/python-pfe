@@ -283,4 +283,4 @@ class Threaded(QtCore.QObject):
     @QtCore.pyqtSlot()
     def exit_process(self):
         print("Thread stopped")
-        self.device.exit_process()
+        

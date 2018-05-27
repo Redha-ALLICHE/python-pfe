@@ -130,7 +130,7 @@ class Rename_dialog(QtWidgets.QWidget):
     def retranslateUi(self, rename_dialog):
         _translate = QtCore.QCoreApplication.translate
         rename_dialog.setWindowTitle(_translate(
-            "rename_dialog", "Apply configuration from script"))
+            "rename_dialog", "Renaming the devices"))
         self.rename_btn.setText(_translate("rename_dialog", "Rename"))
         self.path_input.setPlaceholderText(
             _translate("rename_dialog", "Please input the new names down below"))
@@ -259,4 +259,3 @@ class Threaded(QtCore.QObject):
     @QtCore.pyqtSlot()
     def exit_process(self):
         print("Thread stopped")
-        self.device.exit_process()
