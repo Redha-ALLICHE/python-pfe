@@ -54,7 +54,8 @@ class Utility():
                 new_config.append(line.lstrip('no '))
             else:
                 new_config.append('no ' + line)
-        return '\n'.join(new_config).rstrip('end \n') + recovery_config              
+        final = ['\n'.join(new_config), recovery_config]
+        return  final            
 
     def mktemp(self, temp_path):
         """creates the temp_new folder"""

@@ -271,36 +271,49 @@ class TelnetDevice(QtCore.QObject):
                       privelege=True, silent=False, funct=funct, increment=increment)
 
     def restore(self, ips='', config_path='backups/', funct=None, increment=None):
-        """apply the configuration from a file to one or many devices"""
-        ip = ips
-        self.temp = increment
-        if ip == '':
-            ip = [config_path.split('_')[0].split('/')[-1]]
-        with open(config_path) as f:
-            old_config = f.read(5000)
-        for addr in ip:
-            increment[0].emit(ip.index(addr))
+        """restore many devices from a folder"""
+        if not config_path.endswith('/'):
+            config_path +='/'
+        paths = subprocess.os.listdir(config_path)
+        for addr in ips:
+            increment[0].emit(ips.index(addr))
             increment[1].emit("Working on : " + addr)
-            self.data.update({'host': '', 'device_type': '', 'ip': addr,
-                              'port': '23', 'username': '', 'password': '', 'secret': ''})
-            self.data = funct(self.data, mode="check")
-            target = self.loginTelnet(privelege=True)
-            if target:
-                self.executeLine(target, "terminal length 0")
-                self.executeLine(target, "show run")
-                target.read_until('#'.encode())
-                actual_config = target.read_until(
-                    '#'.encode()).decode().split("\n")[3:-2]
-                new_config = self.myDb.getRestore(actual_config, old_config)
-                self.executeLine(target, "conf t")
-                self.executeLine(target, str(new_config + '\n'))
-                self.executeLine(target, "exit")
-                target.close()
-            else:
-                self.temp[2].emit("Commands did not apply!!")
-            self.temp[2].emit("restoring " + "from : " + config_path)
+            path = ((subprocess.os.stat(config_path + x), x)for x in paths if x.startswith(addr))
+            if path:
+                path = sorted(path)[0][1]
+                self.restore_one(addr, config_path + path, funct, increment)
         increment[0].emit(len(ips))
         increment[3].emit()
+        return None
+
+    def restore_one(self, addr='', config_path='', funct=None, increment=None):
+        """apply the configuration from a file to one device"""
+        self.temp = increment
+        if addr == '':
+            addr = [config_path.split('_')[0].split('/')[-1]]
+        with open(config_path) as f:
+            old_config = f.read(5000)
+        self.data.update({'host': '', 'device_type': '', 'ip': addr,
+                            'port': '23', 'username': '', 'password': '', 'secret': ''})
+        self.data = funct(self.data, mode="check")
+        target = self.loginTelnet(privelege=True)
+        if target:
+            self.executeLine(target, "terminal length 0")
+            self.executeLine(target, "show run")
+            target.read_until('#'.encode())
+            actual_config = target.read_until(
+                '#'.encode()).decode().split("\n")[3:-2]
+            new_config = self.myDb.getRestore(actual_config, old_config)
+            self.executeLine(target, "conf t")
+            self.executeLine(target, str(new_config[0]))
+            self.executeLine(target, "conf t")
+            self.executeLine(target, str(new_config[1]))
+            self.executeLine(target, "exit")
+            target.close()
+        else:
+            self.temp[2].emit("Commands did not apply!!")
+            return 1
+        self.temp[2].emit(addr + " is restored " + "from : " + config_path + '\n')
         return None
 
     def undo(self):

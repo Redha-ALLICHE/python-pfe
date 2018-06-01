@@ -21,7 +21,6 @@ class Restore_dialog(QtWidgets.QWidget):
         self._thread.finished.connect(self.after_work)
         self.work.moveToThread(self._thread)
         QtWidgets.qApp.aboutToQuit.connect(self._thread.quit)
-        print("nrmlment")
         self.setupUi(self)
 
     def setupUi(self, Restore_dialog):
@@ -51,7 +50,7 @@ class Restore_dialog(QtWidgets.QWidget):
             self.open_btn.setObjectName("open_btn")
             self.horizontalLayout.addWidget(self.open_btn)
             self.open_btn.setAutoDefault(True)
-            self.open_btn.clicked.connect(self.open_file)
+            self.open_btn.clicked.connect(self.open_folder)
         #toolbox reset button
             self.reset_btn = QtWidgets.QPushButton(self.toolbox)
             self.reset_btn.setCursor(
@@ -159,10 +158,10 @@ class Restore_dialog(QtWidgets.QWidget):
         self.loading_label.setText(_translate(
             "Restore_dialog", "Executing the script"))
 
-    def open_file(self):
+    def open_folder(self):
         """action when toolbox open button is pressed"""
-        path = QtWidgets.QFileDialog.getOpenFileName(self, QtCore.QCoreApplication.translate(
-            "Restore_dialog", "Choose the restore text file"), "backups/", QtCore.QCoreApplication.translate("Restore_dialog", "Text File(*.txt),Conf File(*.conf)"))[0]
+        path = QtWidgets.QFileDialog.getExistingDirectory(self, QtCore.QCoreApplication.translate(
+            "Restore_dialog", "Choose a backups directory "))
         self.path_input.setText(path)
         try:
             with open(path, 'r') as f:

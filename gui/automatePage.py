@@ -489,7 +489,7 @@ class Ui_Automate(QtWidgets.QWidget):
     def retranslateUi(self, Automate):
         """setting the labels and titles """
         _translate = QtCore.QCoreApplication.translate
-        Automate.setWindowTitle(_translate("Automate", "Automate"))
+        Automate.setWindowTitle(_translate("Automate", "N-Mate"))
         self.select_btn.setToolTip(_translate(
             "Automate", "<html><head/><body><p>Select devices</p></body></html>"))
         self.script_btn.setToolTip(_translate(
@@ -878,7 +878,6 @@ class Ui_Automate(QtWidgets.QWidget):
             else:
                 return True
         else:
-            
             output = subprocess.Popen(['ping', '-w', '1', ip],
                                       stdout=subprocess.PIPE).communicate()[0]
             if "100% packet loss" in output.decode('utf-8').lower():
@@ -919,7 +918,7 @@ class Ui_Automate(QtWidgets.QWidget):
     def errorMsg(self, msg):
         """display an error msg to the screen"""
         QtWidgets.QMessageBox.warning(
-            self, "Login", msg, QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
+            self, "Error", msg, QtWidgets.QMessageBox.Ok, QtWidgets.QMessageBox.Ok)
 
     def generateRange(self, start, end, increment):
         """return a list of ips from a given interval"""
