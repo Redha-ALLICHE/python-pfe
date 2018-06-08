@@ -307,6 +307,8 @@ class Script_dialog(QtWidgets.QWidget):
         self.loading_bar.hide()
         if mode == "ask":
             self.login_container.show()
+            if self.privilege_check.isChecked():
+                self.login_secret.show()
             while self.loop:
                 self.loading_label.setText(
                     "Input the login for : " + data["ip"])
@@ -334,7 +336,7 @@ class Script_dialog(QtWidgets.QWidget):
                 if self.privilege_check.isChecked() and self.device.myDb.all_info[index]["secret"] == '':
                     self.getInputs(data, mode='privilegeOnly')
             else:
-                self.getInputs(data, mode='ask')
+                data = self.getInputs(data, mode='ask')
         self.reset_view()
         self.loading_bar.show()
         return data

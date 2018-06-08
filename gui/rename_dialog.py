@@ -161,6 +161,7 @@ class Rename_dialog(QtWidgets.QWidget):
         self.loop = True
         if mode == "ask":
             self.login_container.show()
+            self.login_secret.show()
             while self.loop:
                 self.loading_label.setText(
                     "Input the login for : " + data["ip"])
@@ -185,6 +186,8 @@ class Rename_dialog(QtWidgets.QWidget):
                 if self.device.myDb.all_info[index]["secret"] == '':
                     self.getInputs(data, mode='privilegeOnly')
                 data = self.device.myDb.all_info[index].copy()
+            else:
+                data = self.getInputs(data, mode="ask")
         self.reset_view()
         return data
 

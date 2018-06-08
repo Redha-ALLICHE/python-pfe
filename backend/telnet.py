@@ -159,6 +159,7 @@ class TelnetDevice(QtCore.QObject):
                     if mode != "one":
                         self.data.update(
                             {'username': '', 'password': '', 'secret': ''})
+                    print(self.data)
                     self.data = funct(self.data, mode=mode)
                     self.executeCommands(self.loginTelnet(
                         refreshing=save, privelege=privelege, mode=mode), commands, silent=silent, backup=backup, backup_root=backup_root)

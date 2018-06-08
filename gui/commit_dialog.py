@@ -156,6 +156,7 @@ class Commit_dialog(QtWidgets.QWidget):
         self.loop = True
         if mode == "ask":
             self.login_container.show()
+            self.login_secret.show()
             while self.loop:
                 self.loading_label.setText(
                     "Input the login for : " + data["ip"])
