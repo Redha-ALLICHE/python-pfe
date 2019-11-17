@@ -1,6 +1,9 @@
-# python-pfe
-objet : projet de fin d'étude pour l'année de licence 2017-2018
+# Network automation tool
 
-fonction : automatisation de la configuration d'un réseau
-
-Réaliser par: ALLICHE Abderrahmane Redha et Gaci Sara
+Object : end of study project to validate my bachelor's degree
+Summary : automate and monitor network devices
+Fonctionnaities : - Secure login
+                  - spread configuration on multiple network devices
+                  - Backup and restore multiple network devices
+                  - Monitor devices activities and manage logs
+                  - Enable access into device's configuration terminal
