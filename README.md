@@ -1,7 +1,7 @@
 # Network automation tool
 
 ## Motivation : 
-End of study project to validate my bachelor's degree
+End of study project to validate my bachelor's degree (2018)
 ## Summary : 
 Automate and monitor network devices
 ## Fonctionnaities : 
